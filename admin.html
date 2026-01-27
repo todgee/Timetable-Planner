@@ -1,0 +1,3053 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Universal Timetable Maker</title>
+
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#2c5f4f" />
+    <meta name="apple-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="Timetable" />
+    <meta
+      name="description"
+      content="Professional timetable and roster scheduling application for schools and organizations"
+    />
+
+    <!-- iOS Icons -->
+    <link rel="apple-touch-icon" href="icons/icon-152x152.png" />
+    <link
+      rel="apple-touch-icon"
+      sizes="152x152"
+      href="icons/icon-152x152.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="icons/icon-192x192.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="167x167"
+      href="icons/icon-192x192.png"
+    />
+
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="icons/icon-128x128.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="icons/icon-72x72.png"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Work+Sans:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    
+    <!-- Firebase SDK -->
+    
+    <!-- Export Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <style>
+      :root {
+        --primary: #2c5f4f;
+        --primary-light: #3d7861;
+        --primary-dark: #1e4438;
+        --accent: #d4a574;
+        --bg: #fdfbf7;
+        --surface: #ffffff;
+        --text: #2d2d2d;
+        --text-light: #6b6b6b;
+        --border: #e8e3db;
+        --shadow: rgba(44, 95, 79, 0.08);
+        --error: #c84848;
+        --success: #4a8b6f;
+        --monday: #4ade80;
+        --tuesday: #60d5f5;
+        --wednesday: #f59e0b;
+        --thursday: #a78bfa;
+        --friday: #fb923c;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Work Sans", sans-serif;
+        background: linear-gradient(135deg, var(--bg) 0%, #f5f1e8 100%);
+        color: var(--text);
+        line-height: 1.6;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 1.5rem;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border);
+      }
+
+      h1 {
+        font-family: "Crimson Pro", serif;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.02em;
+      }
+
+      .subtitle {
+        font-size: 1rem;
+        color: var(--text-light);
+        font-weight: 300;
+      }
+
+      .setup-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .panel {
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px var(--shadow);
+        border: 1px solid var(--border);
+      }
+
+      .panel-title {
+        font-family: "Crimson Pro", serif;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .panel-icon {
+        font-size: 1.3rem;
+      }
+
+      .form-group {
+        margin-bottom: 1.25rem;
+      }
+
+      label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: var(--text);
+        font-size: 0.9rem;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-family: "Work Sans", sans-serif;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+        background: var(--bg);
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: var(--surface);
+      }
+
+      .btn {
+        width: 100%;
+        padding: 0.875rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-family: "Work Sans", sans-serif;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(44, 95, 79, 0.3);
+      }
+
+      .btn-secondary {
+        background: var(--accent);
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background: #c49563;
+        transform: translateY(-2px);
+      }
+
+      .btn-success {
+        background: var(--success);
+        color: white;
+      }
+
+      .btn-success:hover {
+        background: #3d7861;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(74, 139, 111, 0.3);
+      }
+
+      .input-with-button {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 0.5rem;
+        align-items: end;
+      }
+
+      .btn-add {
+        padding: 0.75rem 1.5rem;
+        white-space: nowrap;
+      }
+
+      .item-list {
+        max-height: 200px;
+        overflow-y: auto;
+        margin-bottom: 1rem;
+        padding-right: 0.5rem;
+      }
+
+      .item-list::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .item-list::-webkit-scrollbar-track {
+        background: var(--bg);
+        border-radius: 3px;
+      }
+
+      .item-list::-webkit-scrollbar-thumb {
+        background: var(--primary);
+        border-radius: 3px;
+      }
+
+      .list-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+        background: var(--bg);
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        transition: all 0.2s ease;
+      }
+
+      .list-item:hover {
+        border-color: var(--primary);
+        transform: translateX(4px);
+      }
+
+      .item-name {
+        font-weight: 500;
+        color: var(--primary);
+        flex: 1;
+      }
+
+      .class-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .color-indicator {
+        width: 24px;
+        height: 24px;
+        border-radius: 4px;
+        border: 2px solid var(--border);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .color-indicator:hover {
+        transform: scale(1.1);
+        border-color: var(--primary);
+      }
+
+      input[type="color"] {
+        width: 50px;
+        height: 35px;
+        border: none;
+        cursor: pointer;
+        padding: 2px;
+      }
+
+      .delete-btn {
+        background: var(--error);
+        color: white;
+        border: none;
+        padding: 0.4rem 0.75rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: all 0.2s ease;
+      }
+
+      .delete-btn:hover {
+        background: #b23838;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-light);
+      }
+
+      .empty-state-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        opacity: 0.3;
+      }
+
+      .empty-state p {
+        font-size: 0.9rem;
+      }
+
+      .timetable-section {
+        margin-top: 2rem;
+      }
+
+      .timetable-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .timetable-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .btn-icon {
+        padding: 0.875rem 2rem;
+        width: auto;
+      }
+
+      .day-selector {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+      }
+
+      .day-btn {
+        padding: 0.75rem 2rem;
+        border: 2px solid var(--border);
+        background: var(--surface);
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        font-family: "Work Sans", sans-serif;
+        font-size: 0.95rem;
+      }
+
+      .day-btn:hover {
+        border-color: var(--primary);
+        transform: translateY(-2px);
+      }
+
+      .day-btn.active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+      }
+
+      .timetable-wrapper {
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px var(--shadow);
+        border: 1px solid var(--border);
+        overflow-x: auto;
+      }
+
+      .day-title {
+        font-family: "Crimson Pro", serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: white;
+        padding: 1rem;
+        text-align: center;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+      }
+
+      .day-title.monday {
+        background: var(--monday);
+      }
+      .day-title.tuesday {
+        background: var(--tuesday);
+      }
+      .day-title.wednesday {
+        background: var(--wednesday);
+      }
+      .day-title.thursday {
+        background: var(--thursday);
+      }
+      .day-title.friday {
+        background: var(--friday);
+      }
+
+      .timetable {
+        display: table;
+        width: 100%;
+        border-collapse: collapse;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 2rem;
+      }
+
+      .timetable-header-row {
+        display: table-row;
+        background: var(--primary);
+        color: white;
+      }
+
+      .timetable-header-row > div {
+        display: table-cell;
+        padding: 1rem;
+        font-weight: 600;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        font-family: "Crimson Pro", serif;
+        font-size: 1.05rem;
+      }
+
+      .timetable-row {
+        display: table-row;
+      }
+
+      .timetable-row:nth-child(even) {
+        background: var(--bg);
+      }
+
+      .time-cell {
+        display: table-cell;
+        padding: 0.75rem;
+        font-weight: 600;
+        color: var(--primary);
+        border: 1px solid var(--border);
+        text-align: center;
+        vertical-align: middle;
+        min-width: 100px;
+        background: var(--surface);
+      }
+
+      .time-range {
+        font-size: 0.85rem;
+        line-height: 1.4;
+      }
+
+      .roster-cell {
+        display: table-cell;
+        padding: 0.5rem;
+        border: 1px solid var(--border);
+        min-width: 140px;
+        min-height: 70px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+        vertical-align: top;
+      }
+
+      .roster-cell:hover {
+        background: rgba(44, 95, 79, 0.05);
+      }
+
+      .roster-cell.has-content {
+        color: white;
+        cursor: default;
+      }
+
+      .cell-content {
+        font-size: 0.85rem;
+        line-height: 1.4;
+        word-wrap: break-word;
+      }
+
+      .assignment-class {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+      }
+
+      .assignment-duration {
+        font-size: 0.8rem;
+        opacity: 0.9;
+        margin-bottom: 0.25rem;
+      }
+
+      .assignment-notes {
+        font-size: 0.75rem;
+        opacity: 0.85;
+        font-style: italic;
+      }
+
+      .remove-btn-cell {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        background: rgba(255, 255, 255, 0.3);
+        color: white;
+        border: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 0.7rem;
+        display: none;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .roster-cell.has-content:hover .remove-btn-cell {
+        display: flex;
+      }
+
+      .remove-btn-cell:hover {
+        background: rgba(255, 255, 255, 0.5);
+      }
+
+      .counters-section {
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px var(--shadow);
+        border: 1px solid var(--border);
+        margin-top: 2rem;
+      }
+
+      .counter-tabs {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border);
+      }
+
+      .counter-tab {
+        padding: 0.75rem 1.5rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-family: "Work Sans", sans-serif;
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: var(--text-light);
+        border-bottom: 3px solid transparent;
+        transition: all 0.2s ease;
+      }
+
+      .counter-tab.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+      }
+
+      .counter-content {
+        display: none;
+      }
+
+      .counter-content.active {
+        display: block;
+      }
+
+      .counter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+      }
+
+      .counter-item {
+        padding: 1rem;
+        background: var(--bg);
+        border-radius: 8px;
+        border: 2px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .counter-class {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
+      }
+
+      .counter-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        border: 1px solid var(--border);
+      }
+
+      .counter-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary);
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: var(--surface);
+        padding: 2rem;
+        border-radius: 12px;
+        max-width: 600px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      .modal-title {
+        font-family: "Crimson Pro", serif;
+        font-size: 1.75rem;
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+      }
+
+      .modal-info {
+        background: var(--bg);
+        padding: 0.75rem;
+        border-radius: 6px;
+        margin-bottom: 1.5rem;
+        font-size: 0.9rem;
+        color: var(--text);
+      }
+
+      .modal-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+
+      .btn-cancel {
+        background: var(--text-light);
+        color: white;
+      }
+
+      .btn-cancel:hover {
+        background: var(--text);
+      }
+
+      .time-slot-list {
+        max-height: 400px;
+        overflow-y: auto;
+        margin-bottom: 1rem;
+      }
+
+      .time-slot-item {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 0.75rem;
+        align-items: center;
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+        background: var(--bg);
+        border-radius: 6px;
+        border: 1px solid var(--border);
+      }
+
+      .time-slot-item input[type="time"] {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+      }
+
+      .btn-small {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .list-item {
+        animation: fadeIn 0.3s ease;
+      }
+
+      @media (max-width: 968px) {
+        .setup-section {
+          grid-template-columns: 1fr;
+        }
+
+        h1 {
+          font-size: 2rem;
+        }
+
+        .timetable-actions {
+          flex-direction: column;
+          width: 100%;
+        }
+
+        .btn-icon {
+          width: 100%;
+        }
+
+        .day-selector {
+          gap: 0.5rem;
+        }
+
+        .day-btn {
+          padding: 0.6rem 1rem;
+          font-size: 0.85rem;
+        }
+      }
+
+      /* Login Screen Styles */
+      #loginScreen {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+      }
+
+      .login-container {
+        background: var(--surface);
+        border-radius: 16px;
+        padding: 3rem;
+        box-shadow: 0 10px 40px var(--shadow);
+        border: 1px solid var(--border);
+        max-width: 500px;
+        width: 100%;
+      }
+
+      .login-title {
+        font-family: 'Crimson Pro', serif;
+        font-size: 2.5rem;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+        text-align: center;
+      }
+
+      .login-subtitle {
+        text-align: center;
+        color: var(--text-light);
+        margin-bottom: 3rem;
+        font-size: 1rem;
+      }
+
+      .role-options {
+        display: grid;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .role-card {
+        padding: 2rem;
+        background: var(--bg);
+        border: 3px solid var(--border);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+      }
+
+      .role-card:hover {
+        border-color: var(--primary);
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px var(--shadow);
+      }
+
+      .role-card.selected {
+        border-color: var(--primary);
+        background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);
+      }
+
+      .role-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+      }
+
+      .role-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+      }
+
+      .role-description {
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+
+      .login-form {
+        display: none;
+      }
+
+      .login-form.active {
+        display: block;
+      }
+
+      .login-input {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+        font-family: 'Work Sans', sans-serif;
+      }
+
+      .login-input:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+
+      .login-button {
+        width: 100%;
+        padding: 1rem 2rem;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: 'Work Sans', sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .login-button:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(44, 95, 79, 0.3);
+      }
+
+      .login-button:disabled {
+        background: var(--text-light);
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .login-error {
+        background: #fee;
+        border: 1px solid #fcc;
+        color: #c00;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+        display: none;
+      }
+
+      .login-error.active {
+        display: block;
+      }
+
+      .back-button {
+        background: var(--text-light);
+        color: white;
+        margin-top: 1rem;
+      }
+
+      .back-button:hover {
+        background: var(--text);
+      }
+
+      #appContainer {
+        display: none;
+      }
+
+      #appContainer.active {
+        display: block;
+      }
+
+      .user-info {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        background: var(--surface);
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px var(--shadow);
+        border: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        z-index: 999;
+      }
+
+      .user-role {
+        font-weight: 600;
+        color: var(--primary);
+      }
+
+      .logout-btn {
+        background: var(--error);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: all 0.2s ease;
+      }
+
+      .logout-btn:hover {
+        background: #b23838;
+      }
+
+      .admin-only {
+        display: none;
+      }
+
+      .admin-only.show {
+        display: block;
+      }
+
+      .sync-indicator {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: var(--surface);
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px var(--shadow);
+        border: 2px solid var(--success);
+        display: none;
+        align-items: center;
+        gap: 0.5rem;
+        z-index: 999;
+        animation: slideInUp 0.3s ease;
+      }
+
+      .sync-indicator.active {
+        display: flex;
+      }
+
+      @keyframes slideInUp {
+        from {
+          transform: translateY(100px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
+    <!-- Shared utilities -->
+    <script src="shared.js"></script>
+  </head>
+  <body>
+
+    <div id="appContainer">
+    <div class="container">
+      <header>
+        <h1>Universal Timetable Maker</h1>
+        <p class="subtitle">Flexible Scheduling with Custom Time Slots</p>
+        <div
+          id="autoSaveIndicator"
+          style="
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--success);
+            display: none;
+          "
+        >
+          ✓ Auto-saved
+        </div>
+      </header>
+
+      <!-- Setup Section - Compact Buttons -->
+      <div class="setup-section" style="display: flex; gap: 1rem; justify-content: center; padding: 1rem;">
+        <button class="btn btn-primary btn-icon" onclick="openPeopleManager()" style="font-size: 1.1rem; padding: 1rem 2rem;">
+          👥 Manage People (<span id="peopleCount">0</span>)
+        </button>
+        <button class="btn btn-primary btn-icon" onclick="openClassesManager()" style="font-size: 1.1rem; padding: 1rem 2rem;">
+          📚 Manage Classes (<span id="classesCount">0</span>)
+        </button>
+      </div>
+
+      <!-- People Manager Modal -->
+      <div class="modal" id="peopleManagerModal">
+        <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column;">
+          <h3 class="modal-title">👥 Manage People</h3>
+          
+          <div style="flex: 1; overflow-y: auto; padding: 1rem 0;">
+            <div class="form-group">
+              <label for="peopleInput">Add People (one per line or comma-separated)</label>
+              <textarea
+                id="peopleInput"
+                rows="4"
+                placeholder="Single: John Smith&#10;Multiple: Jane Doe, Bob Wilson, Sarah Chen"
+                style="width: 100%;"
+              ></textarea>
+              <button
+                class="btn btn-primary"
+                onclick="addPeople()"
+                style="margin-top: 0.5rem; width: 100%;"
+              >
+                ➕ Add People
+              </button>
+            </div>
+
+            <div style="margin-top: 2rem;">
+              <h4 style="color: var(--primary); margin-bottom: 1rem;">
+                Current People (<span id="peopleCountInModal">0</span>)
+              </h4>
+              <div class="item-list" id="peopleList" style="max-height: 400px; overflow-y: auto;">
+                <div class="empty-state">
+                  <div class="empty-state-icon">👤</div>
+                  <p>No people added yet</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-buttons" style="margin-top: 1rem;">
+            <button class="btn btn-cancel" onclick="closePeopleManager()">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Classes Manager Modal -->
+      <div class="modal" id="classesManagerModal">
+        <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column;">
+          <h3 class="modal-title">📚 Manage Classes</h3>
+          
+          <div style="flex: 1; overflow-y: auto; padding: 1rem 0;">
+            <div class="form-group">
+              <label for="classesInput">Add Classes (one per line or comma-separated)</label>
+              <textarea
+                id="classesInput"
+                rows="4"
+                placeholder="Single: Math 101&#10;Multiple: English 201, Science Lab, History"
+                style="width: 100%;"
+              ></textarea>
+              <button
+                class="btn btn-primary"
+                onclick="addClasses()"
+                style="margin-top: 0.5rem; width: 100%;"
+              >
+                ➕ Add Classes
+              </button>
+            </div>
+
+            <div style="margin-top: 2rem;">
+              <h4 style="color: var(--primary); margin-bottom: 1rem;">
+                Current Classes (<span id="classesCountInModal">0</span>)
+              </h4>
+              <div class="item-list" id="classList" style="max-height: 400px; overflow-y: auto;">
+                <div class="empty-state">
+                  <div class="empty-state-icon">📖</div>
+                  <p>No classes added yet</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-buttons" style="margin-top: 1rem;">
+            <button class="btn btn-cancel" onclick="closeClassesManager()">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timetable Section -->
+      <div class="timetable-section">
+        <div class="timetable-header">
+          <h2 class="panel-title" style="border: none; padding: 0; margin: 0">
+            <span class="panel-icon">📅</span>
+            Weekly Timetable
+          </h2>
+          <div class="timetable-actions">
+            <button
+              class="btn btn-secondary btn-icon"
+              onclick="openEditTimeSlots()"
+              id="editTimeSlotsBtn"
+              style="display: none"
+            >
+              ✏️ Edit Time Slots
+            </button>
+            <button class="btn btn-success btn-icon" onclick="loadFromDatabase()">
+              ☁️ Load from Database
+            </button>
+            <button class="btn btn-primary btn-icon" onclick="saveProject()">
+              💾 Save Project
+            </button>
+            <button
+              class="btn btn-primary btn-icon"
+              onclick="document.getElementById('loadProjectInput').click()"
+            >
+              📂 Load Project
+            </button>
+            <button class="btn btn-primary btn-icon" onclick="exportSchedule()">
+              📤 Export for SharePoint
+            </button>
+          </div>
+          <input
+            type="file"
+            id="loadProjectInput"
+            accept=".json"
+            style="display: none"
+            onchange="loadProject(event)"
+          />
+        </div>
+
+        <!-- Day Selector -->
+        <div class="day-selector" id="daySelector">
+          <button
+            class="day-btn active"
+            data-day="monday"
+            onclick="switchDay('monday')"
+          >
+            Monday
+          </button>
+          <button
+            class="day-btn"
+            data-day="tuesday"
+            onclick="switchDay('tuesday')"
+          >
+            Tuesday
+          </button>
+          <button
+            class="day-btn"
+            data-day="wednesday"
+            onclick="switchDay('wednesday')"
+          >
+            Wednesday
+          </button>
+          <button
+            class="day-btn"
+            data-day="thursday"
+            onclick="switchDay('thursday')"
+          >
+            Thursday
+          </button>
+          <button
+            class="day-btn"
+            data-day="friday"
+            onclick="switchDay('friday')"
+          >
+            Friday
+          </button>
+        </div>
+
+        <div
+          class="timetable-wrapper"
+          id="timetableWrapper"
+        >
+          <div id="timetableContainer">
+            <div class="empty-state" style="padding: 4rem 2rem">
+              <div class="empty-state-icon">📋</div>
+              <p>
+                Loading timetable from database...
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Counters Section -->
+        <div
+          class="counters-section"
+          id="countersSection"
+        >
+          <div class="counter-tabs">
+            <button
+              class="counter-tab active"
+              onclick="switchCounterTab('day')"
+            >
+              <span id="currentDayLabel">Today</span>
+            </button>
+            <button class="counter-tab" onclick="switchCounterTab('week')">
+              Full Week
+            </button>
+          </div>
+
+          <div class="counter-content active" id="dayCounters">
+            <div class="counter-grid" id="dayCounterGrid"></div>
+          </div>
+
+          <div class="counter-content" id="weekCounters">
+            <div class="counter-grid" id="weekCounterGrid"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Assignment Modal -->
+    <div class="modal" id="assignmentModal">
+      <div class="modal-content">
+        <h3 class="modal-title">Create Assignment</h3>
+        <div class="modal-info" id="modalInfo"></div>
+
+        <div class="form-group">
+          <label for="modalClass">Select Class</label>
+          <select id="modalClass"></select>
+        </div>
+
+        <div class="form-group">
+          <label for="modalDuration">Duration (minutes)</label>
+          <input
+            type="number"
+            id="modalDuration"
+            value="60"
+            min="15"
+            step="15"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="modalNotes">Additional Notes (optional)</label>
+          <input
+            type="text"
+            id="modalNotes"
+            placeholder="e.g., Room 204, Lab session"
+          />
+        </div>
+
+        <div class="modal-buttons">
+          <button class="btn btn-cancel" onclick="closeModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="confirmAssignment()">
+            Create Assignment
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Time Slots Modal -->
+    <div class="modal" id="editTimeSlotsModal">
+      <div class="modal-content">
+        <h3 class="modal-title">Edit Time Slots</h3>
+        <p style="color: var(--text-light); margin-bottom: 1.5rem">
+          Customize your schedule by editing, adding, or removing time slots.
+        </p>
+
+        <div class="time-slot-list" id="timeSlotList"></div>
+
+        <button
+          class="btn btn-secondary"
+          onclick="addNewTimeSlot()"
+          style="margin-bottom: 1rem"
+        >
+          + Add Time Slot
+        </button>
+
+        <div class="modal-buttons">
+          <button class="btn btn-cancel" onclick="closeEditTimeSlotsModal()">
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="saveTimeSlots()">
+            Save Changes
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Export Options Modal -->
+    <div class="modal" id="exportModal">
+      <div class="modal-content" style="max-width: 700px;">
+        <h3 class="modal-title">📤 Export Timetable for SharePoint</h3>
+        <p style="color: var(--text-light); margin-bottom: 2rem">
+          Choose your export format. All formats are ready to upload to SharePoint.
+        </p>
+
+        <div style="display: grid; gap: 1.5rem; margin-bottom: 2rem;">
+          <!-- Excel Export Option -->
+          <div class="export-option" onclick="exportToExcel()">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              <div style="font-size: 3rem;">📊</div>
+              <div style="flex: 1;">
+                <h4 style="margin: 0 0 0.5rem 0; font-size: 1.2rem; color: var(--primary);">Excel Workbook (.xlsx)</h4>
+                <p style="margin: 0; font-size: 0.9rem; color: var(--text-light);">
+                  Full week with separate sheets per day. Opens in Excel Online. Best for editing and filtering.
+                </p>
+              </div>
+              <button class="btn btn-primary" style="width: auto; padding: 0.75rem 1.5rem;" onclick="event.stopPropagation(); exportToExcel()">
+                Download
+              </button>
+            </div>
+          </div>
+
+          <!-- PDF Export Option -->
+          <div class="export-option" onclick="exportToPDF()">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              <div style="font-size: 3rem;">📄</div>
+              <div style="flex: 1;">
+                <h4 style="margin: 0 0 0.5rem 0; font-size: 1.2rem; color: var(--primary);">PDF Document (.pdf)</h4>
+                <p style="margin: 0; font-size: 0.9rem; color: var(--text-light);">
+                  Professional multi-page document. Perfect for printing and formal distribution.
+                </p>
+              </div>
+              <button class="btn btn-primary" style="width: auto; padding: 0.75rem 1.5rem;" onclick="event.stopPropagation(); exportToPDF()">
+                Download
+              </button>
+            </div>
+          </div>
+
+          <!-- PNG Images Export Option -->
+          <div class="export-option" onclick="exportToPNG()">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              <div style="font-size: 3rem;">🖼️</div>
+              <div style="flex: 1;">
+                <h4 style="margin: 0 0 0.5rem 0; font-size: 1.2rem; color: var(--primary);">PNG Images (.png)</h4>
+                <p style="margin: 0; font-size: 0.9rem; color: var(--text-light);">
+                  High-quality images (one per day). Quick visual snapshots for presentations.
+                </p>
+              </div>
+              <button class="btn btn-primary" style="width: auto; padding: 0.75rem 1.5rem;" onclick="event.stopPropagation(); exportToPNG()">
+                Download
+              </button>
+            </div>
+          </div>
+
+          <!-- Export All Option -->
+          <div class="export-option" onclick="exportAll()" style="background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%); border: 2px solid var(--primary);">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              <div style="font-size: 3rem;">💾</div>
+              <div style="flex: 1;">
+                <h4 style="margin: 0 0 0.5rem 0; font-size: 1.2rem; color: var(--primary);">Export All Formats</h4>
+                <p style="margin: 0; font-size: 0.9rem; color: var(--text-light);">
+                  Download Excel, PDF, and PNG files all at once. Maximum flexibility!
+                </p>
+              </div>
+              <button class="btn btn-secondary" style="width: auto; padding: 0.75rem 1.5rem;" onclick="event.stopPropagation(); exportAll()">
+                Download All
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align: center;">
+          <button class="btn btn-cancel" onclick="closeExportModal()" style="width: auto; padding: 0.75rem 2rem;">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      .export-option {
+        padding: 1.5rem;
+        background: var(--bg);
+        border: 2px solid var(--border);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .export-option:hover {
+        border-color: var(--primary);
+        box-shadow: 0 4px 12px var(--shadow);
+        transform: translateY(-2px);
+      }
+    </style>
+
+    <script>
+      // ============================================
+      // AUTHENTICATION CHECK
+      // ============================================
+      checkAuth().then(isAuthenticated => {
+        if (!isAuthenticated) return;
+        
+        // Check if user is admin
+        if (currentUserRole !== 'admin') {
+          window.location.href = 'view.html';
+          return;
+        }
+        
+        // Show user info
+        document.getElementById('userRole').textContent = 'Leadership (Admin)';
+        
+        // Initialize the app
+        initializeApp();
+      });
+
+      // ============================================
+      // ADMIN APPLICATION CODE
+      
+      // Initialize admin app
+      function initializeApp() {
+        console.log('✅ Admin app initialized');
+        
+        // Initialize Firebase empty structure if needed
+        initializeEmptyFirebase(currentUser.email);
+        
+        // Load from localStorage if available
+        loadFromLocalStorage();
+        
+        // Update UI
+        updatePeopleList();
+        updateClassList();
+        updateModalSelects();
+      }
+      // ============================================
+      let peopleList = [];
+      let classList = [];
+      let classColors = {};
+      let assignments = {};
+      let currentDay = "monday";
+      let currentEditCell = null;
+      let timeSlots = [];
+      let currentCounterTab = "day";
+
+      const days = ["monday", "tuesday", "wednesday", "thursday", "friday"];
+      const defaultColors = [
+        "#3b82f6",
+        "#8b5cf6",
+        "#ec4899",
+        "#f97316",
+        "#10b981",
+        "#06b6d4",
+        "#6366f1",
+        "#a855f7",
+        "#f43f5e",
+        "#14b8a6",
+        "#84cc16",
+        "#eab308",
+        "#f59e0b",
+        "#ef4444",
+        "#22c55e",
+      ];
+      let colorIndex = 0;
+
+      // People Management
+      function addPeople() {
+        const input = document.getElementById("peopleInput");
+        const text = input.value.trim();
+
+        if (!text) {
+          alert("Please enter at least one person name");
+          return;
+        }
+
+        // Split by newlines first, then by commas
+        const lines = text.split("\n");
+        const names = [];
+        lines.forEach((line) => {
+          const parts = line
+            .split(",")
+            .map((name) => name.trim())
+            .filter((name) => name);
+          names.push(...parts);
+        });
+
+        if (names.length === 0) {
+          alert("Please enter at least one person name");
+          return;
+        }
+
+        let added = 0;
+        let skipped = 0;
+
+        names.forEach((name) => {
+          if (!peopleList.includes(name)) {
+            peopleList.push(name);
+            added++;
+          } else {
+            skipped++;
+          }
+        });
+
+        input.value = "";
+        updatePeopleList();
+        updateModalSelects();
+        autoSaveToFirebase();
+
+        if (added > 0) {
+          alert(
+            `Added ${added} ${added === 1 ? "person" : "people"}${skipped > 0 ? `, skipped ${skipped} duplicate${skipped === 1 ? "" : "s"}` : ""}`,
+          );
+        } else {
+          alert("All names were already in the list");
+        }
+      }
+
+      function removePerson(name) {
+        if (
+          confirm(
+            `Remove ${name} from the list? All their assignments will be deleted.`,
+          )
+        ) {
+          peopleList = peopleList.filter((person) => person !== name);
+
+          days.forEach((day) => {
+            if (assignments[day]) {
+              Object.keys(assignments[day]).forEach((key) => {
+                if (key.includes(`-${name}`)) {
+                  delete assignments[day][key];
+                }
+              });
+            }
+          });
+
+          updatePeopleList();
+          updateModalSelects();
+          renderCurrentTimetable();
+          updateCounters();
+          autoSaveToFirebase();
+        }
+      }
+
+      function updatePeopleList() {
+        const listContainer = document.getElementById("peopleList");
+        
+        // Update counters
+        document.getElementById("peopleCount").textContent = peopleList.length;
+        const modalCounter = document.getElementById("peopleCountInModal");
+        if (modalCounter) modalCounter.textContent = peopleList.length;
+
+        if (peopleList.length === 0) {
+          listContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">👤</div>
+                        <p>No people added yet</p>
+                    </div>
+                `;
+          return;
+        }
+
+        listContainer.innerHTML = peopleList
+          .map(
+            (person) => `
+                <div class="list-item">
+                    <span class="item-name">${person}</span>
+                    <button class="delete-btn" onclick="removePerson('${person.replace(/'/g, "\\'")}')">Remove</button>
+                </div>
+            `,
+          )
+          .join("");
+      }
+
+      // Classes Management
+      function addClasses() {
+        const input = document.getElementById("classesInput");
+        const text = input.value.trim();
+
+        if (!text) {
+          alert("Please enter at least one class name");
+          return;
+        }
+
+        // Split by newlines first, then by commas
+        const lines = text.split("\n");
+        const names = [];
+        lines.forEach((line) => {
+          const parts = line
+            .split(",")
+            .map((name) => name.trim())
+            .filter((name) => name);
+          names.push(...parts);
+        });
+
+        if (names.length === 0) {
+          alert("Please enter at least one class name");
+          return;
+        }
+
+        let added = 0;
+        let skipped = 0;
+
+        names.forEach((name) => {
+          if (!classList.includes(name)) {
+            classList.push(name);
+            classColors[name] =
+              defaultColors[colorIndex % defaultColors.length];
+            colorIndex++;
+            added++;
+          } else {
+            skipped++;
+          }
+        });
+
+        input.value = "";
+        updateClassList();
+        updateModalSelects();
+        autoSaveToFirebase();
+
+        if (added > 0) {
+          alert(
+            `Added ${added} ${added === 1 ? "class" : "classes"}${skipped > 0 ? `, skipped ${skipped} duplicate${skipped === 1 ? "" : "s"}` : ""}`,
+          );
+        } else {
+          alert("All classes were already in the list");
+        }
+      }
+
+      function removeClass(name) {
+        if (
+          confirm(
+            `Remove ${name} from the list? All assignments using this class will be deleted.`,
+          )
+        ) {
+          classList = classList.filter((cls) => cls !== name);
+          delete classColors[name];
+
+          days.forEach((day) => {
+            if (assignments[day]) {
+              Object.keys(assignments[day]).forEach((key) => {
+                if (assignments[day][key].class === name) {
+                  delete assignments[day][key];
+                }
+              });
+            }
+          });
+
+          updateClassList();
+          updateModalSelects();
+          renderCurrentTimetable();
+          updateCounters();
+          autoSaveToFirebase();
+        }
+      }
+
+      function updateClassColor(name, color) {
+        classColors[name] = color;
+        renderCurrentTimetable();
+        autoSaveToFirebase();
+      }
+
+      function updateClassList() {
+        const listContainer = document.getElementById("classList");
+        
+        // Update counters
+        document.getElementById("classesCount").textContent = classList.length;
+        const modalCounter = document.getElementById("classesCountInModal");
+        if (modalCounter) modalCounter.textContent = classList.length;
+
+        if (classList.length === 0) {
+          listContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📖</div>
+                        <p>No classes added yet</p>
+                    </div>
+                `;
+          return;
+        }
+
+        listContainer.innerHTML = classList
+          .map(
+            (cls) => `
+                <div class="list-item">
+                    <div class="class-item">
+                        <input type="color" value="${classColors[cls]}" 
+                               onchange="updateClassColor('${cls.replace(/'/g, "\\'")}', this.value)"
+                               title="Choose color">
+                        <span class="item-name">${cls}</span>
+                    </div>
+                    <button class="delete-btn" onclick="removeClass('${cls.replace(/'/g, "\\'")}')">Remove</button>
+                </div>
+            `,
+          )
+          .join("");
+      }
+
+      // Modal Management
+      function openPeopleManager() {
+        document.getElementById("peopleManagerModal").classList.add("active");
+      }
+
+      function closePeopleManager() {
+        document.getElementById("peopleManagerModal").classList.remove("active");
+      }
+
+      function openClassesManager() {
+        document.getElementById("classesManagerModal").classList.add("active");
+      }
+
+      function closeClassesManager() {
+        document.getElementById("classesManagerModal").classList.remove("active");
+      }
+
+      function updateModalSelects() {
+        const classSelect = document.getElementById("modalClass");
+
+        classSelect.innerHTML =
+          '<option value="">Select a class...</option>' +
+          classList
+            .map((cls) => `<option value="${cls}">${cls}</option>`)
+            .join("");
+      }
+
+      // Time Slots Management
+      // REMOVED: Generate Timetable function (timetable now loads automatically from Firebase)
+      /*
+      function generateTimetable() {
+        const startTime = document.getElementById("startTime").value;
+        const endTime = document.getElementById("endTime").value;
+        const duration = parseInt(
+          document.getElementById("lessonDuration").value,
+        );
+
+        if (!startTime || !endTime) {
+          alert("Please set start and end times");
+          return;
+        }
+
+        if (peopleList.length === 0) {
+          alert("Please add at least one person");
+          return;
+        }
+
+        if (classList.length === 0) {
+          alert("Please add at least one class");
+          return;
+        }
+
+        const start = timeToMinutes(startTime);
+        const end = timeToMinutes(endTime);
+
+        if (start >= end) {
+          alert("End time must be after start time");
+          return;
+        }
+
+        timeSlots = [];
+        for (let time = start; time < end; time += duration) {
+          const slotStart = minutesToTime(time);
+          const slotEnd = minutesToTime(Math.min(time + duration, end));
+          timeSlots.push({ start: slotStart, end: slotEnd });
+        }
+
+        days.forEach((day) => {
+          if (!assignments[day]) {
+            assignments[day] = {};
+          }
+        });
+
+        document.getElementById("daySelector").style.display = "flex";
+        document.getElementById("timetableWrapper").style.display = "block";
+        document.getElementById("editTimeSlotsBtn").style.display =
+          "inline-block";
+        document.getElementById("countersSection").style.display = "block";
+
+        renderTimetable();
+        updateCounters();
+      }
+      */
+
+      function openEditTimeSlots() {
+        const listContainer = document.getElementById("timeSlotList");
+        listContainer.innerHTML = timeSlots
+          .map(
+            (slot, index) => `
+                <div class="time-slot-item">
+                    <input type="time" value="${slot.start}" onchange="updateTimeSlot(${index}, 'start', this.value)">
+                    <input type="time" value="${slot.end}" onchange="updateTimeSlot(${index}, 'end', this.value)">
+                    <button class="btn btn-secondary btn-small delete-btn" onclick="removeTimeSlot(${index})">Remove</button>
+                </div>
+            `,
+          )
+          .join("");
+
+        document.getElementById("editTimeSlotsModal").classList.add("active");
+      }
+
+      function updateTimeSlot(index, field, value) {
+        timeSlots[index][field] = value;
+      }
+
+      function addNewTimeSlot() {
+        const lastSlot = timeSlots[timeSlots.length - 1];
+        const newStart = lastSlot ? lastSlot.end : "08:00";
+        const newEnd = minutesToTime(timeToMinutes(newStart) + 60);
+
+        timeSlots.push({ start: newStart, end: newEnd });
+        openEditTimeSlots();
+      }
+
+      function removeTimeSlot(index) {
+        if (
+          confirm(
+            "Remove this time slot? Any assignments during this time will be deleted.",
+          )
+        ) {
+          const removedSlot = timeSlots[index];
+          timeSlots.splice(index, 1);
+
+          // Remove assignments in this slot
+          days.forEach((day) => {
+            if (assignments[day]) {
+              Object.keys(assignments[day]).forEach((key) => {
+                if (key.startsWith(removedSlot.start + "-")) {
+                  delete assignments[day][key];
+                }
+              });
+            }
+          });
+
+          openEditTimeSlots();
+        }
+      }
+
+      function closeEditTimeSlotsModal() {
+        document
+          .getElementById("editTimeSlotsModal")
+          .classList.remove("active");
+      }
+
+      function saveTimeSlots() {
+        // Sort time slots
+        timeSlots.sort(
+          (a, b) => timeToMinutes(a.start) - timeToMinutes(b.start),
+        );
+
+        closeEditTimeSlotsModal();
+        renderTimetable();
+        updateCounters();
+        autoSaveToFirebase();
+      }
+
+      function renderCurrentTimetable() {
+        if (timeSlots.length > 0) {
+          renderTimetable();
+        }
+      }
+
+      function renderTimetable() {
+        const container = document.getElementById("timetableContainer");
+
+        let html = '<div style="display: inline-block; min-width: 100%;">';
+        html += `<div class="day-title ${currentDay}">${currentDay.charAt(0).toUpperCase() + currentDay.slice(1)}</div>`;
+        html += '<div class="timetable">';
+
+        html += '<div class="timetable-header-row">';
+        html += "<div>Time</div>";
+        peopleList.forEach((name) => {
+          html += `<div>${name}</div>`;
+        });
+        html += "</div>";
+
+        // Filter out invalid time slots
+        const validTimeSlots = timeSlots.filter(slot => 
+          slot && slot.start && slot.end && 
+          typeof slot.start === 'string' && typeof slot.end === 'string'
+        );
+
+        validTimeSlots.forEach((slot) => {
+          html += '<div class="timetable-row">';
+          html += `<div class="time-cell"><div class="time-range">${formatTime12Hour(slot.start)}<br>${formatTime12Hour(slot.end)}</div></div>`;
+
+          peopleList.forEach((person) => {
+            const cellKey = `${slot.start}-${person}`;
+            const cellData = assignments[currentDay]?.[cellKey];
+            const hasContent = cellData !== undefined;
+
+            const bgColor = hasContent ? classColors[cellData.class] : "";
+            const style = hasContent ? `style="background: ${bgColor};"` : "";
+            
+            // Only make clickable for admin users
+            const clickHandler = currentUserRole === 'admin' ? `onclick="editCell('${slot.start}', '${person.replace(/'/g, "\\'")}')"` : '';
+
+            html += `<div class="roster-cell ${hasContent ? "has-content" : ""}" ${style} ${clickHandler}>`;
+
+            if (hasContent) {
+              // Only show remove button for admin
+              if (currentUserRole === 'admin') {
+                html += `<button class="remove-btn-cell" onclick="event.stopPropagation(); removeCell('${slot.start}', '${person.replace(/'/g, "\\'")}')">×</button>`;
+              }
+              html += `<div class="cell-content">`;
+              html += `<div class="assignment-class">${cellData.class}</div>`;
+              html += `<div class="assignment-duration">${cellData.duration} min</div>`;
+              if (cellData.notes) {
+                html += `<div class="assignment-notes">${cellData.notes}</div>`;
+              }
+              html += `</div>`;
+            }
+
+            html += "</div>";
+          });
+
+          html += "</div>";
+        });
+
+        html += "</div>";
+        html += "</div>";
+        container.innerHTML = html;
+      }
+
+      function switchDay(day) {
+        currentDay = day;
+
+        document.querySelectorAll(".day-btn").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+        document.querySelector(`[data-day="${day}"]`).classList.add("active");
+
+        renderTimetable();
+        updateCounters();
+      }
+
+      function editCell(time, person) {
+        currentEditCell = { time, person };
+        const cellKey = `${time}-${person}`;
+        const currentData = assignments[currentDay][cellKey];
+
+        document.getElementById("modalInfo").textContent =
+          `${currentDay.charAt(0).toUpperCase() + currentDay.slice(1)} - ${formatTime12Hour(time)} - ${person}`;
+
+        if (currentData) {
+          document.getElementById("modalClass").value = currentData.class;
+          document.getElementById("modalDuration").value = currentData.duration;
+          document.getElementById("modalNotes").value = currentData.notes || "";
+        } else {
+          document.getElementById("modalClass").value = "";
+          document.getElementById("modalDuration").value = parseInt(
+            document.getElementById("lessonDuration").value,
+          );
+          document.getElementById("modalNotes").value = "";
+        }
+
+        document.getElementById("assignmentModal").classList.add("active");
+      }
+
+      function closeModal() {
+        document.getElementById("assignmentModal").classList.remove("active");
+        currentEditCell = null;
+      }
+
+      function confirmAssignment() {
+        if (!currentEditCell) return;
+
+        const className = document.getElementById("modalClass").value;
+        const duration = parseInt(
+          document.getElementById("modalDuration").value,
+        );
+        const notes = document.getElementById("modalNotes").value.trim();
+
+        if (!className) {
+          alert("Please select a class");
+          return;
+        }
+
+        const cellKey = `${currentEditCell.time}-${currentEditCell.person}`;
+
+        assignments[currentDay][cellKey] = {
+          class: className,
+          duration: duration,
+          notes: notes,
+        };
+
+        closeModal();
+        renderTimetable();
+        updateCounters();
+        autoSaveToFirebase();
+      }
+
+      function removeCell(time, person) {
+        const cellKey = `${time}-${person}`;
+        delete assignments[currentDay][cellKey];
+        renderTimetable();
+        updateCounters();
+        autoSaveToFirebase();
+      }
+
+      // Counters
+      function switchCounterTab(tab) {
+        currentCounterTab = tab;
+
+        document
+          .querySelectorAll(".counter-tab")
+          .forEach((t) => t.classList.remove("active"));
+        document
+          .querySelectorAll(".counter-content")
+          .forEach((c) => c.classList.remove("active"));
+
+        if (tab === "day") {
+          document.querySelectorAll(".counter-tab")[0].classList.add("active");
+          document.getElementById("dayCounters").classList.add("active");
+        } else {
+          document.querySelectorAll(".counter-tab")[1].classList.add("active");
+          document.getElementById("weekCounters").classList.add("active");
+        }
+      }
+
+      function updateCounters() {
+        document.getElementById("currentDayLabel").textContent =
+          currentDay.charAt(0).toUpperCase() + currentDay.slice(1);
+
+        // Day counters
+        const dayCounts = {};
+        classList.forEach((cls) => (dayCounts[cls] = 0));
+
+        if (assignments[currentDay]) {
+          Object.values(assignments[currentDay]).forEach((assignment) => {
+            dayCounts[assignment.class]++;
+          });
+        }
+
+        const dayGrid = document.getElementById("dayCounterGrid");
+        dayGrid.innerHTML = classList
+          .map(
+            (cls) => `
+                <div class="counter-item">
+                    <div class="counter-class">
+                        <div class="counter-color" style="background: ${classColors[cls]}"></div>
+                        <span>${cls}</span>
+                    </div>
+                    <div class="counter-value">${dayCounts[cls]}</div>
+                </div>
+            `,
+          )
+          .join("");
+
+        // Week counters
+        const weekCounts = {};
+        classList.forEach((cls) => (weekCounts[cls] = 0));
+
+        days.forEach((day) => {
+          if (assignments[day]) {
+            Object.values(assignments[day]).forEach((assignment) => {
+              weekCounts[assignment.class]++;
+            });
+          }
+        });
+
+        const weekGrid = document.getElementById("weekCounterGrid");
+        weekGrid.innerHTML = classList
+          .map(
+            (cls) => `
+                <div class="counter-item">
+                    <div class="counter-class">
+                        <div class="counter-color" style="background: ${classColors[cls]}"></div>
+                        <span>${cls}</span>
+                    </div>
+                    <div class="counter-value">${weekCounts[cls]}</div>
+                </div>
+            `,
+          )
+          .join("");
+      }
+
+      // Time Utilities
+
+      }
+
+        
+        const parts = time24.split(":");
+        if (parts.length !== 2) {
+          console.error('Invalid time format:', time24);
+          return time24; // Return as-is if invalid
+        }
+        
+        const [hours, minutes] = parts.map(Number);
+        if (isNaN(hours) || isNaN(minutes)) {
+          console.error('Non-numeric time values:', time24);
+          return time24;
+        }
+        
+        const period = hours >= 12 ? "PM" : "AM";
+        const hours12 = hours % 12 || 12;
+        return `${hours12}:${minutes.toString().padStart(2, "0")} ${period}`;
+      }
+
+      // Save & Load Project
+      function saveProject() {
+        const projectData = {
+          version: "1.0",
+          savedDate: new Date().toISOString(),
+          peopleList: peopleList,
+          classList: classList,
+          classColors: classColors,
+          assignments: assignments,
+          timeSlots: timeSlots
+        };
+
+        const jsonString = JSON.stringify(projectData, null, 2);
+        const blob = new Blob([jsonString], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `Timetable_Project_${new Date().toISOString().split("T")[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+
+        showAutoSaveIndicator("Project saved!");
+      }
+
+      function loadProject(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            const projectData = JSON.parse(e.target.result);
+
+            // Validate version
+            if (!projectData.version) {
+              alert("Invalid project file");
+              return;
+            }
+
+            // Confirm load
+            if (
+              !confirm(
+                "Loading this project will replace your current work. Continue?",
+              )
+            ) {
+              return;
+            }
+
+            // Restore data
+            peopleList = projectData.peopleList || [];
+            classList = projectData.classList || [];
+            classColors = projectData.classColors || {};
+            assignments = projectData.assignments || {};
+            timeSlots = projectData.timeSlots || [];
+            colorIndex = classList.length;
+
+            // Restore settings
+            if (projectData.settings) {
+              document.getElementById("startTime").value =
+                projectData.settings.startTime;
+              document.getElementById("endTime").value =
+                projectData.settings.endTime;
+              document.getElementById("lessonDuration").value =
+                projectData.settings.lessonDuration;
+            }
+
+            // Update UI
+            updatePeopleList();
+            updateClassList();
+            updateModalSelects();
+
+            // Show timetable if data exists
+            if (timeSlots.length > 0) {
+              document.getElementById("daySelector").style.display = "flex";
+              document.getElementById("timetableWrapper").style.display =
+                "block";
+              document.getElementById("editTimeSlotsBtn").style.display =
+                "inline-block";
+              document.getElementById("countersSection").style.display =
+                "block";
+              renderTimetable();
+              updateCounters();
+            }
+
+            alert("Project loaded successfully!");
+            autoSaveToFirebase();
+          } catch (error) {
+            alert("Error loading project file: " + error.message);
+          }
+        };
+        reader.readAsText(file);
+
+        // Reset file input
+        event.target.value = "";
+      }
+
+      function autoSaveToFirebase() {
+        const projectData = {
+          version: "1.0",
+          savedDate: new Date().toISOString(),
+          peopleList: peopleList,
+          classList: classList,
+          classColors: classColors,
+          assignments: assignments,
+          timeSlots: timeSlots,
+          settings: {
+            startTime: document.getElementById("startTime").value,
+            endTime: document.getElementById("endTime").value,
+            lessonDuration: document.getElementById("lessonDuration").value,
+          },
+        };
+
+        try {
+          localStorage.setItem("timetableProject", JSON.stringify(projectData));
+          showAutoSaveIndicator();
+        } catch (error) {
+          console.error("Auto-save failed:", error);
+        }
+      }
+
+      function loadFromLocalStorage() {
+        try {
+          const saved = localStorage.getItem("timetableProject");
+          if (!saved) return;
+
+          const projectData = JSON.parse(saved);
+
+          // Restore data
+          peopleList = projectData.peopleList || [];
+          classList = projectData.classList || [];
+          classColors = projectData.classColors || {};
+          assignments = projectData.assignments || {};
+          timeSlots = projectData.timeSlots || [];
+          colorIndex = classList.length;
+
+          // Update UI
+          updatePeopleList();
+          updateClassList();
+          updateModalSelects();
+
+          // Show timetable if data exists
+          if (timeSlots.length > 0) {
+            document.getElementById("daySelector").style.display = "flex";
+            document.getElementById("timetableWrapper").style.display = "block";
+            document.getElementById("editTimeSlotsBtn").style.display =
+              "inline-block";
+            document.getElementById("countersSection").style.display = "block";
+            renderTimetable();
+            updateCounters();
+          }
+        } catch (error) {
+          console.error("Error loading from localStorage:", error);
+        }
+      }
+
+      function showAutoSaveIndicator(message = "✓ Auto-saved") {
+        const indicator = document.getElementById("autoSaveIndicator");
+        indicator.textContent = message;
+        indicator.style.display = "block";
+
+        setTimeout(() => {
+          indicator.style.display = "none";
+        }, 2000);
+      }
+
+      // Export Functions
+      function exportSchedule() {
+        let hasAssignments = false;
+        days.forEach((day) => {
+          if (assignments[day] && Object.keys(assignments[day]).length > 0) {
+            hasAssignments = true;
+          }
+        });
+
+        if (!hasAssignments) {
+          alert("No assignments to export");
+          return;
+        }
+
+        // Open export modal
+        document.getElementById("exportModal").classList.add("active");
+      }
+
+      function closeExportModal() {
+        document.getElementById("exportModal").classList.remove("active");
+      }
+
+      // Excel Export
+      function exportToExcel() {
+        const workbook = XLSX.utils.book_new();
+        const timestamp = new Date().toISOString().split('T')[0];
+
+        // Create a sheet for each day
+        days.forEach(day => {
+          const dayName = day.charAt(0).toUpperCase() + day.slice(1);
+          const sheetData = [];
+
+          // Header row
+          const headerRow = ['Time'];
+          peopleList.forEach(person => headerRow.push(person));
+          sheetData.push(headerRow);
+
+          // Data rows
+          timeSlots.forEach(slot => {
+            const row = [`${formatTime12Hour(slot.start)} - ${formatTime12Hour(slot.end)}`];
+            
+            peopleList.forEach(person => {
+              const cellKey = `${slot.start}-${person}`;
+              const data = assignments[day]?.[cellKey];
+              
+              if (data) {
+                let cellText = `${data.class}`;
+                if (data.duration !== 60) cellText += ` (${data.duration}min)`;
+                if (data.notes) cellText += `\n${data.notes}`;
+                row.push(cellText);
+              } else {
+                row.push('');
+              }
+            });
+            
+            sheetData.push(row);
+          });
+
+          const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
+          
+          // Set column widths
+          const colWidths = [{ wch: 20 }];
+          peopleList.forEach(() => colWidths.push({ wch: 25 }));
+          worksheet['!cols'] = colWidths;
+
+          XLSX.utils.book_append_sheet(workbook, worksheet, dayName);
+        });
+
+        // Summary sheet
+        const summaryData = [['Class Summary', 'Count']];
+        const weekCounts = {};
+        classList.forEach(cls => weekCounts[cls] = 0);
+        days.forEach(day => {
+          if (assignments[day]) {
+            Object.values(assignments[day]).forEach(assignment => {
+              weekCounts[assignment.class]++;
+            });
+          }
+        });
+        
+        classList.forEach(cls => {
+          summaryData.push([cls, weekCounts[cls]]);
+        });
+        summaryData.push(['', '']);
+        summaryData.push(['Total People', peopleList.length]);
+        summaryData.push(['Total Classes', classList.length]);
+
+        const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
+        summarySheet['!cols'] = [{ wch: 40 }, { wch: 10 }];
+        XLSX.utils.book_append_sheet(workbook, summarySheet, 'Summary');
+
+        XLSX.writeFile(workbook, `Timetable_${timestamp}.xlsx`);
+        showAutoSaveIndicator('✅ Excel file downloaded!');
+      }
+
+      // PDF Export
+      async function exportToPDF() {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('l', 'mm', 'a4'); // landscape
+        const timestamp = new Date().toISOString().split('T')[0];
+        let pageNum = 0;
+
+        for (const day of days) {
+          if (pageNum > 0) pdf.addPage();
+          
+          const dayName = day.charAt(0).toUpperCase() + day.slice(1);
+          
+          // Title
+          pdf.setFontSize(20);
+          pdf.setTextColor(44, 95, 79);
+          pdf.text(dayName, 148, 20, { align: 'center' });
+          
+          // Table
+          const tableData = [];
+          timeSlots.forEach(slot => {
+            const row = [`${formatTime12Hour(slot.start)}-${formatTime12Hour(slot.end)}`];
+            
+            peopleList.forEach(person => {
+              const cellKey = `${slot.start}-${person}`;
+              const data = assignments[day]?.[cellKey];
+              
+              if (data) {
+                let cellText = data.class;
+                if (data.duration !== 60) cellText += `\n(${data.duration}min)`;
+                if (data.notes) cellText += `\n${data.notes}`;
+                row.push(cellText);
+              } else {
+                row.push('');
+              }
+            });
+            
+            tableData.push(row);
+          });
+
+          pdf.autoTable({
+            head: [['Time', ...peopleList]],
+            body: tableData,
+            startY: 30,
+            theme: 'grid',
+            styles: { fontSize: 8, cellPadding: 2 },
+            headStyles: { fillColor: [44, 95, 79], textColor: 255 },
+            columnStyles: {
+              0: { cellWidth: 25, fontStyle: 'bold' }
+            },
+            margin: { left: 10, right: 10 }
+          });
+
+          // Footer
+          pdf.setFontSize(8);
+          pdf.setTextColor(107, 107, 107);
+          pdf.text(`Generated: ${new Date().toLocaleString()}`, 10, 200);
+          pdf.text(`Page ${pageNum + 1} of 5`, 280, 200);
+          
+          pageNum++;
+        }
+
+        pdf.save(`Timetable_${timestamp}.pdf`);
+        showAutoSaveIndicator('✅ PDF downloaded!');
+      }
+
+      // PNG Export
+      async function exportToPNG() {
+        const originalDay = currentDay;
+        let downloadCount = 0;
+
+        for (const day of days) {
+          // Switch to the day
+          currentDay = day;
+          renderTimetable();
+          
+          // Wait for render
+          await new Promise(resolve => setTimeout(resolve, 100));
+          
+          // Capture the timetable
+          const element = document.getElementById('timetableContainer');
+          const canvas = await html2canvas(element, {
+            scale: 2,
+            backgroundColor: '#ffffff',
+            logging: false
+          });
+          
+          // Download
+          const dayName = day.charAt(0).toUpperCase() + day.slice(1);
+          const timestamp = new Date().toISOString().split('T')[0];
+          
+          canvas.toBlob(blob => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Timetable_${dayName}_${timestamp}.png`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            downloadCount++;
+            if (downloadCount === days.length) {
+              showAutoSaveIndicator('✅ All images downloaded!');
+            }
+          });
+          
+          // Small delay between downloads
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+
+        // Restore original day
+        currentDay = originalDay;
+        renderTimetable();
+      }
+
+      // Export All Formats
+      async function exportAll() {
+        showAutoSaveIndicator('⏳ Exporting all formats...');
+        
+        exportToExcel();
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        await exportToPDF();
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        await exportToPNG();
+        
+        showAutoSaveIndicator('✅ All formats exported!');
+      }
+
+      // Event Listeners
+      document
+        .getElementById("assignmentModal")
+        .addEventListener("click", function (e) {
+          if (e.target === this) closeModal();
+        });
+
+      document
+        .getElementById("editTimeSlotsModal")
+        .addEventListener("click", function (e) {
+          if (e.target === this) closeEditTimeSlotsModal();
+        });
+
+      document
+        .getElementById("exportModal")
+        .addEventListener("click", function (e) {
+          if (e.target === this) closeExportModal();
+        });
+
+      document
+        .getElementById("peopleManagerModal")
+        .addEventListener("click", function (e) {
+          if (e.target === this) closePeopleManager();
+        });
+
+      document
+        .getElementById("classesManagerModal")
+        .addEventListener("click", function (e) {
+          if (e.target === this) closeClassesManager();
+        });
+
+      // Allow Enter to submit textareas with Ctrl+Enter
+      document
+        .getElementById("peopleInput")
+        .addEventListener("keydown", function (e) {
+          if (e.key === "Enter" && e.ctrlKey) addPeople();
+        });
+
+      document
+        .getElementById("classesInput")
+        .addEventListener("keydown", function (e) {
+          if (e.key === "Enter" && e.ctrlKey) addClasses();
+        });
+
+      // Load saved project on page load
+      window.addEventListener("DOMContentLoaded", function () {
+        loadFromLocalStorage();
+        registerServiceWorker();
+        handlePWAInstall();
+      });
+
+      // Service Worker Registration
+      function registerServiceWorker() {
+        if ("serviceWorker" in navigator) {
+          navigator.serviceWorker
+            .register("./service-worker.js")
+            .then((registration) => {
+              console.log(
+                "Service Worker registered successfully:",
+                registration.scope,
+              );
+
+              // Check for updates
+              registration.addEventListener("updatefound", () => {
+                const newWorker = registration.installing;
+                newWorker.addEventListener("statechange", () => {
+                  if (
+                    newWorker.state === "installed" &&
+                    navigator.serviceWorker.controller
+                  ) {
+                    // New version available
+                    showUpdateNotification();
+                  }
+                });
+              });
+            })
+            .catch((error) => {
+              console.log("Service Worker registration failed:", error);
+            });
+        }
+      }
+
+      // PWA Install Prompt
+      let deferredPrompt;
+
+      function handlePWAInstall() {
+        window.addEventListener("beforeinstallprompt", (e) => {
+          // Prevent the mini-infobar from appearing
+          e.preventDefault();
+          deferredPrompt = e;
+
+          // Show custom install button
+          showInstallButton();
+        });
+
+        window.addEventListener("appinstalled", () => {
+          console.log("PWA installed successfully");
+          deferredPrompt = null;
+          hideInstallButton();
+        });
+      }
+
+      function showInstallButton() {
+        // Create install button if it doesn't exist
+        if (document.getElementById("pwaInstallBtn")) return;
+
+        const installBtn = document.createElement("button");
+        installBtn.id = "pwaInstallBtn";
+        installBtn.className = "btn btn-primary btn-icon";
+        installBtn.innerHTML = "📱 Install App";
+        installBtn.onclick = installPWA;
+        installBtn.style.cssText = `
+                position: fixed;
+                bottom: 2rem;
+                right: 2rem;
+                z-index: 999;
+                box-shadow: 0 8px 24px rgba(44, 95, 79, 0.3);
+                animation: slideInUp 0.5s ease;
+            `;
+
+        document.body.appendChild(installBtn);
+
+        // Add animation
+        const style = document.createElement("style");
+        style.textContent = `
+                @keyframes slideInUp {
+                    from {
+                        transform: translateY(100px);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateY(0);
+                        opacity: 1;
+                    }
+                }
+            `;
+        document.head.appendChild(style);
+      }
+
+      function hideInstallButton() {
+        const btn = document.getElementById("pwaInstallBtn");
+        if (btn) {
+          btn.style.animation = "slideInUp 0.3s ease reverse";
+          setTimeout(() => btn.remove(), 300);
+        }
+      }
+
+      async function installPWA() {
+        if (!deferredPrompt) return;
+
+        // Show the install prompt
+        deferredPrompt.prompt();
+
+        // Wait for the user's response
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User response to install prompt: ${outcome}`);
+
+        // Clear the deferred prompt
+        deferredPrompt = null;
+        hideInstallButton();
+      }
+
+      function showUpdateNotification() {
+        const updateBanner = document.createElement("div");
+        updateBanner.style.cssText = `
+                position: fixed;
+                top: 2rem;
+                right: 2rem;
+                background: var(--success);
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 1001;
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                animation: slideInRight 0.3s ease;
+            `;
+        updateBanner.innerHTML = `
+                <span>🎉 New version available!</span>
+                <button onclick="window.location.reload()" style="
+                    background: white;
+                    color: var(--success);
+                    border: none;
+                    padding: 0.5rem 1rem;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-weight: 600;
+                ">Update Now</button>
+                <button onclick="this.parentElement.remove()" style="
+                    background: transparent;
+                    color: white;
+                    border: none;
+                    padding: 0.5rem;
+                    cursor: pointer;
+                    font-size: 1.2rem;
+                ">×</button>
+            `;
+
+        const style = document.createElement("style");
+        style.textContent = `
+                @keyframes slideInRight {
+                    from {
+                        transform: translateX(400px);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+            `;
+        document.head.appendChild(style);
+
+        document.body.appendChild(updateBanner);
+
+        // Auto-hide after 10 seconds
+        setTimeout(() => {
+          if (updateBanner.parentElement) {
+            updateBanner.remove();
+          }
+        }, 10000);
+      }
+
+      // ======================
+      // Firebase Integration
+      // ======================
+
+      // Initialize Firebase
+
+
+      let selectedRole = null;
+
+      // Login Flow
+        // Pre-fill credentials based on role
+        if (role === 'eso') {
+          document.getElementById('loginFormTitle').textContent = 'Login as ESO Staff';
+          document.getElementById('emailInput').value = 'eso@yourschool.com';
+          document.getElementById('passwordInput').value = '';
+          document.getElementById('passwordInput').placeholder = 'Enter ESO password';
+        } else {
+          document.getElementById('loginFormTitle').textContent = 'Login as Leadership';
+          document.getElementById('emailInput').value = 'admin@yourschool.com';
+          document.getElementById('passwordInput').value = '';
+          document.getElementById('passwordInput').placeholder = 'Enter admin password';
+        }
+        
+        document.getElementById('emailInput').focus();
+      }
+
+          // Sign in with Firebase
+          const userCredential = await auth.signInWithEmailAndPassword(email, password);
+          currentUser = userCredential.user;
+          
+          // Determine role based on email
+          if (email.includes('admin') || email.includes('leadership')) {
+            currentUserRole = 'admin';
+          } else {
+            currentUserRole = 'viewer';
+          }
+
+          // Save to session
+          sessionStorage.setItem('userRole', currentUserRole);
+          sessionStorage.setItem('userEmail', email);
+
+          // Show app
+          showApp();
+
+        } catch (error) {
+          console.error('Login error:', error);
+          let errorMessage = 'Login failed. Please check your credentials.';
+          
+          if (error.code === 'auth/wrong-password') {
+            errorMessage = 'Incorrect password. Please try again.';
+          } else if (error.code === 'auth/user-not-found') {
+            errorMessage = 'User not found. Please contact your administrator.';
+          } else if (error.code === 'auth/invalid-email') {
+            errorMessage = 'Invalid email address.';
+          }
+          
+          showLoginError(errorMessage);
+          loginButton.disabled = false;
+          loginButton.textContent = 'Login';
+        }
+      }
+
+      }
+
+        // Hide login screen
+        document.getElementById('loginScreen').style.display = 'none';
+        
+        // Show app container
+        document.getElementById('appContainer').classList.add('active');
+        
+        // Show user info
+        const userInfo = document.getElementById('userInfo');
+        const userRoleSpan = document.getElementById('userRole');
+        userInfo.style.display = 'flex';
+        userRoleSpan.textContent = currentUserRole === 'admin' ? 'Leadership (Admin)' : 'ESO Staff (View Only)';
+        
+        // Configure UI based on role
+        configureUIForRole();
+        
+        // Initialize Firebase structure (but don't load data)
+        initializeFirebase();
+        
+        // Load from localStorage if available
+        loadFromLocalStorage();
+      }
+
+      function configureUIForRole() {
+        const adminElements = document.querySelectorAll('.panel, .timetable-actions, #editTimeSlotsBtn');
+        const setupSection = document.querySelector('.setup-section');
+        
+        if (currentUserRole === 'viewer') {
+          // Hide setup buttons for ESO staff
+          if (setupSection) {
+            setupSection.style.display = 'none';
+          }
+          
+          // Hide all edit controls for ESO staff
+          adminElements.forEach(el => {
+            if (el.classList.contains('panel')) {
+              el.style.display = 'none';
+            }
+            if (el.id === 'editTimeSlotsBtn') {
+              el.style.display = 'none';
+            }
+          });
+          
+          // Keep only view controls visible
+          const viewControls = document.querySelector('.timetable-actions');
+          if (viewControls) {
+            viewControls.innerHTML = `
+              <button class="btn btn-secondary btn-icon" onclick="window.print()">
+                🖨️ Print Timetable
+              </button>
+            `;
+          }
+          
+          // Make timetable cells non-clickable
+          document.body.classList.add('view-only-mode');
+        } else {
+          // Admin sees everything
+          if (setupSection) {
+            setupSection.style.display = 'flex';
+          }
+          adminElements.forEach(el => {
+            el.style.display = '';
+          });
+        }
+      }
+
+      // Firebase Write-Only Integration (no auto-loading)
+      function initializeFirebase() {
+        // Initialize empty structure in Firebase if it doesn't exist
+        database.ref('timetable/current').once('value', (snapshot) => {
+          if (!snapshot.exists()) {
+            // Create empty structure only if database is completely empty
+            const emptyStructure = {
+              version: '1.0',
+              lastUpdated: new Date().toISOString(),
+              updatedBy: currentUser?.email || 'system',
+              peopleList: [],
+              classList: [],
+              classColors: {},
+              assignments: {
+                monday: {},
+                tuesday: {},
+                wednesday: {},
+                thursday: {},
+                friday: {}
+              },
+              timeSlots: []
+            };
+            
+            database.ref('timetable/current').set(emptyStructure);
+            console.log('Created empty timetable structure in Firebase');
+          }
+        });
+      }
+
+      function saveToFirebase() {
+        if (currentUserRole !== 'admin') {
+          console.log('Only admins can save changes');
+          return;
+        }
+
+        const timetableData = {
+          version: '1.0',
+          lastUpdated: new Date().toISOString(),
+          updatedBy: currentUser.email,
+          peopleList: peopleList,
+          classList: classList,
+          classColors: classColors,
+          assignments: assignments,
+          timeSlots: timeSlots
+        };
+
+        database.ref('timetable/current').set(timetableData)
+          .then(() => {
+            showSyncIndicator('✓ Saved to server');
+          })
+          .catch((error) => {
+            console.error('Firebase save error:', error);
+            showSyncIndicator('❌ Save failed', true);
+          });
+      }
+
+      function loadFromDatabase() {
+        if (!confirm('Load timetable from database? This will replace your current work.')) {
+          return;
+        }
+
+        showSyncIndicator('⏳ Loading from database...', false);
+
+        database.ref('timetable/current').once('value')
+          .then((snapshot) => {
+            const data = snapshot.val();
+            
+            if (data) {
+              // Update local data
+              peopleList = data.peopleList || [];
+              classList = data.classList || [];
+              classColors = data.classColors || {};
+              
+              // Properly initialize assignments with all days
+              assignments = {
+                monday: data.assignments?.monday || {},
+                tuesday: data.assignments?.tuesday || {},
+                wednesday: data.assignments?.wednesday || {},
+                thursday: data.assignments?.thursday || {},
+                friday: data.assignments?.friday || {}
+              };
+              
+              timeSlots = data.timeSlots || [];
+              colorIndex = classList.length;
+
+              // Update UI
+              updatePeopleList();
+              updateClassList();
+              updateModalSelects();
+
+              // Show edit button for admin
+              if (currentUserRole === 'admin') {
+                document.getElementById('editTimeSlotsBtn').style.display = 'inline-block';
+              }
+              
+              renderTimetable();
+              updateCounters();
+
+              showSyncIndicator('✓ Loaded from database');
+            } else {
+              showSyncIndicator('⚠️ No data in database', true);
+            }
+          })
+          .catch((error) => {
+            console.error('Firebase load error:', error);
+            showSyncIndicator('❌ Load failed', true);
+          });
+      }
+
+      function showSyncIndicator(message, isError = false) {
+        const indicator = document.getElementById('syncIndicator');
+        const messageSpan = document.getElementById('syncMessage');
+        
+        messageSpan.textContent = message;
+        indicator.style.borderColor = isError ? 'var(--error)' : 'var(--success)';
+        indicator.classList.add('active');
+
+        setTimeout(() => {
+          indicator.classList.remove('active');
+        }, 3000);
+      }
+
+      // Override auto-save to use Firebase instead of localStorage
+      function autoSaveToFirebase() {
+        if (currentUserRole === 'admin') {
+          saveToFirebase();
+        }
+      }
+
+      // Check for existing session on load
+      window.addEventListener('DOMContentLoaded', function() {
+        const savedRole = sessionStorage.getItem('userRole');
+        const savedEmail = sessionStorage.getItem('userEmail');
+
+        if (savedRole && savedEmail) {
+          // Check if still authenticated
+          auth.onAuthStateChanged((user) => {
+            if (user) {
+              currentUser = user;
+              currentUserRole = savedRole;
+              showApp();
+            } else {
+              // Session expired, show login
+              sessionStorage.clear();
+            }
+          });
+        }
+
+        // Don't load from localStorage anymore - Firebase handles it
+        // registerServiceWorker(); // Keeping PWA functionality
+        // handlePWAInstall();
+      });
+
+      // Add CSS for view-only mode
+      const style = document.createElement('style');
+      style.textContent = `
+        .view-only-mode .roster-cell {
+          cursor: default !important;
+        }
+        .view-only-mode .roster-cell:hover {
+          background: inherit !important;
+        }
+      `;
+      document.head.appendChild(style);
+
+      // Handle Enter key in password field
+      document.addEventListener('DOMContentLoaded', function() {
+        const passwordInput = document.getElementById('passwordInput');
+        if (passwordInput) {
+          passwordInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+              handleLogin();
+            }
+          });
+        }
+      });
+    </script>
+    </div><!-- Close appContainer -->
+  </body>
+</html>
