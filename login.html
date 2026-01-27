@@ -253,6 +253,18 @@
 
         let selectedRole = null;
 
+        // ============================================
+        // ADMIN WHITELIST
+        // ============================================
+        // Add admin email addresses here
+        // Anyone on this list gets full admin access
+        // Everyone else gets viewer (ESO) access
+        const ADMIN_EMAILS = [
+            'admin@yourschool.com',           // Replace with actual admin email
+            'principal@yourschool.com',       // Replace with actual admin email
+            'leadership@yourschool.com'       // Replace with actual admin email
+        ];
+
         function selectRole(role) {
             selectedRole = role;
             document.getElementById('roleSelection').style.display = 'none';
@@ -303,12 +315,14 @@
                 const userCredential = await auth.signInWithEmailAndPassword(email, password);
                 const user = userCredential.user;
                 
-                // Determine role based on email
+                // Determine role based on admin whitelist
                 let userRole;
-                if (email.includes('admin') || email.includes('leadership')) {
+                if (ADMIN_EMAILS.includes(email.toLowerCase())) {
                     userRole = 'admin';
+                    console.log(`✅ Admin access granted to: ${email}`);
                 } else {
                     userRole = 'viewer';
+                    console.log(`👁️ Viewer access granted to: ${email}`);
                 }
 
                 // Save to session
