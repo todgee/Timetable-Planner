@@ -2,7 +2,7 @@
   "name": "Universal Timetable Maker",
   "short_name": "Timetable",
   "description": "Professional timetable and roster scheduling application for schools and organizations",
-  "start_url": "/login.html",
+  "start_url": "/ index.html",
   "display": "standalone",
   "background_color": "#fdfbf7",
   "theme_color": "#2c5f4f",

@@ -24,7 +24,7 @@ function checkAuth(requiredRole) {
 
     if (!userRole || !userEmail) {
         // Not logged in, redirect to login
-        window.location.href = 'login.html';
+        window.location.href = ' index.html';
         return false;
     }
 
@@ -44,7 +44,7 @@ function checkAuth(requiredRole) {
         if (!user) {
             // Firebase session expired
             sessionStorage.clear();
-            window.location.href = 'login.html';
+            window.location.href = ' index.html';
         }
     });
 
@@ -56,7 +56,7 @@ function handleLogout() {
     if (confirm('Are you sure you want to logout?')) {
         auth.signOut().then(() => {
             sessionStorage.clear();
-            window.location.href = 'login.html';
+            window.location.href = ' index.html';
         });
     }
 }

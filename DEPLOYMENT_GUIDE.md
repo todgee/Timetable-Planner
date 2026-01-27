@@ -5,12 +5,14 @@
 You now have a complete 3-file architecture:
 
 ### **Core Files:**
-1. **login.html** (13 KB) - Entry point with authentication
-2. **admin.html** (89 KB) - Full admin interface  
+
+1. ** index.html** (13 KB) - Entry point with authentication
+2. **admin.html** (89 KB) - Full admin interface
 3. **view.html** (11 KB) - ESO read-only view
 4. **shared.js** (5.5 KB) - Common utilities and Firebase config
 
 ### **Data File:**
+
 5. **ESO_Timetable_FINAL.json** - Your timetable data ready to import
 
 ---
@@ -19,7 +21,7 @@ You now have a complete 3-file architecture:
 
 ```
 your-repository/
-├── login.html          # Login page (entry point)
+├──  index.html          # Login page (entry point)
 ├── admin.html          # Admin interface
 ├── view.html           # ESO read-only view
 ├── shared.js           # Shared utilities
@@ -34,7 +36,7 @@ your-repository/
 
 ```
 ┌─────────────────────────────────────────────────┐
-│ 1. User opens: yoursite.com/login.html         │
+│ 1. User opens: yoursite.com/ index.html         │
 └────────────────┬────────────────────────────────┘
                  │
                  ↓
@@ -70,7 +72,8 @@ your-repository/
 ### **Step 1: Upload Files to GitHub**
 
 Upload these files to your repository:
-- `login.html`
+
+- ` index.html`
 - `admin.html`
 - `view.html`
 - `shared.js`
@@ -86,7 +89,7 @@ Change the `start_url` to point to login page:
 {
   "name": "Timetable Planner",
   "short_name": "Timetable",
-  "start_url": "/login.html",
+  "start_url": "/ index.html",
   "display": "standalone",
   ...
 }
@@ -97,15 +100,15 @@ Change the `start_url` to point to login page:
 Update the files to cache:
 
 ```javascript
-const CACHE_NAME = 'timetable-v2';
+const CACHE_NAME = "timetable-v2";
 const urlsToCache = [
-  '/login.html',
-  '/admin.html',
-  '/view.html',
-  '/shared.js',
-  '/manifest.json',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png'
+  "/ index.html",
+  "/admin.html",
+  "/view.html",
+  "/shared.js",
+  "/manifest.json",
+  "/icons/icon-192x192.png",
+  "/icons/icon-512x512.png",
 ];
 ```
 
@@ -122,13 +125,15 @@ const urlsToCache = [
 ### **Step 5: Upload Timetable Data**
 
 **Option A: From Admin Interface** (Recommended)
-1. Login as admin at `yoursite.com/login.html`
+
+1. Login as admin at `yoursite.com/ index.html`
 2. Click "📂 Load Project"
 3. Select `ESO_Timetable_FINAL.json`
 4. Data loads instantly
 5. Auto-saves to Firebase
 
 **Option B: Direct Firebase Upload**
+
 1. Go to Firebase Console → Realtime Database
 2. Click "⋮" → Import JSON
 3. Select `ESO_Timetable_FINAL.json`
@@ -136,7 +141,7 @@ const urlsToCache = [
 
 ### **Step 6: Test Authentication**
 
-1. Open `yoursite.com/login.html`
+1. Open `yoursite.com/ index.html`
 2. Test ESO login:
    - Click "ESO Staff"
    - Enter password
@@ -166,6 +171,7 @@ Update your Firebase Realtime Database rules:
 ```
 
 This ensures:
+
 - ✅ Anyone logged in can read
 - ✅ Only admin emails can write
 
@@ -175,17 +181,18 @@ This ensures:
 
 After deployment:
 
-- **Login:** `https://yourusername.github.io/Timetable-Planner/login.html`
+- **Login:** `https://yourusername.github.io/Timetable-Planner/ index.html`
 - **Admin:** `https://yourusername.github.io/Timetable-Planner/admin.html` (auto-redirects if not admin)
 - **View:** `https://yourusername.github.io/Timetable-Planner/view.html` (auto-redirects if not ESO)
 
-**Important:** Always start at `login.html` - the other pages will redirect if not authenticated.
+**Important:** Always start at ` index.html` - the other pages will redirect if not authenticated.
 
 ---
 
 ## ✨ Features by Role
 
 ### **ESO Staff (view.html)**
+
 - ✅ View timetable (all 5 days)
 - ✅ Switch between days
 - ✅ View counters (daily/weekly)
@@ -194,6 +201,7 @@ After deployment:
 - ❌ No management buttons
 
 ### **Leadership (admin.html)**
+
 - ✅ Full timetable editing
 - ✅ Manage people (modal)
 - ✅ Manage classes (modal)
@@ -208,35 +216,39 @@ After deployment:
 
 ## 🎯 Key Improvements Over Single File
 
-| Aspect | Single File | 3-File Architecture |
-|--------|-------------|---------------------|
-| **File Size** | 100 KB | login: 13 KB, view: 11 KB, admin: 89 KB |
-| **ESO Load Time** | 100 KB | 24.5 KB (78% faster) |
-| **Code Duplication** | N/A | None (shared.js) |
-| **Maintainability** | Hard | Easy (separate concerns) |
-| **Security** | Low | High (role separation) |
-| **Clarity** | Complex | Clear (obvious roles) |
+| Aspect               | Single File | 3-File Architecture                     |
+| -------------------- | ----------- | --------------------------------------- |
+| **File Size**        | 100 KB      | login: 13 KB, view: 11 KB, admin: 89 KB |
+| **ESO Load Time**    | 100 KB      | 24.5 KB (78% faster)                    |
+| **Code Duplication** | N/A         | None (shared.js)                        |
+| **Maintainability**  | Hard        | Easy (separate concerns)                |
+| **Security**         | Low         | High (role separation)                  |
+| **Clarity**          | Complex     | Clear (obvious roles)                   |
 
 ---
 
 ## 🐛 Troubleshooting
 
 ### **"Permission Denied" Error**
+
 - Check Firebase security rules
 - Verify user is authenticated
 - Ensure admin email contains "admin"
 
 ### **Redirect Loop**
+
 - Clear browser cache
 - Check if Firebase auth is working
 - Verify email format in Firebase Console
 
 ### **"Timetable Not Loading"**
+
 - Check Firebase database has data at `timetable/current`
 - Verify network connection
 - Check browser console for errors
 
 ### **"Can't Edit as ESO"**
+
 - This is correct! ESO is read-only
 - Login as admin to edit
 
@@ -245,6 +257,7 @@ After deployment:
 ## 📊 File Comparison
 
 ### **Before (Single File):**
+
 ```
 index.html: 3,144 lines (~100 KB)
 - Login code: ~200 lines
@@ -254,8 +267,9 @@ index.html: 3,144 lines (~100 KB)
 ```
 
 ### **After (3 Files):**
+
 ```
-login.html: ~300 lines (13 KB)
+ index.html: ~300 lines (13 KB)
 admin.html: ~3,050 lines (89 KB)
 view.html: ~350 lines (11 KB)
 shared.js: ~200 lines (5.5 KB)
@@ -263,6 +277,7 @@ Total: ~3,900 lines (118.5 KB)
 ```
 
 **Why larger total?**
+
 - More comments and documentation
 - Clearer structure (whitespace)
 - Auth checks in each file
@@ -286,13 +301,14 @@ Total: ~3,900 lines (118.5 KB)
 - [ ] Test "Load Project" feature
 - [ ] Test Firebase auto-save
 - [ ] Test export features
-- [ ] Share login.html URL with staff
+- [ ] Share index.html URL with staff
 
 ---
 
 ## 🎉 You're Done!
 
 Your timetable planner is now:
+
 - ✅ Professionally structured
 - ✅ Role-based with authentication
 - ✅ Optimized for performance

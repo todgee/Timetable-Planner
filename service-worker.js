@@ -1,6 +1,6 @@
 const CACHE_NAME = 'timetable-v2';
 const urlsToCache = [
-  '/login.html',
+  '/ index.html',
   '/admin.html',
   '/view.html',
   '/shared.js',
