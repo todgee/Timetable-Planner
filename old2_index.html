@@ -55,18 +55,13 @@
       href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Work+Sans:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-    
+
     <!-- Export Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
+
     <style>
       :root {
         --primary: #2c5f4f;
@@ -768,300 +763,9 @@
           font-size: 0.85rem;
         }
       }
-
-      /* Login Screen Styles */
-      #loginScreen {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 2rem;
-      }
-
-      .login-container {
-        background: var(--surface);
-        border-radius: 16px;
-        padding: 3rem;
-        box-shadow: 0 10px 40px var(--shadow);
-        border: 1px solid var(--border);
-        max-width: 500px;
-        width: 100%;
-      }
-
-      .login-title {
-        font-family: 'Crimson Pro', serif;
-        font-size: 2.5rem;
-        color: var(--primary);
-        margin-bottom: 0.5rem;
-        text-align: center;
-      }
-
-      .login-subtitle {
-        text-align: center;
-        color: var(--text-light);
-        margin-bottom: 3rem;
-        font-size: 1rem;
-      }
-
-      .role-options {
-        display: grid;
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-      }
-
-      .role-card {
-        padding: 2rem;
-        background: var(--bg);
-        border: 3px solid var(--border);
-        border-radius: 12px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-align: center;
-      }
-
-      .role-card:hover {
-        border-color: var(--primary);
-        transform: translateY(-4px);
-        box-shadow: 0 8px 24px var(--shadow);
-      }
-
-      .role-card.selected {
-        border-color: var(--primary);
-        background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);
-      }
-
-      .role-icon {
-        font-size: 4rem;
-        margin-bottom: 1rem;
-      }
-
-      .role-title {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: var(--primary);
-        margin-bottom: 0.5rem;
-      }
-
-      .role-description {
-        font-size: 0.9rem;
-        color: var(--text-light);
-      }
-
-      .login-form {
-        display: none;
-      }
-
-      .login-form.active {
-        display: block;
-      }
-
-      .login-input {
-        width: 100%;
-        padding: 1rem;
-        border: 2px solid var(--border);
-        border-radius: 8px;
-        font-size: 1rem;
-        margin-bottom: 1rem;
-        font-family: 'Work Sans', sans-serif;
-      }
-
-      .login-input:focus {
-        outline: none;
-        border-color: var(--primary);
-      }
-
-      .login-button {
-        width: 100%;
-        padding: 1rem 2rem;
-        background: var(--primary);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-size: 1.1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        font-family: 'Work Sans', sans-serif;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-      }
-
-      .login-button:hover {
-        background: var(--primary-dark);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(44, 95, 79, 0.3);
-      }
-
-      .login-button:disabled {
-        background: var(--text-light);
-        cursor: not-allowed;
-        transform: none;
-      }
-
-      .login-error {
-        background: #fee;
-        border: 1px solid #fcc;
-        color: #c00;
-        padding: 1rem;
-        border-radius: 8px;
-        margin-bottom: 1rem;
-        font-size: 0.9rem;
-        display: none;
-      }
-
-      .login-error.active {
-        display: block;
-      }
-
-      .back-button {
-        background: var(--text-light);
-        color: white;
-        margin-top: 1rem;
-      }
-
-      .back-button:hover {
-        background: var(--text);
-      }
-
-      #appContainer {
-        display: none;
-      }
-
-      #appContainer.active {
-        display: block;
-      }
-
-      .user-info {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        background: var(--surface);
-        padding: 0.75rem 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px var(--shadow);
-        border: 1px solid var(--border);
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        z-index: 999;
-      }
-
-      .user-role {
-        font-weight: 600;
-        color: var(--primary);
-      }
-
-      .logout-btn {
-        background: var(--error);
-        color: white;
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 0.85rem;
-        transition: all 0.2s ease;
-      }
-
-      .logout-btn:hover {
-        background: #b23838;
-      }
-
-      .admin-only {
-        display: none;
-      }
-
-      .admin-only.show {
-        display: block;
-      }
-
-      .sync-indicator {
-        position: fixed;
-        bottom: 2rem;
-        right: 2rem;
-        background: var(--surface);
-        padding: 0.75rem 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px var(--shadow);
-        border: 2px solid var(--success);
-        display: none;
-        align-items: center;
-        gap: 0.5rem;
-        z-index: 999;
-        animation: slideInUp 0.3s ease;
-      }
-
-      .sync-indicator.active {
-        display: flex;
-      }
-
-      @keyframes slideInUp {
-        from {
-          transform: translateY(100px);
-          opacity: 0;
-        }
-        to {
-          transform: translateY(0);
-          opacity: 1;
-        }
-      }
     </style>
   </head>
   <body>
-    <!-- Login Screen -->
-    <div id="loginScreen">
-      <div class="login-container">
-        <h1 class="login-title">🗓️ Timetable Planner</h1>
-        <p class="login-subtitle">Flexible Scheduling for Schools</p>
-
-        <div class="login-error" id="loginError"></div>
-
-        <!-- Role Selection -->
-        <div id="roleSelection" class="role-options">
-          <div class="role-card" onclick="selectRole('eso')">
-            <div class="role-icon">👥</div>
-            <div class="role-title">ESO Staff</div>
-            <div class="role-description">View timetables and schedules</div>
-          </div>
-
-          <div class="role-card" onclick="selectRole('admin')">
-            <div class="role-icon">🔑</div>
-            <div class="role-title">Leadership</div>
-            <div class="role-description">Full access to edit and manage</div>
-          </div>
-        </div>
-
-        <!-- Login Form (appears after role selection) -->
-        <div id="loginForm" class="login-form">
-          <h3 style="margin-bottom: 1.5rem; color: var(--primary); text-align: center;" id="loginFormTitle">Login as ESO</h3>
-          
-          <input type="email" id="emailInput" class="login-input" placeholder="Email" autocomplete="email" />
-          <input type="password" id="passwordInput" class="login-input" placeholder="Password" autocomplete="current-password" />
-          
-          <button class="login-button" onclick="handleLogin()" id="loginButton">
-            Login
-          </button>
-
-          <button class="login-button back-button" onclick="backToRoleSelection()">
-            ← Back
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- User Info Bar (shown when logged in) -->
-    <div id="userInfo" class="user-info" style="display: none;">
-      <span class="user-role" id="userRole"></span>
-      <button class="logout-btn" onclick="handleLogout()">Logout</button>
-    </div>
-
-    <!-- Sync Indicator -->
-    <div id="syncIndicator" class="sync-indicator">
-      <span>⚡</span>
-      <span id="syncMessage">Synced</span>
-    </div>
-
-    <!-- Main App Container -->
-    <div id="appContainer">
     <div class="container">
       <header>
         <h1>Universal Timetable Maker</h1>
@@ -1378,24 +1082,43 @@
 
     <!-- Export Options Modal -->
     <div class="modal" id="exportModal">
-      <div class="modal-content" style="max-width: 700px;">
+      <div class="modal-content" style="max-width: 700px">
         <h3 class="modal-title">📤 Export Timetable for SharePoint</h3>
         <p style="color: var(--text-light); margin-bottom: 2rem">
-          Choose your export format. All formats are ready to upload to SharePoint.
+          Choose your export format. All formats are ready to upload to
+          SharePoint.
         </p>
 
-        <div style="display: grid; gap: 1.5rem; margin-bottom: 2rem;">
+        <div style="display: grid; gap: 1.5rem; margin-bottom: 2rem">
           <!-- Excel Export Option -->
           <div class="export-option" onclick="exportToExcel()">
-            <div style="display: flex; align-items: center; gap: 1rem;">
-              <div style="font-size: 3rem;">📊</div>
-              <div style="flex: 1;">
-                <h4 style="margin: 0 0 0.5rem 0; font-size: 1.2rem; color: var(--primary);">Excel Workbook (.xlsx)</h4>
-                <p style="margin: 0; font-size: 0.9rem; color: var(--text-light);">
-                  Full week with separate sheets per day. Opens in Excel Online. Best for editing and filtering.
+            <div style="display: flex; align-items: center; gap: 1rem">
+              <div style="font-size: 3rem">📊</div>
+              <div style="flex: 1">
+                <h4
+                  style="
+                    margin: 0 0 0.5rem 0;
+                    font-size: 1.2rem;
+                    color: var(--primary);
+                  "
+                >
+                  Excel Workbook (.xlsx)
+                </h4>
+                <p
+                  style="margin: 0; font-size: 0.9rem; color: var(--text-light)"
+                >
+                  Full week with separate sheets per day. Opens in Excel Online.
+                  Best for editing and filtering.
                 </p>
               </div>
-              <button class="btn btn-primary" style="width: auto; padding: 0.75rem 1.5rem;" onclick="event.stopPropagation(); exportToExcel()">
+              <button
+                class="btn btn-primary"
+                style="width: auto; padding: 0.75rem 1.5rem"
+                onclick="
+                  event.stopPropagation();
+                  exportToExcel();
+                "
+              >
                 Download
               </button>
             </div>
@@ -1403,15 +1126,33 @@
 
           <!-- PDF Export Option -->
           <div class="export-option" onclick="exportToPDF()">
-            <div style="display: flex; align-items: center; gap: 1rem;">
-              <div style="font-size: 3rem;">📄</div>
-              <div style="flex: 1;">
-                <h4 style="margin: 0 0 0.5rem 0; font-size: 1.2rem; color: var(--primary);">PDF Document (.pdf)</h4>
-                <p style="margin: 0; font-size: 0.9rem; color: var(--text-light);">
-                  Professional multi-page document. Perfect for printing and formal distribution.
+            <div style="display: flex; align-items: center; gap: 1rem">
+              <div style="font-size: 3rem">📄</div>
+              <div style="flex: 1">
+                <h4
+                  style="
+                    margin: 0 0 0.5rem 0;
+                    font-size: 1.2rem;
+                    color: var(--primary);
+                  "
+                >
+                  PDF Document (.pdf)
+                </h4>
+                <p
+                  style="margin: 0; font-size: 0.9rem; color: var(--text-light)"
+                >
+                  Professional multi-page document. Perfect for printing and
+                  formal distribution.
                 </p>
               </div>
-              <button class="btn btn-primary" style="width: auto; padding: 0.75rem 1.5rem;" onclick="event.stopPropagation(); exportToPDF()">
+              <button
+                class="btn btn-primary"
+                style="width: auto; padding: 0.75rem 1.5rem"
+                onclick="
+                  event.stopPropagation();
+                  exportToPDF();
+                "
+              >
                 Download
               </button>
             </div>
@@ -1419,39 +1160,86 @@
 
           <!-- PNG Images Export Option -->
           <div class="export-option" onclick="exportToPNG()">
-            <div style="display: flex; align-items: center; gap: 1rem;">
-              <div style="font-size: 3rem;">🖼️</div>
-              <div style="flex: 1;">
-                <h4 style="margin: 0 0 0.5rem 0; font-size: 1.2rem; color: var(--primary);">PNG Images (.png)</h4>
-                <p style="margin: 0; font-size: 0.9rem; color: var(--text-light);">
-                  High-quality images (one per day). Quick visual snapshots for presentations.
+            <div style="display: flex; align-items: center; gap: 1rem">
+              <div style="font-size: 3rem">🖼️</div>
+              <div style="flex: 1">
+                <h4
+                  style="
+                    margin: 0 0 0.5rem 0;
+                    font-size: 1.2rem;
+                    color: var(--primary);
+                  "
+                >
+                  PNG Images (.png)
+                </h4>
+                <p
+                  style="margin: 0; font-size: 0.9rem; color: var(--text-light)"
+                >
+                  High-quality images (one per day). Quick visual snapshots for
+                  presentations.
                 </p>
               </div>
-              <button class="btn btn-primary" style="width: auto; padding: 0.75rem 1.5rem;" onclick="event.stopPropagation(); exportToPNG()">
+              <button
+                class="btn btn-primary"
+                style="width: auto; padding: 0.75rem 1.5rem"
+                onclick="
+                  event.stopPropagation();
+                  exportToPNG();
+                "
+              >
                 Download
               </button>
             </div>
           </div>
 
           <!-- Export All Option -->
-          <div class="export-option" onclick="exportAll()" style="background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%); border: 2px solid var(--primary);">
-            <div style="display: flex; align-items: center; gap: 1rem;">
-              <div style="font-size: 3rem;">💾</div>
-              <div style="flex: 1;">
-                <h4 style="margin: 0 0 0.5rem 0; font-size: 1.2rem; color: var(--primary);">Export All Formats</h4>
-                <p style="margin: 0; font-size: 0.9rem; color: var(--text-light);">
-                  Download Excel, PDF, and PNG files all at once. Maximum flexibility!
+          <div
+            class="export-option"
+            onclick="exportAll()"
+            style="
+              background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);
+              border: 2px solid var(--primary);
+            "
+          >
+            <div style="display: flex; align-items: center; gap: 1rem">
+              <div style="font-size: 3rem">💾</div>
+              <div style="flex: 1">
+                <h4
+                  style="
+                    margin: 0 0 0.5rem 0;
+                    font-size: 1.2rem;
+                    color: var(--primary);
+                  "
+                >
+                  Export All Formats
+                </h4>
+                <p
+                  style="margin: 0; font-size: 0.9rem; color: var(--text-light)"
+                >
+                  Download Excel, PDF, and PNG files all at once. Maximum
+                  flexibility!
                 </p>
               </div>
-              <button class="btn btn-secondary" style="width: auto; padding: 0.75rem 1.5rem;" onclick="event.stopPropagation(); exportAll()">
+              <button
+                class="btn btn-secondary"
+                style="width: auto; padding: 0.75rem 1.5rem"
+                onclick="
+                  event.stopPropagation();
+                  exportAll();
+                "
+              >
                 Download All
               </button>
             </div>
           </div>
         </div>
 
-        <div style="text-align: center;">
-          <button class="btn btn-cancel" onclick="closeExportModal()" style="width: auto; padding: 0.75rem 2rem;">
+        <div style="text-align: center">
+          <button
+            class="btn btn-cancel"
+            onclick="closeExportModal()"
+            style="width: auto; padding: 0.75rem 2rem"
+          >
             Close
           </button>
         </div>
@@ -1546,7 +1334,7 @@
         input.value = "";
         updatePeopleList();
         updateModalSelects();
-        autoSaveToFirebase();
+        autoSaveToLocalStorage();
 
         if (added > 0) {
           alert(
@@ -1579,7 +1367,7 @@
           updateModalSelects();
           renderCurrentTimetable();
           updateCounters();
-          autoSaveToFirebase();
+          autoSaveToLocalStorage();
         }
       }
 
@@ -1652,7 +1440,7 @@
         input.value = "";
         updateClassList();
         updateModalSelects();
-        autoSaveToFirebase();
+        autoSaveToLocalStorage();
 
         if (added > 0) {
           alert(
@@ -1686,14 +1474,14 @@
           updateModalSelects();
           renderCurrentTimetable();
           updateCounters();
-          autoSaveToFirebase();
+          autoSaveToLocalStorage();
         }
       }
 
       function updateClassColor(name, color) {
         classColors[name] = color;
         renderCurrentTimetable();
-        autoSaveToFirebase();
+        autoSaveToLocalStorage();
       }
 
       function updateClassList() {
@@ -1860,7 +1648,7 @@
         closeEditTimeSlotsModal();
         renderTimetable();
         updateCounters();
-        autoSaveToFirebase();
+        autoSaveToLocalStorage();
       }
 
       function renderCurrentTimetable() {
@@ -1985,7 +1773,7 @@
         closeModal();
         renderTimetable();
         updateCounters();
-        autoSaveToFirebase();
+        autoSaveToLocalStorage();
       }
 
       function removeCell(time, person) {
@@ -1993,7 +1781,7 @@
         delete assignments[currentDay][cellKey];
         renderTimetable();
         updateCounters();
-        autoSaveToFirebase();
+        autoSaveToLocalStorage();
       }
 
       // Counters
@@ -2182,7 +1970,7 @@
             }
 
             alert("Project loaded successfully!");
-            autoSaveToFirebase();
+            autoSaveToLocalStorage();
           } catch (error) {
             alert("Error loading project file: " + error.message);
           }
@@ -2193,7 +1981,7 @@
         event.target.value = "";
       }
 
-      function autoSaveToFirebase() {
+      function autoSaveToLocalStorage() {
         const projectData = {
           version: "1.0",
           savedDate: new Date().toISOString(),
@@ -2297,126 +2085,130 @@
       // Excel Export
       function exportToExcel() {
         const workbook = XLSX.utils.book_new();
-        const timestamp = new Date().toISOString().split('T')[0];
+        const timestamp = new Date().toISOString().split("T")[0];
 
         // Create a sheet for each day
-        days.forEach(day => {
+        days.forEach((day) => {
           const dayName = day.charAt(0).toUpperCase() + day.slice(1);
           const sheetData = [];
 
           // Header row
-          const headerRow = ['Time'];
-          peopleList.forEach(person => headerRow.push(person));
+          const headerRow = ["Time"];
+          peopleList.forEach((person) => headerRow.push(person));
           sheetData.push(headerRow);
 
           // Data rows
-          timeSlots.forEach(slot => {
-            const row = [`${formatTime12Hour(slot.start)} - ${formatTime12Hour(slot.end)}`];
-            
-            peopleList.forEach(person => {
+          timeSlots.forEach((slot) => {
+            const row = [
+              `${formatTime12Hour(slot.start)} - ${formatTime12Hour(slot.end)}`,
+            ];
+
+            peopleList.forEach((person) => {
               const cellKey = `${slot.start}-${person}`;
               const data = assignments[day]?.[cellKey];
-              
+
               if (data) {
                 let cellText = `${data.class}`;
                 if (data.duration !== 60) cellText += ` (${data.duration}min)`;
                 if (data.notes) cellText += `\n${data.notes}`;
                 row.push(cellText);
               } else {
-                row.push('');
+                row.push("");
               }
             });
-            
+
             sheetData.push(row);
           });
 
           const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
-          
+
           // Set column widths
           const colWidths = [{ wch: 20 }];
           peopleList.forEach(() => colWidths.push({ wch: 25 }));
-          worksheet['!cols'] = colWidths;
+          worksheet["!cols"] = colWidths;
 
           XLSX.utils.book_append_sheet(workbook, worksheet, dayName);
         });
 
         // Summary sheet
-        const summaryData = [['Class Summary', 'Count']];
+        const summaryData = [["Class Summary", "Count"]];
         const weekCounts = {};
-        classList.forEach(cls => weekCounts[cls] = 0);
-        days.forEach(day => {
+        classList.forEach((cls) => (weekCounts[cls] = 0));
+        days.forEach((day) => {
           if (assignments[day]) {
-            Object.values(assignments[day]).forEach(assignment => {
+            Object.values(assignments[day]).forEach((assignment) => {
               weekCounts[assignment.class]++;
             });
           }
         });
-        
-        classList.forEach(cls => {
+
+        classList.forEach((cls) => {
           summaryData.push([cls, weekCounts[cls]]);
         });
-        summaryData.push(['', '']);
-        summaryData.push(['Total People', peopleList.length]);
-        summaryData.push(['Total Classes', classList.length]);
+        summaryData.push(["", ""]);
+        summaryData.push(["Total People", peopleList.length]);
+        summaryData.push(["Total Classes", classList.length]);
 
         const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
-        summarySheet['!cols'] = [{ wch: 40 }, { wch: 10 }];
-        XLSX.utils.book_append_sheet(workbook, summarySheet, 'Summary');
+        summarySheet["!cols"] = [{ wch: 40 }, { wch: 10 }];
+        XLSX.utils.book_append_sheet(workbook, summarySheet, "Summary");
 
         XLSX.writeFile(workbook, `Timetable_${timestamp}.xlsx`);
-        showAutoSaveIndicator('✅ Excel file downloaded!');
+        showAutoSaveIndicator("✅ Excel file downloaded!");
       }
 
       // PDF Export
       async function exportToPDF() {
         const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF('l', 'mm', 'a4'); // landscape
-        const timestamp = new Date().toISOString().split('T')[0];
+        const pdf = new jsPDF("l", "mm", "a4"); // landscape
+        const timestamp = new Date().toISOString().split("T")[0];
         let pageNum = 0;
 
         for (const day of days) {
           if (pageNum > 0) pdf.addPage();
-          
+
           const dayName = day.charAt(0).toUpperCase() + day.slice(1);
-          
+
           // Title
           pdf.setFontSize(20);
           pdf.setTextColor(44, 95, 79);
-          pdf.text(dayName, 148, 20, { align: 'center' });
-          
+          pdf.text(dayName, 148, 20, { align: "center" });
+
           // Table
           const tableData = [];
-          timeSlots.forEach(slot => {
-            const row = [`${formatTime12Hour(slot.start)}-${formatTime12Hour(slot.end)}`];
-            
-            peopleList.forEach(person => {
+          timeSlots.forEach((slot) => {
+            const row = [
+              `${formatTime12Hour(slot.start)}-${formatTime12Hour(slot.end)}`,
+            ];
+
+            peopleList.forEach((person) => {
               const cellKey = `${slot.start}-${person}`;
               const data = assignments[day]?.[cellKey];
-              
+
               if (data) {
                 let cellText = data.class;
                 if (data.duration !== 60) cellText += `\n(${data.duration}min)`;
                 if (data.notes) cellText += `\n${data.notes}`;
                 row.push(cellText);
               } else {
-                row.push('');
+                row.push("");
               }
             });
-            
+
             tableData.push(row);
           });
 
           pdf.autoTable({
-            head: [['Time', ...peopleList]],
+            head: [["Time", ...peopleList]],
             body: tableData,
             startY: 30,
-            theme: 'grid',
+            theme: "grid",
             styles: { fontSize: 8, cellPadding: 2 },
             headStyles: { fillColor: [44, 95, 79], textColor: 255 },
             columnStyles: {
-              0: { cellWidth: 25, fontStyle: 'bold' }
+              0: { cellWidth: 25, fontStyle: "bold" },
             },
-            margin: { left: 10, right: 10 }
+            margin: { left: 10, right: 10 },
           });
 
           // Footer
@@ -2424,12 +2216,12 @@
           pdf.setTextColor(107, 107, 107);
           pdf.text(`Generated: ${new Date().toLocaleString()}`, 10, 200);
           pdf.text(`Page ${pageNum + 1} of 5`, 280, 200);
-          
+
           pageNum++;
         }
 
         pdf.save(`Timetable_${timestamp}.pdf`);
-        showAutoSaveIndicator('✅ PDF downloaded!');
+        showAutoSaveIndicator("✅ PDF downloaded!");
       }
 
       // PNG Export
@@ -2441,38 +2233,38 @@
           // Switch to the day
           currentDay = day;
           renderTimetable();
-          
+
           // Wait for render
-          await new Promise(resolve => setTimeout(resolve, 100));
-          
+          await new Promise((resolve) => setTimeout(resolve, 100));
+
           // Capture the timetable
-          const element = document.getElementById('timetableContainer');
+          const element = document.getElementById("timetableContainer");
           const canvas = await html2canvas(element, {
             scale: 2,
-            backgroundColor: '#ffffff',
-            logging: false
+            backgroundColor: "#ffffff",
+            logging: false,
           });
-          
+
           // Download
           const dayName = day.charAt(0).toUpperCase() + day.slice(1);
-          const timestamp = new Date().toISOString().split('T')[0];
-          
-          canvas.toBlob(blob => {
+          const timestamp = new Date().toISOString().split("T")[0];
+
+          canvas.toBlob((blob) => {
             const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
+            const a = document.createElement("a");
             a.href = url;
             a.download = `Timetable_${dayName}_${timestamp}.png`;
             a.click();
             URL.revokeObjectURL(url);
-            
+
             downloadCount++;
             if (downloadCount === days.length) {
-              showAutoSaveIndicator('✅ All images downloaded!');
+              showAutoSaveIndicator("✅ All images downloaded!");
             }
           });
-          
+
           // Small delay between downloads
-          await new Promise(resolve => setTimeout(resolve, 500));
+          await new Promise((resolve) => setTimeout(resolve, 500));
         }
 
         // Restore original day
@@ -2482,17 +2274,17 @@
 
       // Export All Formats
       async function exportAll() {
-        showAutoSaveIndicator('⏳ Exporting all formats...');
-        
+        showAutoSaveIndicator("⏳ Exporting all formats...");
+
         exportToExcel();
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
         await exportToPDF();
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
         await exportToPNG();
-        
-        showAutoSaveIndicator('✅ All formats exported!');
+
+        showAutoSaveIndicator("✅ All formats exported!");
       }
 
       // Event Listeners
@@ -2707,326 +2499,6 @@
           }
         }, 10000);
       }
-
-      // ======================
-      // Firebase Integration
-      // ======================
-
-      // Initialize Firebase
-      const firebaseConfig = {
-        apiKey: "AIzaSyBfwploSOHtEYfLZAgoyQdguU0AOFQTLik",
-        authDomain: "timetable-planner-b709d.firebaseapp.com",
-        databaseURL: "https://timetable-planner-b709d-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "timetable-planner-b709d",
-        storageBucket: "timetable-planner-b709d.firebasestorage.app",
-        messagingSenderId: "442836512942",
-        appId: "1:442836512942:web:c84e9338b05863f83a3d3f"
-      };
-
-      firebase.initializeApp(firebaseConfig);
-      const auth = firebase.auth();
-      const database = firebase.database();
-
-      let currentUser = null;
-      let currentUserRole = null;
-      let selectedRole = null;
-
-      // Login Flow
-      function selectRole(role) {
-        selectedRole = role;
-        document.getElementById('roleSelection').style.display = 'none';
-        document.getElementById('loginForm').classList.add('active');
-        
-        // Pre-fill credentials based on role
-        if (role === 'eso') {
-          document.getElementById('loginFormTitle').textContent = 'Login as ESO Staff';
-          document.getElementById('emailInput').value = 'eso@yourschool.com';
-          document.getElementById('passwordInput').value = '';
-          document.getElementById('passwordInput').placeholder = 'Enter ESO password';
-        } else {
-          document.getElementById('loginFormTitle').textContent = 'Login as Leadership';
-          document.getElementById('emailInput').value = 'admin@yourschool.com';
-          document.getElementById('passwordInput').value = '';
-          document.getElementById('passwordInput').placeholder = 'Enter admin password';
-        }
-        
-        document.getElementById('emailInput').focus();
-      }
-
-      function backToRoleSelection() {
-        selectedRole = null;
-        document.getElementById('roleSelection').style.display = 'grid';
-        document.getElementById('loginForm').classList.remove('active');
-        document.getElementById('loginError').classList.remove('active');
-        document.getElementById('emailInput').value = '';
-        document.getElementById('passwordInput').value = '';
-      }
-
-      async function handleLogin() {
-        const email = document.getElementById('emailInput').value.trim();
-        const password = document.getElementById('passwordInput').value;
-        const loginButton = document.getElementById('loginButton');
-        const errorDiv = document.getElementById('loginError');
-
-        if (!email || !password) {
-          showLoginError('Please enter both email and password');
-          return;
-        }
-
-        try {
-          loginButton.disabled = true;
-          loginButton.textContent = 'Logging in...';
-          errorDiv.classList.remove('active');
-
-          // Sign in with Firebase
-          const userCredential = await auth.signInWithEmailAndPassword(email, password);
-          currentUser = userCredential.user;
-          
-          // Determine role based on email
-          if (email.includes('admin') || email.includes('leadership')) {
-            currentUserRole = 'admin';
-          } else {
-            currentUserRole = 'viewer';
-          }
-
-          // Save to session
-          sessionStorage.setItem('userRole', currentUserRole);
-          sessionStorage.setItem('userEmail', email);
-
-          // Show app
-          showApp();
-
-        } catch (error) {
-          console.error('Login error:', error);
-          let errorMessage = 'Login failed. Please check your credentials.';
-          
-          if (error.code === 'auth/wrong-password') {
-            errorMessage = 'Incorrect password. Please try again.';
-          } else if (error.code === 'auth/user-not-found') {
-            errorMessage = 'User not found. Please contact your administrator.';
-          } else if (error.code === 'auth/invalid-email') {
-            errorMessage = 'Invalid email address.';
-          }
-          
-          showLoginError(errorMessage);
-          loginButton.disabled = false;
-          loginButton.textContent = 'Login';
-        }
-      }
-
-      function showLoginError(message) {
-        const errorDiv = document.getElementById('loginError');
-        errorDiv.textContent = message;
-        errorDiv.classList.add('active');
-      }
-
-      function handleLogout() {
-        if (confirm('Are you sure you want to logout?')) {
-          auth.signOut().then(() => {
-            currentUser = null;
-            currentUserRole = null;
-            sessionStorage.clear();
-            
-            // Hide app, show login
-            document.getElementById('appContainer').classList.remove('active');
-            document.getElementById('loginScreen').style.display = 'flex';
-            document.getElementById('userInfo').style.display = 'none';
-            
-            // Reset login form
-            backToRoleSelection();
-          });
-        }
-      }
-
-      function showApp() {
-        // Hide login screen
-        document.getElementById('loginScreen').style.display = 'none';
-        
-        // Show app container
-        document.getElementById('appContainer').classList.add('active');
-        
-        // Show user info
-        const userInfo = document.getElementById('userInfo');
-        const userRoleSpan = document.getElementById('userRole');
-        userInfo.style.display = 'flex';
-        userRoleSpan.textContent = currentUserRole === 'admin' ? 'Leadership (Admin)' : 'ESO Staff (View Only)';
-        
-        // Configure UI based on role
-        configureUIForRole();
-        
-        // Load timetable data from Firebase
-        loadFromFirebase();
-      }
-
-      function configureUIForRole() {
-        const adminElements = document.querySelectorAll('.panel, .timetable-actions, #editTimeSlotsBtn');
-        
-        if (currentUserRole === 'viewer') {
-          // Hide all edit controls for ESO staff
-          adminElements.forEach(el => {
-            if (el.classList.contains('panel')) {
-              el.style.display = 'none'; // Hide People, Classes, Time Settings panels
-            }
-            if (el.id === 'editTimeSlotsBtn') {
-              el.style.display = 'none';
-            }
-          });
-          
-          // Keep only view controls visible
-          const viewControls = document.querySelector('.timetable-actions');
-          if (viewControls) {
-            viewControls.innerHTML = `
-              <button class="btn btn-secondary btn-icon" onclick="window.print()">
-                🖨️ Print Timetable
-              </button>
-            `;
-          }
-          
-          // Make timetable cells non-clickable
-          document.body.classList.add('view-only-mode');
-        } else {
-          // Admin sees everything
-          adminElements.forEach(el => {
-            el.style.display = '';
-          });
-        }
-      }
-
-      // Firebase Real-time Sync
-      let firebaseListener = null;
-
-      function loadFromFirebase() {
-        // Listen for changes
-        firebaseListener = database.ref('timetable/current').on('value', (snapshot) => {
-          const data = snapshot.val();
-          
-          if (data) {
-            // Update local data
-            peopleList = data.peopleList || [];
-            classList = data.classList || [];
-            classColors = data.classColors || {};
-            assignments = data.assignments || {};
-            timeSlots = data.timeSlots || [];
-            colorIndex = classList.length;
-
-            // Update UI
-            updatePeopleList();
-            updateClassList();
-            updateModalSelects();
-
-            // Show timetable if data exists
-            if (timeSlots.length > 0) {
-              document.getElementById('daySelector').style.display = 'flex';
-              document.getElementById('timetableWrapper').style.display = 'block';
-              if (currentUserRole === 'admin') {
-                document.getElementById('editTimeSlotsBtn').style.display = 'inline-block';
-              }
-              document.getElementById('countersSection').style.display = 'block';
-              renderTimetable();
-              updateCounters();
-            }
-
-            // Show sync indicator
-            showSyncIndicator('✓ Synced with server');
-          }
-        });
-      }
-
-      function saveToFirebase() {
-        if (currentUserRole !== 'admin') {
-          console.log('Only admins can save changes');
-          return;
-        }
-
-        const timetableData = {
-          version: '1.0',
-          lastUpdated: new Date().toISOString(),
-          updatedBy: currentUser.email,
-          peopleList: peopleList,
-          classList: classList,
-          classColors: classColors,
-          assignments: assignments,
-          timeSlots: timeSlots
-        };
-
-        database.ref('timetable/current').set(timetableData)
-          .then(() => {
-            showSyncIndicator('✓ Saved to server');
-          })
-          .catch((error) => {
-            console.error('Firebase save error:', error);
-            showSyncIndicator('❌ Save failed', true);
-          });
-      }
-
-      function showSyncIndicator(message, isError = false) {
-        const indicator = document.getElementById('syncIndicator');
-        const messageSpan = document.getElementById('syncMessage');
-        
-        messageSpan.textContent = message;
-        indicator.style.borderColor = isError ? 'var(--error)' : 'var(--success)';
-        indicator.classList.add('active');
-
-        setTimeout(() => {
-          indicator.classList.remove('active');
-        }, 3000);
-      }
-
-      // Override auto-save to use Firebase instead of localStorage
-      function autoSaveToFirebase() {
-        if (currentUserRole === 'admin') {
-          saveToFirebase();
-        }
-      }
-
-      // Check for existing session on load
-      window.addEventListener('DOMContentLoaded', function() {
-        const savedRole = sessionStorage.getItem('userRole');
-        const savedEmail = sessionStorage.getItem('userEmail');
-
-        if (savedRole && savedEmail) {
-          // Check if still authenticated
-          auth.onAuthStateChanged((user) => {
-            if (user) {
-              currentUser = user;
-              currentUserRole = savedRole;
-              showApp();
-            } else {
-              // Session expired, show login
-              sessionStorage.clear();
-            }
-          });
-        }
-
-        // Don't load from localStorage anymore - Firebase handles it
-        // registerServiceWorker(); // Keeping PWA functionality
-        // handlePWAInstall();
-      });
-
-      // Add CSS for view-only mode
-      const style = document.createElement('style');
-      style.textContent = `
-        .view-only-mode .roster-cell {
-          cursor: default !important;
-        }
-        .view-only-mode .roster-cell:hover {
-          background: inherit !important;
-        }
-      `;
-      document.head.appendChild(style);
-
-      // Handle Enter key in password field
-      document.addEventListener('DOMContentLoaded', function() {
-        const passwordInput = document.getElementById('passwordInput');
-        if (passwordInput) {
-          passwordInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-              handleLogin();
-            }
-          });
-        }
-      });
     </script>
-    </div><!-- Close appContainer -->
   </body>
 </html>
