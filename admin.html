@@ -57,7 +57,6 @@
     />
     
     <!-- Firebase SDK -->
-    
     <!-- Export Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -1013,9 +1012,7 @@
         }
       }
     </style>
-  </head>
-  <body>
-    <!-- Firebase SDK -->
+      <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
@@ -1024,9 +1021,13 @@
     <script src="shared.js"></script>
   </head>
   <body>
+    <!-- User Info Bar -->
+    <div class="user-info" style="display: none;" id="userInfo">
+      <span class="user-role" id="userRole">Leadership (Admin)</span>
+      <button class="logout-btn" onclick="handleLogout()">Logout</button>
+    </div>
 
-    <div id="appContainer">
-    <div class="container">
+<div class="container">
       <header>
         <h1>Universal Timetable Maker</h1>
         <p class="subtitle">Flexible Scheduling with Custom Time Slots</p>
@@ -1431,45 +1432,35 @@
       }
     </style>
 
+    
     <script>
       // ============================================
       // AUTHENTICATION CHECK
       // ============================================
-      checkAuth().then(isAuthenticated => {
-        if (!isAuthenticated) return;
+      auth.onAuthStateChanged((user) => {
+        if (!user) {
+          window.location.href = 'login.html';
+          return;
+        }
         
-        // Check if user is admin
-        if (currentUserRole !== 'admin') {
+        // Check if admin (from session or email)
+        const savedRole = sessionStorage.getItem('userRole');
+        if (savedRole === 'viewer') {
           window.location.href = 'view.html';
           return;
         }
         
-        // Show user info
-        document.getElementById('userRole').textContent = 'Leadership (Admin)';
+        // Show admin UI
+        document.getElementById('userInfo').style.display = 'flex';
         
-        // Initialize the app
-        initializeApp();
+        // Load timetable from localStorage
+        loadFromLocalStorage();
       });
 
       // ============================================
       // ADMIN APPLICATION CODE
-      
-      // Initialize admin app
-      function initializeApp() {
-        console.log('✅ Admin app initialized');
-        
-        // Initialize Firebase empty structure if needed
-        initializeEmptyFirebase(currentUser.email);
-        
-        // Load from localStorage if available
-        loadFromLocalStorage();
-        
-        // Update UI
-        updatePeopleList();
-        updateClassList();
-        updateModalSelects();
-      }
       // ============================================
+
       let peopleList = [];
       let classList = [];
       let classColors = {};
@@ -1549,7 +1540,6 @@
         } else {
           alert("All names were already in the list");
         }
-      }
 
       function removePerson(name) {
         if (
@@ -1575,7 +1565,6 @@
           updateCounters();
           autoSaveToFirebase();
         }
-      }
 
       function updatePeopleList() {
         const listContainer = document.getElementById("peopleList");
@@ -1660,7 +1649,6 @@
         } else {
           alert("All classes were already in the list");
         }
-      }
 
       function removeClass(name) {
         if (
@@ -1687,7 +1675,6 @@
           updateCounters();
           autoSaveToFirebase();
         }
-      }
 
       function updateClassColor(name, color) {
         classColors[name] = color;
@@ -2108,9 +2095,23 @@
       }
 
       // Time Utilities
-
+      function timeToMinutes(time) {
+        const [hours, minutes] = time.split(":").map(Number);
+        return hours * 60 + minutes;
       }
 
+      function minutesToTime(minutes) {
+        const hours = Math.floor(minutes / 60);
+        const mins = minutes % 60;
+        return `${hours.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}`;
+      }
+
+      function formatTime12Hour(time24) {
+        // Safety check for undefined or invalid time
+        if (!time24 || typeof time24 !== 'string') {
+          console.error('Invalid time passed to formatTime12Hour:', time24);
+          return 'Invalid Time';
+        }
         
         const parts = time24.split(":");
         if (parts.length !== 2) {
@@ -2748,25 +2749,16 @@
 
       // Initialize Firebase
 
-
-      let selectedRole = null;
-
-      // Login Flow
-        // Pre-fill credentials based on role
-        if (role === 'eso') {
-          document.getElementById('loginFormTitle').textContent = 'Login as ESO Staff';
-          document.getElementById('emailInput').value = 'eso@yourschool.com';
-          document.getElementById('passwordInput').value = '';
-          document.getElementById('passwordInput').placeholder = 'Enter ESO password';
-        } else {
-          document.getElementById('loginFormTitle').textContent = 'Login as Leadership';
-          document.getElementById('emailInput').value = 'admin@yourschool.com';
-          document.getElementById('passwordInput').value = '';
-          document.getElementById('passwordInput').placeholder = 'Enter admin password';
-        }
         
         document.getElementById('emailInput').focus();
       }
+
+
+
+        try {
+          loginButton.disabled = true;
+          loginButton.textContent = 'Logging in...';
+          errorDiv.classList.remove('active');
 
           // Sign in with Firebase
           const userCredential = await auth.signInWithEmailAndPassword(email, password);
@@ -2804,100 +2796,29 @@
         }
       }
 
-      }
 
-        // Hide login screen
-        document.getElementById('loginScreen').style.display = 'none';
-        
-        // Show app container
-        document.getElementById('appContainer').classList.add('active');
-        
-        // Show user info
-        const userInfo = document.getElementById('userInfo');
-        const userRoleSpan = document.getElementById('userRole');
-        userInfo.style.display = 'flex';
-        userRoleSpan.textContent = currentUserRole === 'admin' ? 'Leadership (Admin)' : 'ESO Staff (View Only)';
-        
-        // Configure UI based on role
-        configureUIForRole();
-        
-        // Initialize Firebase structure (but don't load data)
-        initializeFirebase();
-        
-        // Load from localStorage if available
-        loadFromLocalStorage();
-      }
-
-      function configureUIForRole() {
-        const adminElements = document.querySelectorAll('.panel, .timetable-actions, #editTimeSlotsBtn');
-        const setupSection = document.querySelector('.setup-section');
-        
-        if (currentUserRole === 'viewer') {
-          // Hide setup buttons for ESO staff
-          if (setupSection) {
-            setupSection.style.display = 'none';
-          }
-          
-          // Hide all edit controls for ESO staff
-          adminElements.forEach(el => {
-            if (el.classList.contains('panel')) {
-              el.style.display = 'none';
-            }
-            if (el.id === 'editTimeSlotsBtn') {
-              el.style.display = 'none';
-            }
-          });
-          
-          // Keep only view controls visible
-          const viewControls = document.querySelector('.timetable-actions');
-          if (viewControls) {
-            viewControls.innerHTML = `
-              <button class="btn btn-secondary btn-icon" onclick="window.print()">
-                🖨️ Print Timetable
-              </button>
-            `;
-          }
-          
-          // Make timetable cells non-clickable
-          document.body.classList.add('view-only-mode');
-        } else {
-          // Admin sees everything
-          if (setupSection) {
-            setupSection.style.display = 'flex';
-          }
-          adminElements.forEach(el => {
-            el.style.display = '';
+      function handleLogout() {
+        if (confirm('Are you sure you want to logout?')) {
+          auth.signOut().then(() => {
+            currentUser = null;
+            currentUserRole = null;
+            sessionStorage.clear();
+            
+            // Hide app, show login
+            document.getElementById('appContainer').classList.remove('active');
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('userInfo').style.display = 'none';
+            
+            // Reset login form
+            backToRoleSelection();
           });
         }
       }
 
+
+      }
+
       // Firebase Write-Only Integration (no auto-loading)
-      function initializeFirebase() {
-        // Initialize empty structure in Firebase if it doesn't exist
-        database.ref('timetable/current').once('value', (snapshot) => {
-          if (!snapshot.exists()) {
-            // Create empty structure only if database is completely empty
-            const emptyStructure = {
-              version: '1.0',
-              lastUpdated: new Date().toISOString(),
-              updatedBy: currentUser?.email || 'system',
-              peopleList: [],
-              classList: [],
-              classColors: {},
-              assignments: {
-                monday: {},
-                tuesday: {},
-                wednesday: {},
-                thursday: {},
-                friday: {}
-              },
-              timeSlots: []
-            };
-            
-            database.ref('timetable/current').set(emptyStructure);
-            console.log('Created empty timetable structure in Firebase');
-          }
-        });
       }
 
       function saveToFirebase() {
@@ -3047,7 +2968,7 @@
           });
         }
       });
+    
     </script>
-    </div><!-- Close appContainer -->
   </body>
 </html>
