@@ -1170,37 +1170,6 @@
               </div>
             </div>
           </div>
-
-          <!-- Time Settings -->
-          <div class="panel">
-            <h2 class="panel-title">
-              <span class="panel-icon">⏰</span>
-              Time Settings
-            </h2>
-
-            <div class="form-group">
-              <label for="startTime">Day Start Time</label>
-              <input type="time" id="startTime" value="08:00" />
-            </div>
-
-            <div class="form-group">
-              <label for="endTime">Day End Time</label>
-              <input type="time" id="endTime" value="15:00" />
-            </div>
-
-            <div class="form-group">
-              <label for="lessonDuration"
-                >Default Period Duration (minutes)</label
-              >
-              <input
-                type="number"
-                id="lessonDuration"
-                value="60"
-                min="15"
-                step="15"
-              />
-            </div>
-          </div>
         </div>
 
         <!-- Timetable Section -->
@@ -1211,12 +1180,6 @@
               Weekly Timetable
             </h2>
             <div class="timetable-actions">
-              <button
-                class="btn btn-secondary btn-icon"
-                onclick="generateTimetable()"
-              >
-                ⚡ Generate Timetable
-              </button>
               <button
                 class="btn btn-secondary btn-icon"
                 onclick="openEditTimeSlots()"
@@ -1251,7 +1214,7 @@
           </div>
 
           <!-- Day Selector -->
-          <div class="day-selector" id="daySelector" style="display: none">
+          <div class="day-selector" id="daySelector">
             <button
               class="day-btn active"
               data-day="monday"
@@ -1289,28 +1252,17 @@
             </button>
           </div>
 
-          <div
-            class="timetable-wrapper"
-            id="timetableWrapper"
-            style="display: none"
-          >
+          <div class="timetable-wrapper" id="timetableWrapper">
             <div id="timetableContainer">
               <div class="empty-state" style="padding: 4rem 2rem">
                 <div class="empty-state-icon">📋</div>
-                <p>
-                  Add people and classes above, then click "Generate Timetable"
-                  to begin scheduling
-                </p>
+                <p>Loading timetable from database...</p>
               </div>
             </div>
           </div>
 
           <!-- Counters Section -->
-          <div
-            class="counters-section"
-            id="countersSection"
-            style="display: none"
-          >
+          <div class="counters-section" id="countersSection">
             <div class="counter-tabs">
               <button
                 class="counter-tab active"
@@ -1867,58 +1819,61 @@
         }
 
         // Time Slots Management
-        function generateTimetable() {
-          const startTime = document.getElementById("startTime").value;
-          const endTime = document.getElementById("endTime").value;
-          const duration = parseInt(
-            document.getElementById("lessonDuration").value,
-          );
+        // REMOVED: Generate Timetable function (timetable now loads automatically from Firebase)
+        /*
+      function generateTimetable() {
+        const startTime = document.getElementById("startTime").value;
+        const endTime = document.getElementById("endTime").value;
+        const duration = parseInt(
+          document.getElementById("lessonDuration").value,
+        );
 
-          if (!startTime || !endTime) {
-            alert("Please set start and end times");
-            return;
-          }
-
-          if (peopleList.length === 0) {
-            alert("Please add at least one person");
-            return;
-          }
-
-          if (classList.length === 0) {
-            alert("Please add at least one class");
-            return;
-          }
-
-          const start = timeToMinutes(startTime);
-          const end = timeToMinutes(endTime);
-
-          if (start >= end) {
-            alert("End time must be after start time");
-            return;
-          }
-
-          timeSlots = [];
-          for (let time = start; time < end; time += duration) {
-            const slotStart = minutesToTime(time);
-            const slotEnd = minutesToTime(Math.min(time + duration, end));
-            timeSlots.push({ start: slotStart, end: slotEnd });
-          }
-
-          days.forEach((day) => {
-            if (!assignments[day]) {
-              assignments[day] = {};
-            }
-          });
-
-          document.getElementById("daySelector").style.display = "flex";
-          document.getElementById("timetableWrapper").style.display = "block";
-          document.getElementById("editTimeSlotsBtn").style.display =
-            "inline-block";
-          document.getElementById("countersSection").style.display = "block";
-
-          renderTimetable();
-          updateCounters();
+        if (!startTime || !endTime) {
+          alert("Please set start and end times");
+          return;
         }
+
+        if (peopleList.length === 0) {
+          alert("Please add at least one person");
+          return;
+        }
+
+        if (classList.length === 0) {
+          alert("Please add at least one class");
+          return;
+        }
+
+        const start = timeToMinutes(startTime);
+        const end = timeToMinutes(endTime);
+
+        if (start >= end) {
+          alert("End time must be after start time");
+          return;
+        }
+
+        timeSlots = [];
+        for (let time = start; time < end; time += duration) {
+          const slotStart = minutesToTime(time);
+          const slotEnd = minutesToTime(Math.min(time + duration, end));
+          timeSlots.push({ start: slotStart, end: slotEnd });
+        }
+
+        days.forEach((day) => {
+          if (!assignments[day]) {
+            assignments[day] = {};
+          }
+        });
+
+        document.getElementById("daySelector").style.display = "flex";
+        document.getElementById("timetableWrapper").style.display = "block";
+        document.getElementById("editTimeSlotsBtn").style.display =
+          "inline-block";
+        document.getElementById("countersSection").style.display = "block";
+
+        renderTimetable();
+        updateCounters();
+      }
+      */
 
         function openEditTimeSlots() {
           const listContainer = document.getElementById("timeSlotList");
@@ -3087,20 +3042,14 @@
                 updateClassList();
                 updateModalSelects();
 
-                // Show timetable if data exists
-                if (timeSlots.length > 0) {
-                  document.getElementById("daySelector").style.display = "flex";
-                  document.getElementById("timetableWrapper").style.display =
-                    "block";
-                  if (currentUserRole === "admin") {
-                    document.getElementById("editTimeSlotsBtn").style.display =
-                      "inline-block";
-                  }
-                  document.getElementById("countersSection").style.display =
-                    "block";
-                  renderTimetable();
-                  updateCounters();
+                // Always render timetable and show edit button for admin
+                if (currentUserRole === "admin") {
+                  document.getElementById("editTimeSlotsBtn").style.display =
+                    "inline-block";
                 }
+
+                renderTimetable();
+                updateCounters();
 
                 // Show sync indicator
                 showSyncIndicator("✓ Synced with server");
