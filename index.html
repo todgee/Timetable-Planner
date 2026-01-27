@@ -230,6 +230,17 @@
         transform: translateY(-2px);
       }
 
+      .btn-success {
+        background: var(--success);
+        color: white;
+      }
+
+      .btn-success:hover {
+        background: #3d7861;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(74, 139, 111, 0.3);
+      }
+
       .input-with-button {
         display: grid;
         grid-template-columns: 1fr auto;
@@ -1188,6 +1199,12 @@
               >
                 ✏️ Edit Time Slots
               </button>
+              <button
+                class="btn btn-success btn-icon"
+                onclick="loadFromDatabase()"
+              >
+                ☁️ Load from Database
+              </button>
               <button class="btn btn-primary btn-icon" onclick="saveProject()">
                 💾 Save Project
               </button>
@@ -1967,7 +1984,17 @@
           });
           html += "</div>";
 
-          timeSlots.forEach((slot) => {
+          // Filter out invalid time slots
+          const validTimeSlots = timeSlots.filter(
+            (slot) =>
+              slot &&
+              slot.start &&
+              slot.end &&
+              typeof slot.start === "string" &&
+              typeof slot.end === "string",
+          );
+
+          validTimeSlots.forEach((slot) => {
             html += '<div class="timetable-row">';
             html += `<div class="time-cell"><div class="time-range">${formatTime12Hour(slot.start)}<br>${formatTime12Hour(slot.end)}</div></div>`;
 
@@ -2176,7 +2203,24 @@
         }
 
         function formatTime12Hour(time24) {
-          const [hours, minutes] = time24.split(":").map(Number);
+          // Safety check for undefined or invalid time
+          if (!time24 || typeof time24 !== "string") {
+            console.error("Invalid time passed to formatTime12Hour:", time24);
+            return "Invalid Time";
+          }
+
+          const parts = time24.split(":");
+          if (parts.length !== 2) {
+            console.error("Invalid time format:", time24);
+            return time24; // Return as-is if invalid
+          }
+
+          const [hours, minutes] = parts.map(Number);
+          if (isNaN(hours) || isNaN(minutes)) {
+            console.error("Non-numeric time values:", time24);
+            return time24;
+          }
+
           const period = hours >= 12 ? "PM" : "AM";
           const hours12 = hours % 12 || 12;
           return `${hours12}:${minutes.toString().padStart(2, "0")} ${period}`;
@@ -2192,11 +2236,6 @@
             classColors: classColors,
             assignments: assignments,
             timeSlots: timeSlots,
-            settings: {
-              startTime: document.getElementById("startTime").value,
-              endTime: document.getElementById("endTime").value,
-              lessonDuration: document.getElementById("lessonDuration").value,
-            },
           };
 
           const jsonString = JSON.stringify(projectData, null, 2);
@@ -2324,16 +2363,6 @@
             assignments = projectData.assignments || {};
             timeSlots = projectData.timeSlots || [];
             colorIndex = classList.length;
-
-            // Restore settings
-            if (projectData.settings) {
-              document.getElementById("startTime").value =
-                projectData.settings.startTime;
-              document.getElementById("endTime").value =
-                projectData.settings.endTime;
-              document.getElementById("lessonDuration").value =
-                projectData.settings.lessonDuration;
-            }
 
             // Update UI
             updatePeopleList();
@@ -2969,8 +2998,11 @@
           // Configure UI based on role
           configureUIForRole();
 
-          // Load timetable data from Firebase
-          loadFromFirebase();
+          // Initialize Firebase structure (but don't load data)
+          initializeFirebase();
+
+          // Load from localStorage if available
+          loadFromLocalStorage();
         }
 
         function configureUIForRole() {
@@ -3009,52 +3041,33 @@
           }
         }
 
-        // Firebase Real-time Sync
-        let firebaseListener = null;
+        // Firebase Write-Only Integration (no auto-loading)
+        function initializeFirebase() {
+          // Initialize empty structure in Firebase if it doesn't exist
+          database.ref("timetable/current").once("value", (snapshot) => {
+            if (!snapshot.exists()) {
+              // Create empty structure only if database is completely empty
+              const emptyStructure = {
+                version: "1.0",
+                lastUpdated: new Date().toISOString(),
+                updatedBy: currentUser?.email || "system",
+                peopleList: [],
+                classList: [],
+                classColors: {},
+                assignments: {
+                  monday: {},
+                  tuesday: {},
+                  wednesday: {},
+                  thursday: {},
+                  friday: {},
+                },
+                timeSlots: [],
+              };
 
-        function loadFromFirebase() {
-          // Listen for changes
-          firebaseListener = database
-            .ref("timetable/current")
-            .on("value", (snapshot) => {
-              const data = snapshot.val();
-
-              if (data) {
-                // Update local data
-                peopleList = data.peopleList || [];
-                classList = data.classList || [];
-                classColors = data.classColors || {};
-
-                // Properly initialize assignments with all days
-                assignments = {
-                  monday: data.assignments?.monday || {},
-                  tuesday: data.assignments?.tuesday || {},
-                  wednesday: data.assignments?.wednesday || {},
-                  thursday: data.assignments?.thursday || {},
-                  friday: data.assignments?.friday || {},
-                };
-
-                timeSlots = data.timeSlots || [];
-                colorIndex = classList.length;
-
-                // Update UI
-                updatePeopleList();
-                updateClassList();
-                updateModalSelects();
-
-                // Always render timetable and show edit button for admin
-                if (currentUserRole === "admin") {
-                  document.getElementById("editTimeSlotsBtn").style.display =
-                    "inline-block";
-                }
-
-                renderTimetable();
-                updateCounters();
-
-                // Show sync indicator
-                showSyncIndicator("✓ Synced with server");
-              }
-            });
+              database.ref("timetable/current").set(emptyStructure);
+              console.log("Created empty timetable structure in Firebase");
+            }
+          });
         }
 
         function saveToFirebase() {
@@ -3083,6 +3096,66 @@
             .catch((error) => {
               console.error("Firebase save error:", error);
               showSyncIndicator("❌ Save failed", true);
+            });
+        }
+
+        function loadFromDatabase() {
+          if (
+            !confirm(
+              "Load timetable from database? This will replace your current work.",
+            )
+          ) {
+            return;
+          }
+
+          showSyncIndicator("⏳ Loading from database...", false);
+
+          database
+            .ref("timetable/current")
+            .once("value")
+            .then((snapshot) => {
+              const data = snapshot.val();
+
+              if (data) {
+                // Update local data
+                peopleList = data.peopleList || [];
+                classList = data.classList || [];
+                classColors = data.classColors || {};
+
+                // Properly initialize assignments with all days
+                assignments = {
+                  monday: data.assignments?.monday || {},
+                  tuesday: data.assignments?.tuesday || {},
+                  wednesday: data.assignments?.wednesday || {},
+                  thursday: data.assignments?.thursday || {},
+                  friday: data.assignments?.friday || {},
+                };
+
+                timeSlots = data.timeSlots || [];
+                colorIndex = classList.length;
+
+                // Update UI
+                updatePeopleList();
+                updateClassList();
+                updateModalSelects();
+
+                // Show edit button for admin
+                if (currentUserRole === "admin") {
+                  document.getElementById("editTimeSlotsBtn").style.display =
+                    "inline-block";
+                }
+
+                renderTimetable();
+                updateCounters();
+
+                showSyncIndicator("✓ Loaded from database");
+              } else {
+                showSyncIndicator("⚠️ No data in database", true);
+              }
+            })
+            .catch((error) => {
+              console.error("Firebase load error:", error);
+              showSyncIndicator("❌ Load failed", true);
             });
         }
 

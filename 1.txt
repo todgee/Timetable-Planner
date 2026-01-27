@@ -1,0 +1,2 @@
+need to rework how the DB is being used, everything up until the DB was great, what we will do is instead of using the DB to import our used data we can use our 
+import JSON, and instead create a DB table so that we can save the data we input into the DB rather then bypassing the webpage
