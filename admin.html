@@ -55,14 +55,14 @@
       href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Work+Sans:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
-    
+
     <!-- Firebase SDK -->
     <!-- Export Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
+
     <style>
       :root {
         --primary: #2c5f4f;
@@ -796,7 +796,7 @@
       }
 
       .login-title {
-        font-family: 'Crimson Pro', serif;
+        font-family: "Crimson Pro", serif;
         font-size: 2.5rem;
         color: var(--primary);
         margin-bottom: 0.5rem;
@@ -869,7 +869,7 @@
         border-radius: 8px;
         font-size: 1rem;
         margin-bottom: 1rem;
-        font-family: 'Work Sans', sans-serif;
+        font-family: "Work Sans", sans-serif;
       }
 
       .login-input:focus {
@@ -888,7 +888,7 @@
         font-weight: 600;
         cursor: pointer;
         transition: all 0.2s ease;
-        font-family: 'Work Sans', sans-serif;
+        font-family: "Work Sans", sans-serif;
         text-transform: uppercase;
         letter-spacing: 0.05em;
       }
@@ -1012,22 +1012,22 @@
         }
       }
     </style>
-      <!-- Firebase SDK -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-    
+
     <!-- Shared utilities -->
     <script src="shared.js"></script>
   </head>
   <body>
     <!-- User Info Bar -->
-    <div class="user-info" style="display: none;" id="userInfo">
+    <div class="user-info" style="display: none" id="userInfo">
       <span class="user-role" id="userRole">Leadership (Admin)</span>
       <button class="logout-btn" onclick="handleLogout()">Logout</button>
     </div>
 
-<div class="container">
+    <div class="container">
       <header>
         <h1>Universal Timetable Maker</h1>
         <p class="subtitle">Flexible Scheduling with Custom Time Slots</p>
@@ -1045,43 +1045,69 @@
       </header>
 
       <!-- Setup Section - Compact Buttons -->
-      <div class="setup-section" style="display: flex; gap: 1rem; justify-content: center; padding: 1rem;">
-        <button class="btn btn-primary btn-icon" onclick="openPeopleManager()" style="font-size: 1.1rem; padding: 1rem 2rem;">
+      <div
+        class="setup-section"
+        style="display: flex; gap: 1rem; justify-content: center; padding: 1rem"
+      >
+        <button
+          class="btn btn-primary btn-icon"
+          onclick="openPeopleManager()"
+          style="font-size: 1.1rem; padding: 1rem 2rem"
+        >
           👥 Manage People (<span id="peopleCount">0</span>)
         </button>
-        <button class="btn btn-primary btn-icon" onclick="openClassesManager()" style="font-size: 1.1rem; padding: 1rem 2rem;">
+        <button
+          class="btn btn-primary btn-icon"
+          onclick="openClassesManager()"
+          style="font-size: 1.1rem; padding: 1rem 2rem"
+        >
           📚 Manage Classes (<span id="classesCount">0</span>)
         </button>
       </div>
 
       <!-- People Manager Modal -->
       <div class="modal" id="peopleManagerModal">
-        <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column;">
+        <div
+          class="modal-content"
+          style="
+            max-width: 800px;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+          "
+        >
           <h3 class="modal-title">👥 Manage People</h3>
-          
-          <div style="flex: 1; overflow-y: auto; padding: 1rem 0;">
+
+          <div style="flex: 1; overflow-y: auto; padding: 1rem 0">
             <div class="form-group">
-              <label for="peopleInput">Add People (one per line or comma-separated)</label>
+              <label for="peopleInput"
+                >Add People (one per line or comma-separated)</label
+              >
               <textarea
                 id="peopleInput"
                 rows="4"
                 placeholder="Single: John Smith&#10;Multiple: Jane Doe, Bob Wilson, Sarah Chen"
-                style="width: 100%;"
+                style="width: 100%"
               ></textarea>
               <button
                 class="btn btn-primary"
                 onclick="addPeople()"
-                style="margin-top: 0.5rem; width: 100%;"
+                style="margin-top: 0.5rem; width: 100%"
               >
                 ➕ Add People
               </button>
             </div>
 
-            <div style="margin-top: 2rem;">
-              <h4 style="color: var(--primary); margin-bottom: 1rem;">
+            <div style="margin-top: 2rem">
+              <h4 style="color: var(--primary); margin-bottom: 1rem">
                 Current People (<span id="peopleCountInModal">0</span>)
               </h4>
-              <div class="item-list" id="peopleList" style="max-height: 400px; overflow-y: auto;">
+              <div
+                class="item-list"
+                id="peopleList"
+                style="max-height: 400px; overflow-y: auto"
+              >
                 <div class="empty-state">
                   <div class="empty-state-icon">👤</div>
                   <p>No people added yet</p>
@@ -1090,7 +1116,7 @@
             </div>
           </div>
 
-          <div class="modal-buttons" style="margin-top: 1rem;">
+          <div class="modal-buttons" style="margin-top: 1rem">
             <button class="btn btn-cancel" onclick="closePeopleManager()">
               Close
             </button>
@@ -1100,32 +1126,47 @@
 
       <!-- Classes Manager Modal -->
       <div class="modal" id="classesManagerModal">
-        <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column;">
+        <div
+          class="modal-content"
+          style="
+            max-width: 800px;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+          "
+        >
           <h3 class="modal-title">📚 Manage Classes</h3>
-          
-          <div style="flex: 1; overflow-y: auto; padding: 1rem 0;">
+
+          <div style="flex: 1; overflow-y: auto; padding: 1rem 0">
             <div class="form-group">
-              <label for="classesInput">Add Classes (one per line or comma-separated)</label>
+              <label for="classesInput"
+                >Add Classes (one per line or comma-separated)</label
+              >
               <textarea
                 id="classesInput"
                 rows="4"
                 placeholder="Single: Math 101&#10;Multiple: English 201, Science Lab, History"
-                style="width: 100%;"
+                style="width: 100%"
               ></textarea>
               <button
                 class="btn btn-primary"
                 onclick="addClasses()"
-                style="margin-top: 0.5rem; width: 100%;"
+                style="margin-top: 0.5rem; width: 100%"
               >
                 ➕ Add Classes
               </button>
             </div>
 
-            <div style="margin-top: 2rem;">
-              <h4 style="color: var(--primary); margin-bottom: 1rem;">
+            <div style="margin-top: 2rem">
+              <h4 style="color: var(--primary); margin-bottom: 1rem">
                 Current Classes (<span id="classesCountInModal">0</span>)
               </h4>
-              <div class="item-list" id="classList" style="max-height: 400px; overflow-y: auto;">
+              <div
+                class="item-list"
+                id="classList"
+                style="max-height: 400px; overflow-y: auto"
+              >
                 <div class="empty-state">
                   <div class="empty-state-icon">📖</div>
                   <p>No classes added yet</p>
@@ -1134,7 +1175,7 @@
             </div>
           </div>
 
-          <div class="modal-buttons" style="margin-top: 1rem;">
+          <div class="modal-buttons" style="margin-top: 1rem">
             <button class="btn btn-cancel" onclick="closeClassesManager()">
               Close
             </button>
@@ -1158,7 +1199,10 @@
             >
               ✏️ Edit Time Slots
             </button>
-            <button class="btn btn-success btn-icon" onclick="loadFromDatabase()">
+            <button
+              class="btn btn-success btn-icon"
+              onclick="loadFromDatabase()"
+            >
               ☁️ Load from Database
             </button>
             <button class="btn btn-primary btn-icon" onclick="saveProject()">
@@ -1222,25 +1266,17 @@
           </button>
         </div>
 
-        <div
-          class="timetable-wrapper"
-          id="timetableWrapper"
-        >
+        <div class="timetable-wrapper" id="timetableWrapper">
           <div id="timetableContainer">
             <div class="empty-state" style="padding: 4rem 2rem">
               <div class="empty-state-icon">📋</div>
-              <p>
-                Loading timetable from database...
-              </p>
+              <p>Loading timetable from database...</p>
             </div>
           </div>
         </div>
 
         <!-- Counters Section -->
-        <div
-          class="counters-section"
-          id="countersSection"
-        >
+        <div class="counters-section" id="countersSection">
           <div class="counter-tabs">
             <button
               class="counter-tab active"
@@ -1335,24 +1371,43 @@
 
     <!-- Export Options Modal -->
     <div class="modal" id="exportModal">
-      <div class="modal-content" style="max-width: 700px;">
+      <div class="modal-content" style="max-width: 700px">
         <h3 class="modal-title">📤 Export Timetable for SharePoint</h3>
         <p style="color: var(--text-light); margin-bottom: 2rem">
-          Choose your export format. All formats are ready to upload to SharePoint.
+          Choose your export format. All formats are ready to upload to
+          SharePoint.
         </p>
 
-        <div style="display: grid; gap: 1.5rem; margin-bottom: 2rem;">
+        <div style="display: grid; gap: 1.5rem; margin-bottom: 2rem">
           <!-- Excel Export Option -->
           <div class="export-option" onclick="exportToExcel()">
-            <div style="display: flex; align-items: center; gap: 1rem;">
-              <div style="font-size: 3rem;">📊</div>
-              <div style="flex: 1;">
-                <h4 style="margin: 0 0 0.5rem 0; font-size: 1.2rem; color: var(--primary);">Excel Workbook (.xlsx)</h4>
-                <p style="margin: 0; font-size: 0.9rem; color: var(--text-light);">
-                  Full week with separate sheets per day. Opens in Excel Online. Best for editing and filtering.
+            <div style="display: flex; align-items: center; gap: 1rem">
+              <div style="font-size: 3rem">📊</div>
+              <div style="flex: 1">
+                <h4
+                  style="
+                    margin: 0 0 0.5rem 0;
+                    font-size: 1.2rem;
+                    color: var(--primary);
+                  "
+                >
+                  Excel Workbook (.xlsx)
+                </h4>
+                <p
+                  style="margin: 0; font-size: 0.9rem; color: var(--text-light)"
+                >
+                  Full week with separate sheets per day. Opens in Excel Online.
+                  Best for editing and filtering.
                 </p>
               </div>
-              <button class="btn btn-primary" style="width: auto; padding: 0.75rem 1.5rem;" onclick="event.stopPropagation(); exportToExcel()">
+              <button
+                class="btn btn-primary"
+                style="width: auto; padding: 0.75rem 1.5rem"
+                onclick="
+                  event.stopPropagation();
+                  exportToExcel();
+                "
+              >
                 Download
               </button>
             </div>
@@ -1360,15 +1415,33 @@
 
           <!-- PDF Export Option -->
           <div class="export-option" onclick="exportToPDF()">
-            <div style="display: flex; align-items: center; gap: 1rem;">
-              <div style="font-size: 3rem;">📄</div>
-              <div style="flex: 1;">
-                <h4 style="margin: 0 0 0.5rem 0; font-size: 1.2rem; color: var(--primary);">PDF Document (.pdf)</h4>
-                <p style="margin: 0; font-size: 0.9rem; color: var(--text-light);">
-                  Professional multi-page document. Perfect for printing and formal distribution.
+            <div style="display: flex; align-items: center; gap: 1rem">
+              <div style="font-size: 3rem">📄</div>
+              <div style="flex: 1">
+                <h4
+                  style="
+                    margin: 0 0 0.5rem 0;
+                    font-size: 1.2rem;
+                    color: var(--primary);
+                  "
+                >
+                  PDF Document (.pdf)
+                </h4>
+                <p
+                  style="margin: 0; font-size: 0.9rem; color: var(--text-light)"
+                >
+                  Professional multi-page document. Perfect for printing and
+                  formal distribution.
                 </p>
               </div>
-              <button class="btn btn-primary" style="width: auto; padding: 0.75rem 1.5rem;" onclick="event.stopPropagation(); exportToPDF()">
+              <button
+                class="btn btn-primary"
+                style="width: auto; padding: 0.75rem 1.5rem"
+                onclick="
+                  event.stopPropagation();
+                  exportToPDF();
+                "
+              >
                 Download
               </button>
             </div>
@@ -1376,39 +1449,86 @@
 
           <!-- PNG Images Export Option -->
           <div class="export-option" onclick="exportToPNG()">
-            <div style="display: flex; align-items: center; gap: 1rem;">
-              <div style="font-size: 3rem;">🖼️</div>
-              <div style="flex: 1;">
-                <h4 style="margin: 0 0 0.5rem 0; font-size: 1.2rem; color: var(--primary);">PNG Images (.png)</h4>
-                <p style="margin: 0; font-size: 0.9rem; color: var(--text-light);">
-                  High-quality images (one per day). Quick visual snapshots for presentations.
+            <div style="display: flex; align-items: center; gap: 1rem">
+              <div style="font-size: 3rem">🖼️</div>
+              <div style="flex: 1">
+                <h4
+                  style="
+                    margin: 0 0 0.5rem 0;
+                    font-size: 1.2rem;
+                    color: var(--primary);
+                  "
+                >
+                  PNG Images (.png)
+                </h4>
+                <p
+                  style="margin: 0; font-size: 0.9rem; color: var(--text-light)"
+                >
+                  High-quality images (one per day). Quick visual snapshots for
+                  presentations.
                 </p>
               </div>
-              <button class="btn btn-primary" style="width: auto; padding: 0.75rem 1.5rem;" onclick="event.stopPropagation(); exportToPNG()">
+              <button
+                class="btn btn-primary"
+                style="width: auto; padding: 0.75rem 1.5rem"
+                onclick="
+                  event.stopPropagation();
+                  exportToPNG();
+                "
+              >
                 Download
               </button>
             </div>
           </div>
 
           <!-- Export All Option -->
-          <div class="export-option" onclick="exportAll()" style="background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%); border: 2px solid var(--primary);">
-            <div style="display: flex; align-items: center; gap: 1rem;">
-              <div style="font-size: 3rem;">💾</div>
-              <div style="flex: 1;">
-                <h4 style="margin: 0 0 0.5rem 0; font-size: 1.2rem; color: var(--primary);">Export All Formats</h4>
-                <p style="margin: 0; font-size: 0.9rem; color: var(--text-light);">
-                  Download Excel, PDF, and PNG files all at once. Maximum flexibility!
+          <div
+            class="export-option"
+            onclick="exportAll()"
+            style="
+              background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);
+              border: 2px solid var(--primary);
+            "
+          >
+            <div style="display: flex; align-items: center; gap: 1rem">
+              <div style="font-size: 3rem">💾</div>
+              <div style="flex: 1">
+                <h4
+                  style="
+                    margin: 0 0 0.5rem 0;
+                    font-size: 1.2rem;
+                    color: var(--primary);
+                  "
+                >
+                  Export All Formats
+                </h4>
+                <p
+                  style="margin: 0; font-size: 0.9rem; color: var(--text-light)"
+                >
+                  Download Excel, PDF, and PNG files all at once. Maximum
+                  flexibility!
                 </p>
               </div>
-              <button class="btn btn-secondary" style="width: auto; padding: 0.75rem 1.5rem;" onclick="event.stopPropagation(); exportAll()">
+              <button
+                class="btn btn-secondary"
+                style="width: auto; padding: 0.75rem 1.5rem"
+                onclick="
+                  event.stopPropagation();
+                  exportAll();
+                "
+              >
                 Download All
               </button>
             </div>
           </div>
         </div>
 
-        <div style="text-align: center;">
-          <button class="btn btn-cancel" onclick="closeExportModal()" style="width: auto; padding: 0.75rem 2rem;">
+        <div style="text-align: center">
+          <button
+            class="btn btn-cancel"
+            onclick="closeExportModal()"
+            style="width: auto; padding: 0.75rem 2rem"
+          >
             Close
           </button>
         </div>
@@ -1432,37 +1552,40 @@
       }
     </style>
 
-    
     <script>
       // ============================================
       // AUTHENTICATION CHECK
       // ============================================
-      
+
       // Wait for DOM and Firebase to be ready
-      document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener("DOMContentLoaded", function () {
         // Check if shared.js loaded properly
-        if (typeof auth === 'undefined') {
-          console.error('Firebase not loaded! Make sure shared.js is included.');
-          alert('Error: Application not loaded correctly. Please refresh the page.');
+        if (typeof auth === "undefined") {
+          console.error(
+            "Firebase not loaded! Make sure shared.js is included.",
+          );
+          alert(
+            "Error: Application not loaded correctly. Please refresh the page.",
+          );
           return;
         }
 
         auth.onAuthStateChanged((user) => {
           if (!user) {
-            window.location.href = 'login.html';
+            window.location.href = "login.html";
             return;
           }
-          
+
           // Check if admin (from session or email)
-          const savedRole = sessionStorage.getItem('userRole');
-          if (savedRole === 'viewer') {
-            window.location.href = 'view.html';
+          const savedRole = sessionStorage.getItem("userRole");
+          if (savedRole === "viewer") {
+            window.location.href = "view.html";
             return;
           }
-          
+
           // Show admin UI
-          document.getElementById('userInfo').style.display = 'flex';
-          
+          document.getElementById("userInfo").style.display = "flex";
+
           // Load timetable from localStorage
           loadFromLocalStorage();
         });
@@ -1552,168 +1675,172 @@
           alert("All names were already in the list");
         }
 
-      function removePerson(name) {
-        if (
-          confirm(
-            `Remove ${name} from the list? All their assignments will be deleted.`,
-          )
-        ) {
-          peopleList = peopleList.filter((person) => person !== name);
+        function removePerson(name) {
+          if (
+            confirm(
+              `Remove ${name} from the list? All their assignments will be deleted.`,
+            )
+          ) {
+            peopleList = peopleList.filter((person) => person !== name);
 
-          days.forEach((day) => {
-            if (assignments[day]) {
-              Object.keys(assignments[day]).forEach((key) => {
-                if (key.includes(`-${name}`)) {
-                  delete assignments[day][key];
-                }
-              });
-            }
-          });
+            days.forEach((day) => {
+              if (assignments[day]) {
+                Object.keys(assignments[day]).forEach((key) => {
+                  if (key.includes(`-${name}`)) {
+                    delete assignments[day][key];
+                  }
+                });
+              }
+            });
 
-          updatePeopleList();
-          updateModalSelects();
-          renderCurrentTimetable();
-          updateCounters();
-          autoSaveToFirebase();
+            updatePeopleList();
+            updateModalSelects();
+            renderCurrentTimetable();
+            updateCounters();
+            autoSaveToFirebase();
+          }
         }
 
-      function updatePeopleList() {
-        const listContainer = document.getElementById("peopleList");
-        
-        // Update counters
-        document.getElementById("peopleCount").textContent = peopleList.length;
-        const modalCounter = document.getElementById("peopleCountInModal");
-        if (modalCounter) modalCounter.textContent = peopleList.length;
+        function updatePeopleList() {
+          const listContainer = document.getElementById("peopleList");
 
-        if (peopleList.length === 0) {
-          listContainer.innerHTML = `
+          // Update counters
+          document.getElementById("peopleCount").textContent =
+            peopleList.length;
+          const modalCounter = document.getElementById("peopleCountInModal");
+          if (modalCounter) modalCounter.textContent = peopleList.length;
+
+          if (peopleList.length === 0) {
+            listContainer.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">👤</div>
                         <p>No people added yet</p>
                     </div>
                 `;
-          return;
-        }
+            return;
+          }
 
-        listContainer.innerHTML = peopleList
-          .map(
-            (person) => `
+          listContainer.innerHTML = peopleList
+            .map(
+              (person) => `
                 <div class="list-item">
                     <span class="item-name">${person}</span>
                     <button class="delete-btn" onclick="removePerson('${person.replace(/'/g, "\\'")}')">Remove</button>
                 </div>
             `,
-          )
-          .join("");
-      }
-
-      // Classes Management
-      function addClasses() {
-        const input = document.getElementById("classesInput");
-        const text = input.value.trim();
-
-        if (!text) {
-          alert("Please enter at least one class name");
-          return;
+            )
+            .join("");
         }
 
-        // Split by newlines first, then by commas
-        const lines = text.split("\n");
-        const names = [];
-        lines.forEach((line) => {
-          const parts = line
-            .split(",")
-            .map((name) => name.trim())
-            .filter((name) => name);
-          names.push(...parts);
-        });
+        // Classes Management
+        function addClasses() {
+          const input = document.getElementById("classesInput");
+          const text = input.value.trim();
 
-        if (names.length === 0) {
-          alert("Please enter at least one class name");
-          return;
-        }
-
-        let added = 0;
-        let skipped = 0;
-
-        names.forEach((name) => {
-          if (!classList.includes(name)) {
-            classList.push(name);
-            classColors[name] =
-              defaultColors[colorIndex % defaultColors.length];
-            colorIndex++;
-            added++;
-          } else {
-            skipped++;
+          if (!text) {
+            alert("Please enter at least one class name");
+            return;
           }
-        });
 
-        input.value = "";
-        updateClassList();
-        updateModalSelects();
-        autoSaveToFirebase();
+          // Split by newlines first, then by commas
+          const lines = text.split("\n");
+          const names = [];
+          lines.forEach((line) => {
+            const parts = line
+              .split(",")
+              .map((name) => name.trim())
+              .filter((name) => name);
+            names.push(...parts);
+          });
 
-        if (added > 0) {
-          alert(
-            `Added ${added} ${added === 1 ? "class" : "classes"}${skipped > 0 ? `, skipped ${skipped} duplicate${skipped === 1 ? "" : "s"}` : ""}`,
-          );
-        } else {
-          alert("All classes were already in the list");
-        }
+          if (names.length === 0) {
+            alert("Please enter at least one class name");
+            return;
+          }
 
-      function removeClass(name) {
-        if (
-          confirm(
-            `Remove ${name} from the list? All assignments using this class will be deleted.`,
-          )
-        ) {
-          classList = classList.filter((cls) => cls !== name);
-          delete classColors[name];
+          let added = 0;
+          let skipped = 0;
 
-          days.forEach((day) => {
-            if (assignments[day]) {
-              Object.keys(assignments[day]).forEach((key) => {
-                if (assignments[day][key].class === name) {
-                  delete assignments[day][key];
-                }
-              });
+          names.forEach((name) => {
+            if (!classList.includes(name)) {
+              classList.push(name);
+              classColors[name] =
+                defaultColors[colorIndex % defaultColors.length];
+              colorIndex++;
+              added++;
+            } else {
+              skipped++;
             }
           });
 
+          input.value = "";
           updateClassList();
           updateModalSelects();
+          autoSaveToFirebase();
+
+          if (added > 0) {
+            alert(
+              `Added ${added} ${added === 1 ? "class" : "classes"}${skipped > 0 ? `, skipped ${skipped} duplicate${skipped === 1 ? "" : "s"}` : ""}`,
+            );
+          } else {
+            alert("All classes were already in the list");
+          }
+        }
+        function removeClass(name) {
+          if (
+            confirm(
+              `Remove ${name} from the list? All assignments using this class will be deleted.`,
+            )
+          ) {
+            classList = classList.filter((cls) => cls !== name);
+            delete classColors[name];
+
+            days.forEach((day) => {
+              if (assignments[day]) {
+                Object.keys(assignments[day]).forEach((key) => {
+                  if (assignments[day][key].class === name) {
+                    delete assignments[day][key];
+                  }
+                });
+              }
+            });
+
+            updateClassList();
+            updateModalSelects();
+            renderCurrentTimetable();
+            updateCounters();
+            autoSaveToFirebase();
+          }
+        }
+
+        function updateClassColor(name, color) {
+          classColors[name] = color;
           renderCurrentTimetable();
-          updateCounters();
           autoSaveToFirebase();
         }
 
-      function updateClassColor(name, color) {
-        classColors[name] = color;
-        renderCurrentTimetable();
-        autoSaveToFirebase();
-      }
+        function updateClassList() {
+          const listContainer = document.getElementById("classList");
 
-      function updateClassList() {
-        const listContainer = document.getElementById("classList");
-        
-        // Update counters
-        document.getElementById("classesCount").textContent = classList.length;
-        const modalCounter = document.getElementById("classesCountInModal");
-        if (modalCounter) modalCounter.textContent = classList.length;
+          // Update counters
+          document.getElementById("classesCount").textContent =
+            classList.length;
+          const modalCounter = document.getElementById("classesCountInModal");
+          if (modalCounter) modalCounter.textContent = classList.length;
 
-        if (classList.length === 0) {
-          listContainer.innerHTML = `
+          if (classList.length === 0) {
+            listContainer.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">📖</div>
                         <p>No classes added yet</p>
                     </div>
                 `;
-          return;
-        }
+            return;
+          }
 
-        listContainer.innerHTML = classList
-          .map(
-            (cls) => `
+          listContainer.innerHTML = classList
+            .map(
+              (cls) => `
                 <div class="list-item">
                     <div class="class-item">
                         <input type="color" value="${classColors[cls]}" 
@@ -1724,40 +1851,46 @@
                     <button class="delete-btn" onclick="removeClass('${cls.replace(/'/g, "\\'")}')">Remove</button>
                 </div>
             `,
-          )
-          .join("");
-      }
-
-      // Modal Management
-      function openPeopleManager() {
-        document.getElementById("peopleManagerModal").classList.add("active");
-      }
-
-      function closePeopleManager() {
-        document.getElementById("peopleManagerModal").classList.remove("active");
-      }
-
-      function openClassesManager() {
-        document.getElementById("classesManagerModal").classList.add("active");
-      }
-
-      function closeClassesManager() {
-        document.getElementById("classesManagerModal").classList.remove("active");
-      }
-
-      function updateModalSelects() {
-        const classSelect = document.getElementById("modalClass");
-
-        classSelect.innerHTML =
-          '<option value="">Select a class...</option>' +
-          classList
-            .map((cls) => `<option value="${cls}">${cls}</option>`)
+            )
             .join("");
-      }
+        }
 
-      // Time Slots Management
-      // REMOVED: Generate Timetable function (timetable now loads automatically from Firebase)
-      /*
+        // Modal Management
+        function openPeopleManager() {
+          document.getElementById("peopleManagerModal").classList.add("active");
+        }
+
+        function closePeopleManager() {
+          document
+            .getElementById("peopleManagerModal")
+            .classList.remove("active");
+        }
+
+        function openClassesManager() {
+          document
+            .getElementById("classesManagerModal")
+            .classList.add("active");
+        }
+
+        function closeClassesManager() {
+          document
+            .getElementById("classesManagerModal")
+            .classList.remove("active");
+        }
+
+        function updateModalSelects() {
+          const classSelect = document.getElementById("modalClass");
+
+          classSelect.innerHTML =
+            '<option value="">Select a class...</option>' +
+            classList
+              .map((cls) => `<option value="${cls}">${cls}</option>`)
+              .join("");
+        }
+
+        // Time Slots Management
+        // REMOVED: Generate Timetable function (timetable now loads automatically from Firebase)
+        /*
       function generateTimetable() {
         const startTime = document.getElementById("startTime").value;
         const endTime = document.getElementById("endTime").value;
@@ -1812,260 +1945,273 @@
       }
       */
 
-      function openEditTimeSlots() {
-        const listContainer = document.getElementById("timeSlotList");
-        listContainer.innerHTML = timeSlots
-          .map(
-            (slot, index) => `
+        function openEditTimeSlots() {
+          const listContainer = document.getElementById("timeSlotList");
+          listContainer.innerHTML = timeSlots
+            .map(
+              (slot, index) => `
                 <div class="time-slot-item">
                     <input type="time" value="${slot.start}" onchange="updateTimeSlot(${index}, 'start', this.value)">
                     <input type="time" value="${slot.end}" onchange="updateTimeSlot(${index}, 'end', this.value)">
                     <button class="btn btn-secondary btn-small delete-btn" onclick="removeTimeSlot(${index})">Remove</button>
                 </div>
             `,
-          )
-          .join("");
+            )
+            .join("");
 
-        document.getElementById("editTimeSlotsModal").classList.add("active");
-      }
+          document.getElementById("editTimeSlotsModal").classList.add("active");
+        }
 
-      function updateTimeSlot(index, field, value) {
-        timeSlots[index][field] = value;
-      }
+        function updateTimeSlot(index, field, value) {
+          timeSlots[index][field] = value;
+        }
 
-      function addNewTimeSlot() {
-        const lastSlot = timeSlots[timeSlots.length - 1];
-        const newStart = lastSlot ? lastSlot.end : "08:00";
-        const newEnd = minutesToTime(timeToMinutes(newStart) + 60);
+        function addNewTimeSlot() {
+          const lastSlot = timeSlots[timeSlots.length - 1];
+          const newStart = lastSlot ? lastSlot.end : "08:00";
+          const newEnd = minutesToTime(timeToMinutes(newStart) + 60);
 
-        timeSlots.push({ start: newStart, end: newEnd });
-        openEditTimeSlots();
-      }
-
-      function removeTimeSlot(index) {
-        if (
-          confirm(
-            "Remove this time slot? Any assignments during this time will be deleted.",
-          )
-        ) {
-          const removedSlot = timeSlots[index];
-          timeSlots.splice(index, 1);
-
-          // Remove assignments in this slot
-          days.forEach((day) => {
-            if (assignments[day]) {
-              Object.keys(assignments[day]).forEach((key) => {
-                if (key.startsWith(removedSlot.start + "-")) {
-                  delete assignments[day][key];
-                }
-              });
-            }
-          });
-
+          timeSlots.push({ start: newStart, end: newEnd });
           openEditTimeSlots();
         }
-      }
 
-      function closeEditTimeSlotsModal() {
-        document
-          .getElementById("editTimeSlotsModal")
-          .classList.remove("active");
-      }
+        function removeTimeSlot(index) {
+          if (
+            confirm(
+              "Remove this time slot? Any assignments during this time will be deleted.",
+            )
+          ) {
+            const removedSlot = timeSlots[index];
+            timeSlots.splice(index, 1);
 
-      function saveTimeSlots() {
-        // Sort time slots
-        timeSlots.sort(
-          (a, b) => timeToMinutes(a.start) - timeToMinutes(b.start),
-        );
+            // Remove assignments in this slot
+            days.forEach((day) => {
+              if (assignments[day]) {
+                Object.keys(assignments[day]).forEach((key) => {
+                  if (key.startsWith(removedSlot.start + "-")) {
+                    delete assignments[day][key];
+                  }
+                });
+              }
+            });
 
-        closeEditTimeSlotsModal();
-        renderTimetable();
-        updateCounters();
-        autoSaveToFirebase();
-      }
-
-      function renderCurrentTimetable() {
-        if (timeSlots.length > 0) {
-          renderTimetable();
+            openEditTimeSlots();
+          }
         }
-      }
 
-      function renderTimetable() {
-        const container = document.getElementById("timetableContainer");
+        function closeEditTimeSlotsModal() {
+          document
+            .getElementById("editTimeSlotsModal")
+            .classList.remove("active");
+        }
 
-        let html = '<div style="display: inline-block; min-width: 100%;">';
-        html += `<div class="day-title ${currentDay}">${currentDay.charAt(0).toUpperCase() + currentDay.slice(1)}</div>`;
-        html += '<div class="timetable">';
+        function saveTimeSlots() {
+          // Sort time slots
+          timeSlots.sort(
+            (a, b) => timeToMinutes(a.start) - timeToMinutes(b.start),
+          );
 
-        html += '<div class="timetable-header-row">';
-        html += "<div>Time</div>";
-        peopleList.forEach((name) => {
-          html += `<div>${name}</div>`;
-        });
-        html += "</div>";
+          closeEditTimeSlotsModal();
+          renderTimetable();
+          updateCounters();
+          autoSaveToFirebase();
+        }
 
-        // Filter out invalid time slots
-        const validTimeSlots = timeSlots.filter(slot => 
-          slot && slot.start && slot.end && 
-          typeof slot.start === 'string' && typeof slot.end === 'string'
-        );
+        function renderCurrentTimetable() {
+          if (timeSlots.length > 0) {
+            renderTimetable();
+          }
+        }
 
-        validTimeSlots.forEach((slot) => {
-          html += '<div class="timetable-row">';
-          html += `<div class="time-cell"><div class="time-range">${formatTime12Hour(slot.start)}<br>${formatTime12Hour(slot.end)}</div></div>`;
+        function renderTimetable() {
+          const container = document.getElementById("timetableContainer");
 
-          peopleList.forEach((person) => {
-            const cellKey = `${slot.start}-${person}`;
-            const cellData = assignments[currentDay]?.[cellKey];
-            const hasContent = cellData !== undefined;
+          let html = '<div style="display: inline-block; min-width: 100%;">';
+          html += `<div class="day-title ${currentDay}">${currentDay.charAt(0).toUpperCase() + currentDay.slice(1)}</div>`;
+          html += '<div class="timetable">';
 
-            const bgColor = hasContent ? classColors[cellData.class] : "";
-            const style = hasContent ? `style="background: ${bgColor};"` : "";
-            
-            // Only make clickable for admin users
-            const clickHandler = currentUserRole === 'admin' ? `onclick="editCell('${slot.start}', '${person.replace(/'/g, "\\'")}')"` : '';
+          html += '<div class="timetable-header-row">';
+          html += "<div>Time</div>";
+          peopleList.forEach((name) => {
+            html += `<div>${name}</div>`;
+          });
+          html += "</div>";
 
-            html += `<div class="roster-cell ${hasContent ? "has-content" : ""}" ${style} ${clickHandler}>`;
+          // Filter out invalid time slots
+          const validTimeSlots = timeSlots.filter(
+            (slot) =>
+              slot &&
+              slot.start &&
+              slot.end &&
+              typeof slot.start === "string" &&
+              typeof slot.end === "string",
+          );
 
-            if (hasContent) {
-              // Only show remove button for admin
-              if (currentUserRole === 'admin') {
-                html += `<button class="remove-btn-cell" onclick="event.stopPropagation(); removeCell('${slot.start}', '${person.replace(/'/g, "\\'")}')">×</button>`;
+          validTimeSlots.forEach((slot) => {
+            html += '<div class="timetable-row">';
+            html += `<div class="time-cell"><div class="time-range">${formatTime12Hour(slot.start)}<br>${formatTime12Hour(slot.end)}</div></div>`;
+
+            peopleList.forEach((person) => {
+              const cellKey = `${slot.start}-${person}`;
+              const cellData = assignments[currentDay]?.[cellKey];
+              const hasContent = cellData !== undefined;
+
+              const bgColor = hasContent ? classColors[cellData.class] : "";
+              const style = hasContent ? `style="background: ${bgColor};"` : "";
+
+              // Only make clickable for admin users
+              const clickHandler =
+                currentUserRole === "admin"
+                  ? `onclick="editCell('${slot.start}', '${person.replace(/'/g, "\\'")}')"`
+                  : "";
+
+              html += `<div class="roster-cell ${hasContent ? "has-content" : ""}" ${style} ${clickHandler}>`;
+
+              if (hasContent) {
+                // Only show remove button for admin
+                if (currentUserRole === "admin") {
+                  html += `<button class="remove-btn-cell" onclick="event.stopPropagation(); removeCell('${slot.start}', '${person.replace(/'/g, "\\'")}')">×</button>`;
+                }
+                html += `<div class="cell-content">`;
+                html += `<div class="assignment-class">${cellData.class}</div>`;
+                html += `<div class="assignment-duration">${cellData.duration} min</div>`;
+                if (cellData.notes) {
+                  html += `<div class="assignment-notes">${cellData.notes}</div>`;
+                }
+                html += `</div>`;
               }
-              html += `<div class="cell-content">`;
-              html += `<div class="assignment-class">${cellData.class}</div>`;
-              html += `<div class="assignment-duration">${cellData.duration} min</div>`;
-              if (cellData.notes) {
-                html += `<div class="assignment-notes">${cellData.notes}</div>`;
-              }
-              html += `</div>`;
-            }
+
+              html += "</div>";
+            });
 
             html += "</div>";
           });
 
           html += "</div>";
-        });
-
-        html += "</div>";
-        html += "</div>";
-        container.innerHTML = html;
-      }
-
-      function switchDay(day) {
-        currentDay = day;
-
-        document.querySelectorAll(".day-btn").forEach((btn) => {
-          btn.classList.remove("active");
-        });
-        document.querySelector(`[data-day="${day}"]`).classList.add("active");
-
-        renderTimetable();
-        updateCounters();
-      }
-
-      function editCell(time, person) {
-        currentEditCell = { time, person };
-        const cellKey = `${time}-${person}`;
-        const currentData = assignments[currentDay][cellKey];
-
-        document.getElementById("modalInfo").textContent =
-          `${currentDay.charAt(0).toUpperCase() + currentDay.slice(1)} - ${formatTime12Hour(time)} - ${person}`;
-
-        if (currentData) {
-          document.getElementById("modalClass").value = currentData.class;
-          document.getElementById("modalDuration").value = currentData.duration;
-          document.getElementById("modalNotes").value = currentData.notes || "";
-        } else {
-          document.getElementById("modalClass").value = "";
-          document.getElementById("modalDuration").value = parseInt(
-            document.getElementById("lessonDuration").value,
-          );
-          document.getElementById("modalNotes").value = "";
+          html += "</div>";
+          container.innerHTML = html;
         }
 
-        document.getElementById("assignmentModal").classList.add("active");
-      }
+        function switchDay(day) {
+          currentDay = day;
 
-      function closeModal() {
-        document.getElementById("assignmentModal").classList.remove("active");
-        currentEditCell = null;
-      }
-
-      function confirmAssignment() {
-        if (!currentEditCell) return;
-
-        const className = document.getElementById("modalClass").value;
-        const duration = parseInt(
-          document.getElementById("modalDuration").value,
-        );
-        const notes = document.getElementById("modalNotes").value.trim();
-
-        if (!className) {
-          alert("Please select a class");
-          return;
-        }
-
-        const cellKey = `${currentEditCell.time}-${currentEditCell.person}`;
-
-        assignments[currentDay][cellKey] = {
-          class: className,
-          duration: duration,
-          notes: notes,
-        };
-
-        closeModal();
-        renderTimetable();
-        updateCounters();
-        autoSaveToFirebase();
-      }
-
-      function removeCell(time, person) {
-        const cellKey = `${time}-${person}`;
-        delete assignments[currentDay][cellKey];
-        renderTimetable();
-        updateCounters();
-        autoSaveToFirebase();
-      }
-
-      // Counters
-      function switchCounterTab(tab) {
-        currentCounterTab = tab;
-
-        document
-          .querySelectorAll(".counter-tab")
-          .forEach((t) => t.classList.remove("active"));
-        document
-          .querySelectorAll(".counter-content")
-          .forEach((c) => c.classList.remove("active"));
-
-        if (tab === "day") {
-          document.querySelectorAll(".counter-tab")[0].classList.add("active");
-          document.getElementById("dayCounters").classList.add("active");
-        } else {
-          document.querySelectorAll(".counter-tab")[1].classList.add("active");
-          document.getElementById("weekCounters").classList.add("active");
-        }
-      }
-
-      function updateCounters() {
-        document.getElementById("currentDayLabel").textContent =
-          currentDay.charAt(0).toUpperCase() + currentDay.slice(1);
-
-        // Day counters
-        const dayCounts = {};
-        classList.forEach((cls) => (dayCounts[cls] = 0));
-
-        if (assignments[currentDay]) {
-          Object.values(assignments[currentDay]).forEach((assignment) => {
-            dayCounts[assignment.class]++;
+          document.querySelectorAll(".day-btn").forEach((btn) => {
+            btn.classList.remove("active");
           });
+          document.querySelector(`[data-day="${day}"]`).classList.add("active");
+
+          renderTimetable();
+          updateCounters();
         }
 
-        const dayGrid = document.getElementById("dayCounterGrid");
-        dayGrid.innerHTML = classList
-          .map(
-            (cls) => `
+        function editCell(time, person) {
+          currentEditCell = { time, person };
+          const cellKey = `${time}-${person}`;
+          const currentData = assignments[currentDay][cellKey];
+
+          document.getElementById("modalInfo").textContent =
+            `${currentDay.charAt(0).toUpperCase() + currentDay.slice(1)} - ${formatTime12Hour(time)} - ${person}`;
+
+          if (currentData) {
+            document.getElementById("modalClass").value = currentData.class;
+            document.getElementById("modalDuration").value =
+              currentData.duration;
+            document.getElementById("modalNotes").value =
+              currentData.notes || "";
+          } else {
+            document.getElementById("modalClass").value = "";
+            document.getElementById("modalDuration").value = parseInt(
+              document.getElementById("lessonDuration").value,
+            );
+            document.getElementById("modalNotes").value = "";
+          }
+
+          document.getElementById("assignmentModal").classList.add("active");
+        }
+
+        function closeModal() {
+          document.getElementById("assignmentModal").classList.remove("active");
+          currentEditCell = null;
+        }
+
+        function confirmAssignment() {
+          if (!currentEditCell) return;
+
+          const className = document.getElementById("modalClass").value;
+          const duration = parseInt(
+            document.getElementById("modalDuration").value,
+          );
+          const notes = document.getElementById("modalNotes").value.trim();
+
+          if (!className) {
+            alert("Please select a class");
+            return;
+          }
+
+          const cellKey = `${currentEditCell.time}-${currentEditCell.person}`;
+
+          assignments[currentDay][cellKey] = {
+            class: className,
+            duration: duration,
+            notes: notes,
+          };
+
+          closeModal();
+          renderTimetable();
+          updateCounters();
+          autoSaveToFirebase();
+        }
+
+        function removeCell(time, person) {
+          const cellKey = `${time}-${person}`;
+          delete assignments[currentDay][cellKey];
+          renderTimetable();
+          updateCounters();
+          autoSaveToFirebase();
+        }
+
+        // Counters
+        function switchCounterTab(tab) {
+          currentCounterTab = tab;
+
+          document
+            .querySelectorAll(".counter-tab")
+            .forEach((t) => t.classList.remove("active"));
+          document
+            .querySelectorAll(".counter-content")
+            .forEach((c) => c.classList.remove("active"));
+
+          if (tab === "day") {
+            document
+              .querySelectorAll(".counter-tab")[0]
+              .classList.add("active");
+            document.getElementById("dayCounters").classList.add("active");
+          } else {
+            document
+              .querySelectorAll(".counter-tab")[1]
+              .classList.add("active");
+            document.getElementById("weekCounters").classList.add("active");
+          }
+        }
+
+        function updateCounters() {
+          document.getElementById("currentDayLabel").textContent =
+            currentDay.charAt(0).toUpperCase() + currentDay.slice(1);
+
+          // Day counters
+          const dayCounts = {};
+          classList.forEach((cls) => (dayCounts[cls] = 0));
+
+          if (assignments[currentDay]) {
+            Object.values(assignments[currentDay]).forEach((assignment) => {
+              dayCounts[assignment.class]++;
+            });
+          }
+
+          const dayGrid = document.getElementById("dayCounterGrid");
+          dayGrid.innerHTML = classList
+            .map(
+              (cls) => `
                 <div class="counter-item">
                     <div class="counter-class">
                         <div class="counter-color" style="background: ${classColors[cls]}"></div>
@@ -2074,25 +2220,25 @@
                     <div class="counter-value">${dayCounts[cls]}</div>
                 </div>
             `,
-          )
-          .join("");
+            )
+            .join("");
 
-        // Week counters
-        const weekCounts = {};
-        classList.forEach((cls) => (weekCounts[cls] = 0));
+          // Week counters
+          const weekCounts = {};
+          classList.forEach((cls) => (weekCounts[cls] = 0));
 
-        days.forEach((day) => {
-          if (assignments[day]) {
-            Object.values(assignments[day]).forEach((assignment) => {
-              weekCounts[assignment.class]++;
-            });
-          }
-        });
+          days.forEach((day) => {
+            if (assignments[day]) {
+              Object.values(assignments[day]).forEach((assignment) => {
+                weekCounts[assignment.class]++;
+              });
+            }
+          });
 
-        const weekGrid = document.getElementById("weekCounterGrid");
-        weekGrid.innerHTML = classList
-          .map(
-            (cls) => `
+          const weekGrid = document.getElementById("weekCounterGrid");
+          weekGrid.innerHTML = classList
+            .map(
+              (cls) => `
                 <div class="counter-item">
                     <div class="counter-class">
                         <div class="counter-color" style="background: ${classColors[cls]}"></div>
@@ -2101,93 +2247,175 @@
                     <div class="counter-value">${weekCounts[cls]}</div>
                 </div>
             `,
-          )
-          .join("");
-      }
-
-      // Time Utilities
-      function timeToMinutes(time) {
-        const [hours, minutes] = time.split(":").map(Number);
-        return hours * 60 + minutes;
-      }
-
-      function minutesToTime(minutes) {
-        const hours = Math.floor(minutes / 60);
-        const mins = minutes % 60;
-        return `${hours.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}`;
-      }
-
-      function formatTime12Hour(time24) {
-        // Safety check for undefined or invalid time
-        if (!time24 || typeof time24 !== 'string') {
-          console.error('Invalid time passed to formatTime12Hour:', time24);
-          return 'Invalid Time';
+            )
+            .join("");
         }
-        
-        const parts = time24.split(":");
-        if (parts.length !== 2) {
-          console.error('Invalid time format:', time24);
-          return time24; // Return as-is if invalid
+
+        // Time Utilities
+        function timeToMinutes(time) {
+          const [hours, minutes] = time.split(":").map(Number);
+          return hours * 60 + minutes;
         }
-        
-        const [hours, minutes] = parts.map(Number);
-        if (isNaN(hours) || isNaN(minutes)) {
-          console.error('Non-numeric time values:', time24);
-          return time24;
+
+        function minutesToTime(minutes) {
+          const hours = Math.floor(minutes / 60);
+          const mins = minutes % 60;
+          return `${hours.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}`;
         }
-        
-        const period = hours >= 12 ? "PM" : "AM";
-        const hours12 = hours % 12 || 12;
-        return `${hours12}:${minutes.toString().padStart(2, "0")} ${period}`;
-      }
 
-      // Save & Load Project
-      function saveProject() {
-        const projectData = {
-          version: "1.0",
-          savedDate: new Date().toISOString(),
-          peopleList: peopleList,
-          classList: classList,
-          classColors: classColors,
-          assignments: assignments,
-          timeSlots: timeSlots
-        };
+        function formatTime12Hour(time24) {
+          // Safety check for undefined or invalid time
+          if (!time24 || typeof time24 !== "string") {
+            console.error("Invalid time passed to formatTime12Hour:", time24);
+            return "Invalid Time";
+          }
 
-        const jsonString = JSON.stringify(projectData, null, 2);
-        const blob = new Blob([jsonString], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `Timetable_Project_${new Date().toISOString().split("T")[0]}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
+          const parts = time24.split(":");
+          if (parts.length !== 2) {
+            console.error("Invalid time format:", time24);
+            return time24; // Return as-is if invalid
+          }
 
-        showAutoSaveIndicator("Project saved!");
-      }
+          const [hours, minutes] = parts.map(Number);
+          if (isNaN(hours) || isNaN(minutes)) {
+            console.error("Non-numeric time values:", time24);
+            return time24;
+          }
 
-      function loadProject(event) {
-        const file = event.target.files[0];
-        if (!file) return;
+          const period = hours >= 12 ? "PM" : "AM";
+          const hours12 = hours % 12 || 12;
+          return `${hours12}:${minutes.toString().padStart(2, "0")} ${period}`;
+        }
 
-        const reader = new FileReader();
-        reader.onload = function (e) {
+        // Save & Load Project
+        function saveProject() {
+          const projectData = {
+            version: "1.0",
+            savedDate: new Date().toISOString(),
+            peopleList: peopleList,
+            classList: classList,
+            classColors: classColors,
+            assignments: assignments,
+            timeSlots: timeSlots,
+          };
+
+          const jsonString = JSON.stringify(projectData, null, 2);
+          const blob = new Blob([jsonString], { type: "application/json" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `Timetable_Project_${new Date().toISOString().split("T")[0]}.json`;
+          a.click();
+          URL.revokeObjectURL(url);
+
+          showAutoSaveIndicator("Project saved!");
+        }
+
+        function loadProject(event) {
+          const file = event.target.files[0];
+          if (!file) return;
+
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            try {
+              const projectData = JSON.parse(e.target.result);
+
+              // Validate version
+              if (!projectData.version) {
+                alert("Invalid project file");
+                return;
+              }
+
+              // Confirm load
+              if (
+                !confirm(
+                  "Loading this project will replace your current work. Continue?",
+                )
+              ) {
+                return;
+              }
+
+              // Restore data
+              peopleList = projectData.peopleList || [];
+              classList = projectData.classList || [];
+              classColors = projectData.classColors || {};
+              assignments = projectData.assignments || {};
+              timeSlots = projectData.timeSlots || [];
+              colorIndex = classList.length;
+
+              // Restore settings
+              if (projectData.settings) {
+                document.getElementById("startTime").value =
+                  projectData.settings.startTime;
+                document.getElementById("endTime").value =
+                  projectData.settings.endTime;
+                document.getElementById("lessonDuration").value =
+                  projectData.settings.lessonDuration;
+              }
+
+              // Update UI
+              updatePeopleList();
+              updateClassList();
+              updateModalSelects();
+
+              // Show timetable if data exists
+              if (timeSlots.length > 0) {
+                document.getElementById("daySelector").style.display = "flex";
+                document.getElementById("timetableWrapper").style.display =
+                  "block";
+                document.getElementById("editTimeSlotsBtn").style.display =
+                  "inline-block";
+                document.getElementById("countersSection").style.display =
+                  "block";
+                renderTimetable();
+                updateCounters();
+              }
+
+              alert("Project loaded successfully!");
+              autoSaveToFirebase();
+            } catch (error) {
+              alert("Error loading project file: " + error.message);
+            }
+          };
+          reader.readAsText(file);
+
+          // Reset file input
+          event.target.value = "";
+        }
+
+        function autoSaveToFirebase() {
+          const projectData = {
+            version: "1.0",
+            savedDate: new Date().toISOString(),
+            peopleList: peopleList,
+            classList: classList,
+            classColors: classColors,
+            assignments: assignments,
+            timeSlots: timeSlots,
+            settings: {
+              startTime: document.getElementById("startTime").value,
+              endTime: document.getElementById("endTime").value,
+              lessonDuration: document.getElementById("lessonDuration").value,
+            },
+          };
+
           try {
-            const projectData = JSON.parse(e.target.result);
+            localStorage.setItem(
+              "timetableProject",
+              JSON.stringify(projectData),
+            );
+            showAutoSaveIndicator();
+          } catch (error) {
+            console.error("Auto-save failed:", error);
+          }
+        }
 
-            // Validate version
-            if (!projectData.version) {
-              alert("Invalid project file");
-              return;
-            }
+        function loadFromLocalStorage() {
+          try {
+            const saved = localStorage.getItem("timetableProject");
+            if (!saved) return;
 
-            // Confirm load
-            if (
-              !confirm(
-                "Loading this project will replace your current work. Continue?",
-              )
-            ) {
-              return;
-            }
+            const projectData = JSON.parse(saved);
 
             // Restore data
             peopleList = projectData.peopleList || [];
@@ -2196,16 +2424,6 @@
             assignments = projectData.assignments || {};
             timeSlots = projectData.timeSlots || [];
             colorIndex = classList.length;
-
-            // Restore settings
-            if (projectData.settings) {
-              document.getElementById("startTime").value =
-                projectData.settings.startTime;
-              document.getElementById("endTime").value =
-                projectData.settings.endTime;
-              document.getElementById("lessonDuration").value =
-                projectData.settings.lessonDuration;
-            }
 
             // Update UI
             updatePeopleList();
@@ -2224,423 +2442,362 @@
               renderTimetable();
               updateCounters();
             }
-
-            alert("Project loaded successfully!");
-            autoSaveToFirebase();
           } catch (error) {
-            alert("Error loading project file: " + error.message);
+            console.error("Error loading from localStorage:", error);
           }
-        };
-        reader.readAsText(file);
-
-        // Reset file input
-        event.target.value = "";
-      }
-
-      function autoSaveToFirebase() {
-        const projectData = {
-          version: "1.0",
-          savedDate: new Date().toISOString(),
-          peopleList: peopleList,
-          classList: classList,
-          classColors: classColors,
-          assignments: assignments,
-          timeSlots: timeSlots,
-          settings: {
-            startTime: document.getElementById("startTime").value,
-            endTime: document.getElementById("endTime").value,
-            lessonDuration: document.getElementById("lessonDuration").value,
-          },
-        };
-
-        try {
-          localStorage.setItem("timetableProject", JSON.stringify(projectData));
-          showAutoSaveIndicator();
-        } catch (error) {
-          console.error("Auto-save failed:", error);
-        }
-      }
-
-      function loadFromLocalStorage() {
-        try {
-          const saved = localStorage.getItem("timetableProject");
-          if (!saved) return;
-
-          const projectData = JSON.parse(saved);
-
-          // Restore data
-          peopleList = projectData.peopleList || [];
-          classList = projectData.classList || [];
-          classColors = projectData.classColors || {};
-          assignments = projectData.assignments || {};
-          timeSlots = projectData.timeSlots || [];
-          colorIndex = classList.length;
-
-          // Update UI
-          updatePeopleList();
-          updateClassList();
-          updateModalSelects();
-
-          // Show timetable if data exists
-          if (timeSlots.length > 0) {
-            document.getElementById("daySelector").style.display = "flex";
-            document.getElementById("timetableWrapper").style.display = "block";
-            document.getElementById("editTimeSlotsBtn").style.display =
-              "inline-block";
-            document.getElementById("countersSection").style.display = "block";
-            renderTimetable();
-            updateCounters();
-          }
-        } catch (error) {
-          console.error("Error loading from localStorage:", error);
-        }
-      }
-
-      function showAutoSaveIndicator(message = "✓ Auto-saved") {
-        const indicator = document.getElementById("autoSaveIndicator");
-        indicator.textContent = message;
-        indicator.style.display = "block";
-
-        setTimeout(() => {
-          indicator.style.display = "none";
-        }, 2000);
-      }
-
-      // Export Functions
-      function exportSchedule() {
-        let hasAssignments = false;
-        days.forEach((day) => {
-          if (assignments[day] && Object.keys(assignments[day]).length > 0) {
-            hasAssignments = true;
-          }
-        });
-
-        if (!hasAssignments) {
-          alert("No assignments to export");
-          return;
         }
 
-        // Open export modal
-        document.getElementById("exportModal").classList.add("active");
-      }
+        function showAutoSaveIndicator(message = "✓ Auto-saved") {
+          const indicator = document.getElementById("autoSaveIndicator");
+          indicator.textContent = message;
+          indicator.style.display = "block";
 
-      function closeExportModal() {
-        document.getElementById("exportModal").classList.remove("active");
-      }
-
-      // Excel Export
-      function exportToExcel() {
-        const workbook = XLSX.utils.book_new();
-        const timestamp = new Date().toISOString().split('T')[0];
-
-        // Create a sheet for each day
-        days.forEach(day => {
-          const dayName = day.charAt(0).toUpperCase() + day.slice(1);
-          const sheetData = [];
-
-          // Header row
-          const headerRow = ['Time'];
-          peopleList.forEach(person => headerRow.push(person));
-          sheetData.push(headerRow);
-
-          // Data rows
-          timeSlots.forEach(slot => {
-            const row = [`${formatTime12Hour(slot.start)} - ${formatTime12Hour(slot.end)}`];
-            
-            peopleList.forEach(person => {
-              const cellKey = `${slot.start}-${person}`;
-              const data = assignments[day]?.[cellKey];
-              
-              if (data) {
-                let cellText = `${data.class}`;
-                if (data.duration !== 60) cellText += ` (${data.duration}min)`;
-                if (data.notes) cellText += `\n${data.notes}`;
-                row.push(cellText);
-              } else {
-                row.push('');
-              }
-            });
-            
-            sheetData.push(row);
-          });
-
-          const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
-          
-          // Set column widths
-          const colWidths = [{ wch: 20 }];
-          peopleList.forEach(() => colWidths.push({ wch: 25 }));
-          worksheet['!cols'] = colWidths;
-
-          XLSX.utils.book_append_sheet(workbook, worksheet, dayName);
-        });
-
-        // Summary sheet
-        const summaryData = [['Class Summary', 'Count']];
-        const weekCounts = {};
-        classList.forEach(cls => weekCounts[cls] = 0);
-        days.forEach(day => {
-          if (assignments[day]) {
-            Object.values(assignments[day]).forEach(assignment => {
-              weekCounts[assignment.class]++;
-            });
-          }
-        });
-        
-        classList.forEach(cls => {
-          summaryData.push([cls, weekCounts[cls]]);
-        });
-        summaryData.push(['', '']);
-        summaryData.push(['Total People', peopleList.length]);
-        summaryData.push(['Total Classes', classList.length]);
-
-        const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
-        summarySheet['!cols'] = [{ wch: 40 }, { wch: 10 }];
-        XLSX.utils.book_append_sheet(workbook, summarySheet, 'Summary');
-
-        XLSX.writeFile(workbook, `Timetable_${timestamp}.xlsx`);
-        showAutoSaveIndicator('✅ Excel file downloaded!');
-      }
-
-      // PDF Export
-      async function exportToPDF() {
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF('l', 'mm', 'a4'); // landscape
-        const timestamp = new Date().toISOString().split('T')[0];
-        let pageNum = 0;
-
-        for (const day of days) {
-          if (pageNum > 0) pdf.addPage();
-          
-          const dayName = day.charAt(0).toUpperCase() + day.slice(1);
-          
-          // Title
-          pdf.setFontSize(20);
-          pdf.setTextColor(44, 95, 79);
-          pdf.text(dayName, 148, 20, { align: 'center' });
-          
-          // Table
-          const tableData = [];
-          timeSlots.forEach(slot => {
-            const row = [`${formatTime12Hour(slot.start)}-${formatTime12Hour(slot.end)}`];
-            
-            peopleList.forEach(person => {
-              const cellKey = `${slot.start}-${person}`;
-              const data = assignments[day]?.[cellKey];
-              
-              if (data) {
-                let cellText = data.class;
-                if (data.duration !== 60) cellText += `\n(${data.duration}min)`;
-                if (data.notes) cellText += `\n${data.notes}`;
-                row.push(cellText);
-              } else {
-                row.push('');
-              }
-            });
-            
-            tableData.push(row);
-          });
-
-          pdf.autoTable({
-            head: [['Time', ...peopleList]],
-            body: tableData,
-            startY: 30,
-            theme: 'grid',
-            styles: { fontSize: 8, cellPadding: 2 },
-            headStyles: { fillColor: [44, 95, 79], textColor: 255 },
-            columnStyles: {
-              0: { cellWidth: 25, fontStyle: 'bold' }
-            },
-            margin: { left: 10, right: 10 }
-          });
-
-          // Footer
-          pdf.setFontSize(8);
-          pdf.setTextColor(107, 107, 107);
-          pdf.text(`Generated: ${new Date().toLocaleString()}`, 10, 200);
-          pdf.text(`Page ${pageNum + 1} of 5`, 280, 200);
-          
-          pageNum++;
+          setTimeout(() => {
+            indicator.style.display = "none";
+          }, 2000);
         }
 
-        pdf.save(`Timetable_${timestamp}.pdf`);
-        showAutoSaveIndicator('✅ PDF downloaded!');
-      }
-
-      // PNG Export
-      async function exportToPNG() {
-        const originalDay = currentDay;
-        let downloadCount = 0;
-
-        for (const day of days) {
-          // Switch to the day
-          currentDay = day;
-          renderTimetable();
-          
-          // Wait for render
-          await new Promise(resolve => setTimeout(resolve, 100));
-          
-          // Capture the timetable
-          const element = document.getElementById('timetableContainer');
-          const canvas = await html2canvas(element, {
-            scale: 2,
-            backgroundColor: '#ffffff',
-            logging: false
-          });
-          
-          // Download
-          const dayName = day.charAt(0).toUpperCase() + day.slice(1);
-          const timestamp = new Date().toISOString().split('T')[0];
-          
-          canvas.toBlob(blob => {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Timetable_${dayName}_${timestamp}.png`;
-            a.click();
-            URL.revokeObjectURL(url);
-            
-            downloadCount++;
-            if (downloadCount === days.length) {
-              showAutoSaveIndicator('✅ All images downloaded!');
+        // Export Functions
+        function exportSchedule() {
+          let hasAssignments = false;
+          days.forEach((day) => {
+            if (assignments[day] && Object.keys(assignments[day]).length > 0) {
+              hasAssignments = true;
             }
           });
-          
-          // Small delay between downloads
-          await new Promise(resolve => setTimeout(resolve, 500));
+
+          if (!hasAssignments) {
+            alert("No assignments to export");
+            return;
+          }
+
+          // Open export modal
+          document.getElementById("exportModal").classList.add("active");
         }
 
-        // Restore original day
-        currentDay = originalDay;
-        renderTimetable();
-      }
+        function closeExportModal() {
+          document.getElementById("exportModal").classList.remove("active");
+        }
 
-      // Export All Formats
-      async function exportAll() {
-        showAutoSaveIndicator('⏳ Exporting all formats...');
-        
-        exportToExcel();
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        await exportToPDF();
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        await exportToPNG();
-        
-        showAutoSaveIndicator('✅ All formats exported!');
-      }
+        // Excel Export
+        function exportToExcel() {
+          const workbook = XLSX.utils.book_new();
+          const timestamp = new Date().toISOString().split("T")[0];
 
-      // Event Listeners
-      document
-        .getElementById("assignmentModal")
-        .addEventListener("click", function (e) {
-          if (e.target === this) closeModal();
-        });
+          // Create a sheet for each day
+          days.forEach((day) => {
+            const dayName = day.charAt(0).toUpperCase() + day.slice(1);
+            const sheetData = [];
 
-      document
-        .getElementById("editTimeSlotsModal")
-        .addEventListener("click", function (e) {
-          if (e.target === this) closeEditTimeSlotsModal();
-        });
+            // Header row
+            const headerRow = ["Time"];
+            peopleList.forEach((person) => headerRow.push(person));
+            sheetData.push(headerRow);
 
-      document
-        .getElementById("exportModal")
-        .addEventListener("click", function (e) {
-          if (e.target === this) closeExportModal();
-        });
+            // Data rows
+            timeSlots.forEach((slot) => {
+              const row = [
+                `${formatTime12Hour(slot.start)} - ${formatTime12Hour(slot.end)}`,
+              ];
 
-      document
-        .getElementById("peopleManagerModal")
-        .addEventListener("click", function (e) {
-          if (e.target === this) closePeopleManager();
-        });
+              peopleList.forEach((person) => {
+                const cellKey = `${slot.start}-${person}`;
+                const data = assignments[day]?.[cellKey];
 
-      document
-        .getElementById("classesManagerModal")
-        .addEventListener("click", function (e) {
-          if (e.target === this) closeClassesManager();
-        });
-
-      // Allow Enter to submit textareas with Ctrl+Enter
-      document
-        .getElementById("peopleInput")
-        .addEventListener("keydown", function (e) {
-          if (e.key === "Enter" && e.ctrlKey) addPeople();
-        });
-
-      document
-        .getElementById("classesInput")
-        .addEventListener("keydown", function (e) {
-          if (e.key === "Enter" && e.ctrlKey) addClasses();
-        });
-
-      // Load saved project on page load
-      window.addEventListener("DOMContentLoaded", function () {
-        loadFromLocalStorage();
-        registerServiceWorker();
-        handlePWAInstall();
-      });
-
-      // Service Worker Registration
-      function registerServiceWorker() {
-        if ("serviceWorker" in navigator) {
-          navigator.serviceWorker
-            .register("./service-worker.js")
-            .then((registration) => {
-              console.log(
-                "Service Worker registered successfully:",
-                registration.scope,
-              );
-
-              // Check for updates
-              registration.addEventListener("updatefound", () => {
-                const newWorker = registration.installing;
-                newWorker.addEventListener("statechange", () => {
-                  if (
-                    newWorker.state === "installed" &&
-                    navigator.serviceWorker.controller
-                  ) {
-                    // New version available
-                    showUpdateNotification();
-                  }
-                });
+                if (data) {
+                  let cellText = `${data.class}`;
+                  if (data.duration !== 60)
+                    cellText += ` (${data.duration}min)`;
+                  if (data.notes) cellText += `\n${data.notes}`;
+                  row.push(cellText);
+                } else {
+                  row.push("");
+                }
               });
-            })
-            .catch((error) => {
-              console.log("Service Worker registration failed:", error);
+
+              sheetData.push(row);
             });
+
+            const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
+
+            // Set column widths
+            const colWidths = [{ wch: 20 }];
+            peopleList.forEach(() => colWidths.push({ wch: 25 }));
+            worksheet["!cols"] = colWidths;
+
+            XLSX.utils.book_append_sheet(workbook, worksheet, dayName);
+          });
+
+          // Summary sheet
+          const summaryData = [["Class Summary", "Count"]];
+          const weekCounts = {};
+          classList.forEach((cls) => (weekCounts[cls] = 0));
+          days.forEach((day) => {
+            if (assignments[day]) {
+              Object.values(assignments[day]).forEach((assignment) => {
+                weekCounts[assignment.class]++;
+              });
+            }
+          });
+
+          classList.forEach((cls) => {
+            summaryData.push([cls, weekCounts[cls]]);
+          });
+          summaryData.push(["", ""]);
+          summaryData.push(["Total People", peopleList.length]);
+          summaryData.push(["Total Classes", classList.length]);
+
+          const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
+          summarySheet["!cols"] = [{ wch: 40 }, { wch: 10 }];
+          XLSX.utils.book_append_sheet(workbook, summarySheet, "Summary");
+
+          XLSX.writeFile(workbook, `Timetable_${timestamp}.xlsx`);
+          showAutoSaveIndicator("✅ Excel file downloaded!");
         }
-      }
 
-      // PWA Install Prompt
-      let deferredPrompt;
+        // PDF Export
+        async function exportToPDF() {
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF("l", "mm", "a4"); // landscape
+          const timestamp = new Date().toISOString().split("T")[0];
+          let pageNum = 0;
 
-      function handlePWAInstall() {
-        window.addEventListener("beforeinstallprompt", (e) => {
-          // Prevent the mini-infobar from appearing
-          e.preventDefault();
-          deferredPrompt = e;
+          for (const day of days) {
+            if (pageNum > 0) pdf.addPage();
 
-          // Show custom install button
-          showInstallButton();
+            const dayName = day.charAt(0).toUpperCase() + day.slice(1);
+
+            // Title
+            pdf.setFontSize(20);
+            pdf.setTextColor(44, 95, 79);
+            pdf.text(dayName, 148, 20, { align: "center" });
+
+            // Table
+            const tableData = [];
+            timeSlots.forEach((slot) => {
+              const row = [
+                `${formatTime12Hour(slot.start)}-${formatTime12Hour(slot.end)}`,
+              ];
+
+              peopleList.forEach((person) => {
+                const cellKey = `${slot.start}-${person}`;
+                const data = assignments[day]?.[cellKey];
+
+                if (data) {
+                  let cellText = data.class;
+                  if (data.duration !== 60)
+                    cellText += `\n(${data.duration}min)`;
+                  if (data.notes) cellText += `\n${data.notes}`;
+                  row.push(cellText);
+                } else {
+                  row.push("");
+                }
+              });
+
+              tableData.push(row);
+            });
+
+            pdf.autoTable({
+              head: [["Time", ...peopleList]],
+              body: tableData,
+              startY: 30,
+              theme: "grid",
+              styles: { fontSize: 8, cellPadding: 2 },
+              headStyles: { fillColor: [44, 95, 79], textColor: 255 },
+              columnStyles: {
+                0: { cellWidth: 25, fontStyle: "bold" },
+              },
+              margin: { left: 10, right: 10 },
+            });
+
+            // Footer
+            pdf.setFontSize(8);
+            pdf.setTextColor(107, 107, 107);
+            pdf.text(`Generated: ${new Date().toLocaleString()}`, 10, 200);
+            pdf.text(`Page ${pageNum + 1} of 5`, 280, 200);
+
+            pageNum++;
+          }
+
+          pdf.save(`Timetable_${timestamp}.pdf`);
+          showAutoSaveIndicator("✅ PDF downloaded!");
+        }
+
+        // PNG Export
+        async function exportToPNG() {
+          const originalDay = currentDay;
+          let downloadCount = 0;
+
+          for (const day of days) {
+            // Switch to the day
+            currentDay = day;
+            renderTimetable();
+
+            // Wait for render
+            await new Promise((resolve) => setTimeout(resolve, 100));
+
+            // Capture the timetable
+            const element = document.getElementById("timetableContainer");
+            const canvas = await html2canvas(element, {
+              scale: 2,
+              backgroundColor: "#ffffff",
+              logging: false,
+            });
+
+            // Download
+            const dayName = day.charAt(0).toUpperCase() + day.slice(1);
+            const timestamp = new Date().toISOString().split("T")[0];
+
+            canvas.toBlob((blob) => {
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = `Timetable_${dayName}_${timestamp}.png`;
+              a.click();
+              URL.revokeObjectURL(url);
+
+              downloadCount++;
+              if (downloadCount === days.length) {
+                showAutoSaveIndicator("✅ All images downloaded!");
+              }
+            });
+
+            // Small delay between downloads
+            await new Promise((resolve) => setTimeout(resolve, 500));
+          }
+
+          // Restore original day
+          currentDay = originalDay;
+          renderTimetable();
+        }
+
+        // Export All Formats
+        async function exportAll() {
+          showAutoSaveIndicator("⏳ Exporting all formats...");
+
+          exportToExcel();
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+
+          await exportToPDF();
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+
+          await exportToPNG();
+
+          showAutoSaveIndicator("✅ All formats exported!");
+        }
+
+        // Event Listeners
+        document
+          .getElementById("assignmentModal")
+          .addEventListener("click", function (e) {
+            if (e.target === this) closeModal();
+          });
+
+        document
+          .getElementById("editTimeSlotsModal")
+          .addEventListener("click", function (e) {
+            if (e.target === this) closeEditTimeSlotsModal();
+          });
+
+        document
+          .getElementById("exportModal")
+          .addEventListener("click", function (e) {
+            if (e.target === this) closeExportModal();
+          });
+
+        document
+          .getElementById("peopleManagerModal")
+          .addEventListener("click", function (e) {
+            if (e.target === this) closePeopleManager();
+          });
+
+        document
+          .getElementById("classesManagerModal")
+          .addEventListener("click", function (e) {
+            if (e.target === this) closeClassesManager();
+          });
+
+        // Allow Enter to submit textareas with Ctrl+Enter
+        document
+          .getElementById("peopleInput")
+          .addEventListener("keydown", function (e) {
+            if (e.key === "Enter" && e.ctrlKey) addPeople();
+          });
+
+        document
+          .getElementById("classesInput")
+          .addEventListener("keydown", function (e) {
+            if (e.key === "Enter" && e.ctrlKey) addClasses();
+          });
+
+        // Load saved project on page load
+        window.addEventListener("DOMContentLoaded", function () {
+          loadFromLocalStorage();
+          registerServiceWorker();
+          handlePWAInstall();
         });
 
-        window.addEventListener("appinstalled", () => {
-          console.log("PWA installed successfully");
-          deferredPrompt = null;
-          hideInstallButton();
-        });
-      }
+        // Service Worker Registration
+        function registerServiceWorker() {
+          if ("serviceWorker" in navigator) {
+            navigator.serviceWorker
+              .register("./service-worker.js")
+              .then((registration) => {
+                console.log(
+                  "Service Worker registered successfully:",
+                  registration.scope,
+                );
 
-      function showInstallButton() {
-        // Create install button if it doesn't exist
-        if (document.getElementById("pwaInstallBtn")) return;
+                // Check for updates
+                registration.addEventListener("updatefound", () => {
+                  const newWorker = registration.installing;
+                  newWorker.addEventListener("statechange", () => {
+                    if (
+                      newWorker.state === "installed" &&
+                      navigator.serviceWorker.controller
+                    ) {
+                      // New version available
+                      showUpdateNotification();
+                    }
+                  });
+                });
+              })
+              .catch((error) => {
+                console.log("Service Worker registration failed:", error);
+              });
+          }
+        }
 
-        const installBtn = document.createElement("button");
-        installBtn.id = "pwaInstallBtn";
-        installBtn.className = "btn btn-primary btn-icon";
-        installBtn.innerHTML = "📱 Install App";
-        installBtn.onclick = installPWA;
-        installBtn.style.cssText = `
+        // PWA Install Prompt
+        let deferredPrompt;
+
+        function handlePWAInstall() {
+          window.addEventListener("beforeinstallprompt", (e) => {
+            // Prevent the mini-infobar from appearing
+            e.preventDefault();
+            deferredPrompt = e;
+
+            // Show custom install button
+            showInstallButton();
+          });
+
+          window.addEventListener("appinstalled", () => {
+            console.log("PWA installed successfully");
+            deferredPrompt = null;
+            hideInstallButton();
+          });
+        }
+
+        function showInstallButton() {
+          // Create install button if it doesn't exist
+          if (document.getElementById("pwaInstallBtn")) return;
+
+          const installBtn = document.createElement("button");
+          installBtn.id = "pwaInstallBtn";
+          installBtn.className = "btn btn-primary btn-icon";
+          installBtn.innerHTML = "📱 Install App";
+          installBtn.onclick = installPWA;
+          installBtn.style.cssText = `
                 position: fixed;
                 bottom: 2rem;
                 right: 2rem;
@@ -2649,11 +2806,11 @@
                 animation: slideInUp 0.5s ease;
             `;
 
-        document.body.appendChild(installBtn);
+          document.body.appendChild(installBtn);
 
-        // Add animation
-        const style = document.createElement("style");
-        style.textContent = `
+          // Add animation
+          const style = document.createElement("style");
+          style.textContent = `
                 @keyframes slideInUp {
                     from {
                         transform: translateY(100px);
@@ -2665,35 +2822,35 @@
                     }
                 }
             `;
-        document.head.appendChild(style);
-      }
-
-      function hideInstallButton() {
-        const btn = document.getElementById("pwaInstallBtn");
-        if (btn) {
-          btn.style.animation = "slideInUp 0.3s ease reverse";
-          setTimeout(() => btn.remove(), 300);
+          document.head.appendChild(style);
         }
-      }
 
-      async function installPWA() {
-        if (!deferredPrompt) return;
+        function hideInstallButton() {
+          const btn = document.getElementById("pwaInstallBtn");
+          if (btn) {
+            btn.style.animation = "slideInUp 0.3s ease reverse";
+            setTimeout(() => btn.remove(), 300);
+          }
+        }
 
-        // Show the install prompt
-        deferredPrompt.prompt();
+        async function installPWA() {
+          if (!deferredPrompt) return;
 
-        // Wait for the user's response
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log(`User response to install prompt: ${outcome}`);
+          // Show the install prompt
+          deferredPrompt.prompt();
 
-        // Clear the deferred prompt
-        deferredPrompt = null;
-        hideInstallButton();
-      }
+          // Wait for the user's response
+          const { outcome } = await deferredPrompt.userChoice;
+          console.log(`User response to install prompt: ${outcome}`);
 
-      function showUpdateNotification() {
-        const updateBanner = document.createElement("div");
-        updateBanner.style.cssText = `
+          // Clear the deferred prompt
+          deferredPrompt = null;
+          hideInstallButton();
+        }
+
+        function showUpdateNotification() {
+          const updateBanner = document.createElement("div");
+          updateBanner.style.cssText = `
                 position: fixed;
                 top: 2rem;
                 right: 2rem;
@@ -2708,7 +2865,7 @@
                 gap: 1rem;
                 animation: slideInRight 0.3s ease;
             `;
-        updateBanner.innerHTML = `
+          updateBanner.innerHTML = `
                 <span>🎉 New version available!</span>
                 <button onclick="window.location.reload()" style="
                     background: white;
@@ -2729,8 +2886,8 @@
                 ">×</button>
             `;
 
-        const style = document.createElement("style");
-        style.textContent = `
+          const style = document.createElement("style");
+          style.textContent = `
                 @keyframes slideInRight {
                     from {
                         transform: translateX(400px);
@@ -2742,210 +2899,225 @@
                     }
                 }
             `;
-        document.head.appendChild(style);
+          document.head.appendChild(style);
 
-        document.body.appendChild(updateBanner);
+          document.body.appendChild(updateBanner);
 
-        // Auto-hide after 10 seconds
-        setTimeout(() => {
-          if (updateBanner.parentElement) {
-            updateBanner.remove();
-          }
-        }, 10000);
-      }
-
-      // ======================
-      // Firebase Integration
-      // ======================
-
-      async function handleLogin() {
-        try {
-          loginButton.disabled = true;
-          loginButton.textContent = 'Logging in...';
-          errorDiv.classList.remove('active');
-
-          // Sign in with Firebase
-          const userCredential = await auth.signInWithEmailAndPassword(email, password);
-          currentUser = userCredential.user;
-          
-          // Determine role based on email
-          if (email.includes('admin') || email.includes('leadership')) {
-            currentUserRole = 'admin';
-          } else {
-            currentUserRole = 'viewer';
-          }
-
-          // Save to session
-          sessionStorage.setItem('userRole', currentUserRole);
-          sessionStorage.setItem('userEmail', email);
-
-          // Show app
-          showApp();
-
-        } catch (error) {
-          console.error('Login error:', error);
-          let errorMessage = 'Login failed. Please check your credentials.';
-          
-          if (error.code === 'auth/wrong-password') {
-            errorMessage = 'Incorrect password. Please try again.';
-          } else if (error.code === 'auth/user-not-found') {
-            errorMessage = 'User not found. Please contact your administrator.';
-          } else if (error.code === 'auth/invalid-email') {
-            errorMessage = 'Invalid email address.';
-          }
-          
-          showLoginError(errorMessage);
-          loginButton.disabled = false;
-          loginButton.textContent = 'Login';
-        }
-      }
-
-
-      function handleLogout() {
-        if (confirm('Are you sure you want to logout?')) {
-          auth.signOut().then(() => {
-            currentUser = null;
-            currentUserRole = null;
-            sessionStorage.clear();
-            
-            // Hide app, show login
-            document.getElementById('appContainer').classList.remove('active');
-            document.getElementById('loginScreen').style.display = 'flex';
-            document.getElementById('userInfo').style.display = 'none';
-            
-            // Reset login form
-            backToRoleSelection();
-          });
-        }
-      }
-
-      function saveToFirebase() {
-        if (currentUserRole !== 'admin') {
-          console.log('Only admins can save changes');
-          return;
-        }
-
-        const timetableData = {
-          version: '1.0',
-          lastUpdated: new Date().toISOString(),
-          updatedBy: currentUser.email,
-          peopleList: peopleList,
-          classList: classList,
-          classColors: classColors,
-          assignments: assignments,
-          timeSlots: timeSlots
-        };
-
-        database.ref('timetable/current').set(timetableData)
-          .then(() => {
-            showSyncIndicator('✓ Saved to server');
-          })
-          .catch((error) => {
-            console.error('Firebase save error:', error);
-            showSyncIndicator('❌ Save failed', true);
-          });
-      }
-
-      function loadFromDatabase() {
-        if (!confirm('Load timetable from database? This will replace your current work.')) {
-          return;
-        }
-
-        showSyncIndicator('⏳ Loading from database...', false);
-
-        database.ref('timetable/current').once('value')
-          .then((snapshot) => {
-            const data = snapshot.val();
-            
-            if (data) {
-              // Update local data
-              peopleList = data.peopleList || [];
-              classList = data.classList || [];
-              classColors = data.classColors || {};
-              
-              // Properly initialize assignments with all days
-              assignments = {
-                monday: data.assignments?.monday || {},
-                tuesday: data.assignments?.tuesday || {},
-                wednesday: data.assignments?.wednesday || {},
-                thursday: data.assignments?.thursday || {},
-                friday: data.assignments?.friday || {}
-              };
-              
-              timeSlots = data.timeSlots || [];
-              colorIndex = classList.length;
-
-              // Update UI
-              updatePeopleList();
-              updateClassList();
-              updateModalSelects();
-
-              // Show edit button for admin
-              if (currentUserRole === 'admin') {
-                document.getElementById('editTimeSlotsBtn').style.display = 'inline-block';
-              }
-              
-              renderTimetable();
-              updateCounters();
-
-              showSyncIndicator('✓ Loaded from database');
-            } else {
-              showSyncIndicator('⚠️ No data in database', true);
+          // Auto-hide after 10 seconds
+          setTimeout(() => {
+            if (updateBanner.parentElement) {
+              updateBanner.remove();
             }
-          })
-          .catch((error) => {
-            console.error('Firebase load error:', error);
-            showSyncIndicator('❌ Load failed', true);
-          });
-      }
-
-      function showSyncIndicator(message, isError = false) {
-        const indicator = document.getElementById('syncIndicator');
-        const messageSpan = document.getElementById('syncMessage');
-        
-        messageSpan.textContent = message;
-        indicator.style.borderColor = isError ? 'var(--error)' : 'var(--success)';
-        indicator.classList.add('active');
-
-        setTimeout(() => {
-          indicator.classList.remove('active');
-        }, 3000);
-      }
-
-      // Override auto-save to use Firebase instead of localStorage
-      function autoSaveToFirebase() {
-        if (currentUserRole === 'admin') {
-          saveToFirebase();
+          }, 10000);
         }
-      }
 
-      // Check for existing session on load
-      window.addEventListener('DOMContentLoaded', function() {
-        const savedRole = sessionStorage.getItem('userRole');
-        const savedEmail = sessionStorage.getItem('userEmail');
+        // ======================
+        // Firebase Integration
+        // ======================
 
-        if (savedRole && savedEmail) {
-          // Check if still authenticated
-          auth.onAuthStateChanged((user) => {
-            if (user) {
-              currentUser = user;
-              currentUserRole = savedRole;
-              showApp();
+        async function handleLogin() {
+          try {
+            loginButton.disabled = true;
+            loginButton.textContent = "Logging in...";
+            errorDiv.classList.remove("active");
+
+            // Sign in with Firebase
+            const userCredential = await auth.signInWithEmailAndPassword(
+              email,
+              password,
+            );
+            currentUser = userCredential.user;
+
+            // Determine role based on email
+            if (email.includes("admin") || email.includes("leadership")) {
+              currentUserRole = "admin";
             } else {
-              // Session expired, show login
+              currentUserRole = "viewer";
+            }
+
+            // Save to session
+            sessionStorage.setItem("userRole", currentUserRole);
+            sessionStorage.setItem("userEmail", email);
+
+            // Show app
+            showApp();
+          } catch (error) {
+            console.error("Login error:", error);
+            let errorMessage = "Login failed. Please check your credentials.";
+
+            if (error.code === "auth/wrong-password") {
+              errorMessage = "Incorrect password. Please try again.";
+            } else if (error.code === "auth/user-not-found") {
+              errorMessage =
+                "User not found. Please contact your administrator.";
+            } else if (error.code === "auth/invalid-email") {
+              errorMessage = "Invalid email address.";
+            }
+
+            showLoginError(errorMessage);
+            loginButton.disabled = false;
+            loginButton.textContent = "Login";
+          }
+        }
+
+        function handleLogout() {
+          if (confirm("Are you sure you want to logout?")) {
+            auth.signOut().then(() => {
+              currentUser = null;
+              currentUserRole = null;
               sessionStorage.clear();
-            }
-          });
+
+              // Hide app, show login
+              document
+                .getElementById("appContainer")
+                .classList.remove("active");
+              document.getElementById("loginScreen").style.display = "flex";
+              document.getElementById("userInfo").style.display = "none";
+
+              // Reset login form
+              backToRoleSelection();
+            });
+          }
         }
 
-        // Don't load from localStorage anymore - Firebase handles it
-        // registerServiceWorker(); // Keeping PWA functionality
-        // handlePWAInstall();
-      });
+        function saveToFirebase() {
+          if (currentUserRole !== "admin") {
+            console.log("Only admins can save changes");
+            return;
+          }
 
-      // Add CSS for view-only mode
-      const style = document.createElement('style');
-      style.textContent = `
+          const timetableData = {
+            version: "1.0",
+            lastUpdated: new Date().toISOString(),
+            updatedBy: currentUser.email,
+            peopleList: peopleList,
+            classList: classList,
+            classColors: classColors,
+            assignments: assignments,
+            timeSlots: timeSlots,
+          };
+
+          database
+            .ref("timetable/current")
+            .set(timetableData)
+            .then(() => {
+              showSyncIndicator("✓ Saved to server");
+            })
+            .catch((error) => {
+              console.error("Firebase save error:", error);
+              showSyncIndicator("❌ Save failed", true);
+            });
+        }
+
+        function loadFromDatabase() {
+          if (
+            !confirm(
+              "Load timetable from database? This will replace your current work.",
+            )
+          ) {
+            return;
+          }
+
+          showSyncIndicator("⏳ Loading from database...", false);
+
+          database
+            .ref("timetable/current")
+            .once("value")
+            .then((snapshot) => {
+              const data = snapshot.val();
+
+              if (data) {
+                // Update local data
+                peopleList = data.peopleList || [];
+                classList = data.classList || [];
+                classColors = data.classColors || {};
+
+                // Properly initialize assignments with all days
+                assignments = {
+                  monday: data.assignments?.monday || {},
+                  tuesday: data.assignments?.tuesday || {},
+                  wednesday: data.assignments?.wednesday || {},
+                  thursday: data.assignments?.thursday || {},
+                  friday: data.assignments?.friday || {},
+                };
+
+                timeSlots = data.timeSlots || [];
+                colorIndex = classList.length;
+
+                // Update UI
+                updatePeopleList();
+                updateClassList();
+                updateModalSelects();
+
+                // Show edit button for admin
+                if (currentUserRole === "admin") {
+                  document.getElementById("editTimeSlotsBtn").style.display =
+                    "inline-block";
+                }
+
+                renderTimetable();
+                updateCounters();
+
+                showSyncIndicator("✓ Loaded from database");
+              } else {
+                showSyncIndicator("⚠️ No data in database", true);
+              }
+            })
+            .catch((error) => {
+              console.error("Firebase load error:", error);
+              showSyncIndicator("❌ Load failed", true);
+            });
+        }
+
+        function showSyncIndicator(message, isError = false) {
+          const indicator = document.getElementById("syncIndicator");
+          const messageSpan = document.getElementById("syncMessage");
+
+          messageSpan.textContent = message;
+          indicator.style.borderColor = isError
+            ? "var(--error)"
+            : "var(--success)";
+          indicator.classList.add("active");
+
+          setTimeout(() => {
+            indicator.classList.remove("active");
+          }, 3000);
+        }
+
+        // Override auto-save to use Firebase instead of localStorage
+        function autoSaveToFirebase() {
+          if (currentUserRole === "admin") {
+            saveToFirebase();
+          }
+        }
+
+        // Check for existing session on load
+        window.addEventListener("DOMContentLoaded", function () {
+          const savedRole = sessionStorage.getItem("userRole");
+          const savedEmail = sessionStorage.getItem("userEmail");
+
+          if (savedRole && savedEmail) {
+            // Check if still authenticated
+            auth.onAuthStateChanged((user) => {
+              if (user) {
+                currentUser = user;
+                currentUserRole = savedRole;
+                showApp();
+              } else {
+                // Session expired, show login
+                sessionStorage.clear();
+              }
+            });
+          }
+
+          // Don't load from localStorage anymore - Firebase handles it
+          // registerServiceWorker(); // Keeping PWA functionality
+          // handlePWAInstall();
+        });
+
+        // Add CSS for view-only mode
+        const style = document.createElement("style");
+        style.textContent = `
         .view-only-mode .roster-cell {
           cursor: default !important;
         }
@@ -2953,20 +3125,20 @@
           background: inherit !important;
         }
       `;
-      document.head.appendChild(style);
+        document.head.appendChild(style);
 
-      // Handle Enter key in password field
-      document.addEventListener('DOMContentLoaded', function() {
-        const passwordInput = document.getElementById('passwordInput');
-        if (passwordInput) {
-          passwordInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-              handleLogin();
-            }
-          });
-        }
-      });
-    
+        // Handle Enter key in password field
+        document.addEventListener("DOMContentLoaded", function () {
+          const passwordInput = document.getElementById("passwordInput");
+          if (passwordInput) {
+            passwordInput.addEventListener("keypress", function (e) {
+              if (e.key === "Enter") {
+                handleLogin();
+              }
+            });
+          }
+        });
+      }
     </script>
   </body>
 </html>
