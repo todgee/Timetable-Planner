@@ -1590,8 +1590,8 @@
           // Show admin UI
           document.getElementById("userInfo").style.display = "flex";
 
-          // Load timetable from localStorage
-          loadFromLocalStorage();
+          // Auto-load timetable from Firebase (same as view.html)
+          autoLoadFromFirebase();
         });
       });
 
@@ -2957,6 +2957,67 @@
         }
 
         // Note: showNotification() is defined in shared.js
+
+        // Auto-load from Firebase on page load (no confirmation needed)
+        function autoLoadFromFirebase() {
+          console.log("Auto-loading timetable from Firebase...");
+
+          database
+            .ref("timetable/current")
+            .once("value")
+            .then((snapshot) => {
+              const data = snapshot.val();
+
+              if (data) {
+                // Update local data
+                peopleList = data.peopleList || [];
+                classList = data.classList || [];
+                classColors = data.classColors || {};
+
+                // Properly initialize assignments with all days
+                assignments = {
+                  monday: data.assignments?.monday || {},
+                  tuesday: data.assignments?.tuesday || {},
+                  wednesday: data.assignments?.wednesday || {},
+                  thursday: data.assignments?.thursday || {},
+                  friday: data.assignments?.friday || {},
+                };
+
+                timeSlots = data.timeSlots || [];
+                colorIndex = classList.length;
+
+                // Update UI
+                updatePeopleList();
+                updateClassList();
+                updateModalSelects();
+
+                // Show edit button for admin
+                if (currentUserRole === "admin") {
+                  document.getElementById("editTimeSlotsBtn").style.display =
+                    "inline-block";
+                }
+
+                renderTimetable();
+                updateCounters();
+
+                console.log("Timetable loaded from Firebase successfully");
+              } else {
+                console.log("No timetable data in database yet");
+                // Show empty state message
+                document.getElementById("timetableContainer").innerHTML = `
+                  <div class="empty-state" style="padding: 4rem 2rem;">
+                    <div class="empty-state-icon">📋</div>
+                    <p>No timetable data yet. Add people and classes to get started!</p>
+                  </div>
+                `;
+              }
+            })
+            .catch((error) => {
+              console.error("Firebase auto-load error:", error);
+              // Fall back to localStorage if Firebase fails
+              loadFromLocalStorage();
+            });
+        }
 
         // Add CSS for view-only mode
         const style = document.createElement("style");
