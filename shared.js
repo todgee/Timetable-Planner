@@ -1,5 +1,5 @@
 // Shared Firebase Configuration and Utilities
-// Used by both admin.html and view.html
+// Used by admin.html, view.html, and config.html
 
 // Firebase Configuration
 const firebaseConfig = {
@@ -16,6 +16,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const database = firebase.database();
+const storage = firebase.storage();
 
 // Check authentication on page load
 function checkAuth(requiredRole) {
@@ -24,7 +25,7 @@ function checkAuth(requiredRole) {
 
     if (!userRole || !userEmail) {
         // Not logged in, redirect to login
-        window.location.href = ' index.html';
+        window.location.href = 'index.html';
         return false;
     }
 
@@ -44,7 +45,7 @@ function checkAuth(requiredRole) {
         if (!user) {
             // Firebase session expired
             sessionStorage.clear();
-            window.location.href = ' index.html';
+            window.location.href = 'index.html';
         }
     });
 
@@ -56,7 +57,7 @@ function handleLogout() {
     if (confirm('Are you sure you want to logout?')) {
         auth.signOut().then(() => {
             sessionStorage.clear();
-            window.location.href = ' index.html';
+            window.location.href = 'index.html';
         });
     }
 }
@@ -99,7 +100,7 @@ function minutesToTime(minutes) {
     return `${hours.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}`;
 }
 
-// Firebase utilities
+// Firebase utilities - Timetable
 function saveToFirebase(timetableData) {
     return database.ref('timetable/current').set(timetableData);
 }
@@ -131,6 +132,88 @@ function initializeEmptyFirebase(userEmail) {
             return database.ref('timetable/current').set(emptyStructure);
         }
     });
+}
+
+// Firebase utilities - User Management
+function loadAllUsers() {
+    return database.ref('users').once('value');
+}
+
+function createUserAccount(email, password, role, createdBy) {
+    return auth.createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+            const user = userCredential.user;
+            return database.ref(`users/${user.uid}`).set({
+                email: email,
+                role: role,
+                createdAt: new Date().toISOString(),
+                createdBy: createdBy
+            }).then(() => user);
+        });
+}
+
+function removeUserFromDatabase(uid) {
+    return database.ref(`users/${uid}`).remove();
+}
+
+// Firebase utilities - Theme Management
+function loadThemeColors() {
+    return database.ref('config/theme').once('value');
+}
+
+function saveThemeColors(colors, updatedBy) {
+    return database.ref('config/theme').set({
+        ...colors,
+        updatedAt: new Date().toISOString(),
+        updatedBy: updatedBy
+    });
+}
+
+function resetThemeToDefault(updatedBy) {
+    return database.ref('config/theme').set({
+        primary: '#2c5f4f',
+        primaryLight: '#3d7861',
+        accent: '#d4a574',
+        updatedAt: new Date().toISOString(),
+        updatedBy: updatedBy
+    });
+}
+
+// Firebase utilities - Logo Management
+function loadLogoSettings() {
+    return database.ref('config/logo').once('value');
+}
+
+function uploadLogoToStorage(file) {
+    const storageRef = storage.ref();
+    const logoRef = storageRef.child(`logos/organization-logo-${Date.now()}`);
+    
+    return logoRef.put(file).then((snapshot) => {
+        return snapshot.ref.getDownloadURL();
+    });
+}
+
+function saveLogoSettings(logoUrl, position, size, uploadedBy) {
+    return database.ref('config/logo').set({
+        url: logoUrl,
+        position: position,
+        size: size,
+        uploadedAt: new Date().toISOString(),
+        uploadedBy: uploadedBy
+    });
+}
+
+function updateLogoPosition(position, size, updatedBy) {
+    return database.ref('config/logo').update({
+        position: position,
+        size: size,
+        updatedAt: new Date().toISOString(),
+        updatedBy: updatedBy
+    });
+}
+
+function removeLogo() {
+    return database.ref('config/logo').remove();
 }
 
 // Show notification
@@ -166,6 +249,16 @@ function getCurrentUser() {
         role: sessionStorage.getItem('userRole'),
         userId: sessionStorage.getItem('userId')
     };
+}
+
+// Color utility function
+function lightenColor(hex, percent) {
+    const num = parseInt(hex.replace('#', ''), 16);
+    const amt = Math.round(2.55 * percent);
+    const R = Math.min(255, (num >> 16) + amt);
+    const G = Math.min(255, ((num >> 8) & 0x00FF) + amt);
+    const B = Math.min(255, (num & 0x0000FF) + amt);
+    return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
 }
 
 // Days array

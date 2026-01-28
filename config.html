@@ -1,1039 +1,1476 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Configuration - Timetable Planner</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Work+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        :root {
-            --primary: #2c5f4f;
-            --primary-light: #3d7861;
-            --primary-dark: #1e4438;
-            --accent: #d4a574;
-            --bg: #fdfbf7;
-            --surface: #ffffff;
-            --text: #2d2d2d;
-            --text-light: #6b6b6b;
-            --border: #e8e3db;
-            --shadow: rgba(44, 95, 79, 0.08);
-            --success: #4a8b6f;
-            --error: #c84848;
-            --warning: #f59e0b;
-        }
+      :root {
+        --primary: #2c5f4f;
+        --primary-light: #3d7861;
+        --primary-dark: #1e4438;
+        --accent: #d4a574;
+        --bg: #fdfbf7;
+        --surface: #ffffff;
+        --text: #2d2d2d;
+        --text-light: #6b6b6b;
+        --border: #e8e3db;
+        --shadow: rgba(44, 95, 79, 0.08);
+        --success: #4a8b6f;
+        --error: #c84848;
+        --warning: #f59e0b;
+      }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            font-family: 'Work Sans', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            line-height: 1.6;
-        }
+      body {
+        font-family: "Work Sans", sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        line-height: 1.6;
+      }
 
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      /* Header */
+      .page-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding-bottom: 2rem;
+        border-bottom: 2px solid var(--border);
+      }
+
+      .page-header h1 {
+        font-family: "Crimson Pro", serif;
+        font-size: 2.5rem;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+      }
+
+      .page-header p {
+        color: var(--text-light);
+        font-size: 1.1rem;
+      }
+
+      /* Back Link */
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+        transition: all 0.2s ease;
+      }
+
+      .back-link:hover {
+        color: var(--primary-light);
+        transform: translateX(-4px);
+      }
+
+      /* Config Sections Grid */
+      .config-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+        gap: 2rem;
+      }
+
+      /* Panel Styling */
+      .panel {
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 20px var(--shadow);
+      }
+
+      .panel-title {
+        font-family: "Crimson Pro", serif;
+        font-size: 1.5rem;
+        color: var(--primary);
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .panel-title .icon {
+        font-size: 1.3rem;
+      }
+
+      .panel-description {
+        color: var(--text-light);
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+      }
+
+      /* Form Elements */
+      .form-group {
+        margin-bottom: 1.25rem;
+      }
+
+      .form-group label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: var(--text);
+      }
+
+      .form-group input[type="text"],
+      .form-group input[type="email"],
+      .form-group input[type="password"],
+      .form-group select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 1rem;
+        background: var(--bg);
+        transition: all 0.2s ease;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus {
+        outline: none;
+        border-color: var(--primary);
+        background: var(--surface);
+      }
+
+      .form-group input[type="color"] {
+        width: 60px;
+        height: 40px;
+        padding: 0;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        cursor: pointer;
+        background: transparent;
+      }
+
+      .form-group input[type="file"] {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px dashed var(--border);
+        border-radius: 8px;
+        background: var(--bg);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .form-group input[type="file"]:hover {
+        border-color: var(--primary);
+        background: var(--surface);
+      }
+
+      .form-hint {
+        font-size: 0.85rem;
+        color: var(--text-light);
+        margin-top: 0.35rem;
+      }
+
+      /* Color Picker Row */
+      .color-picker-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .color-picker-row label {
+        flex: 1;
+        margin-bottom: 0;
+      }
+
+      .color-preview {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .color-preview .color-box {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        border: 2px solid var(--border);
+      }
+
+      .color-preview .color-hex {
+        font-family: monospace;
+        font-size: 0.9rem;
+        color: var(--text-light);
+      }
+
+      /* Buttons */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.875rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 0.95rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: var(--primary-light);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px var(--shadow);
+      }
+
+      .btn-secondary {
+        background: var(--accent);
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background: #c49564;
+        transform: translateY(-2px);
+      }
+
+      .btn-danger {
+        background: var(--error);
+        color: white;
+      }
+
+      .btn-danger:hover {
+        background: #b83c3c;
+        transform: translateY(-2px);
+      }
+
+      .btn-outline {
+        background: transparent;
+        border: 2px solid var(--border);
+        color: var(--text);
+      }
+
+      .btn-outline:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+      }
+
+      .btn-full {
+        width: 100%;
+      }
+
+      .btn-group {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+      }
+
+      .btn-group .btn {
+        flex: 1;
+      }
+
+      /* Account List */
+      .account-list {
+        max-height: 250px;
+        overflow-y: auto;
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        /* Performance optimizations */
+        will-change: scroll-position;
+        -webkit-overflow-scrolling: touch;
+        transform: translateZ(0);
+      }
+
+      .account-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.875rem 1rem;
+        border-bottom: 1px solid var(--border);
+        background: var(--bg);
+        transition: all 0.2s ease;
+        /* Performance optimization */
+        will-change: transform;
+        transform: translateZ(0);
+        contain: layout style paint;
+      }
+
+      .account-item:last-child {
+        border-bottom: none;
+      }
+
+      .account-item:hover {
+        background: var(--surface);
+      }
+
+      .account-info {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .account-email {
+        font-weight: 500;
+        color: var(--text);
+      }
+
+      .account-role {
+        font-size: 0.85rem;
+        color: var(--text-light);
+      }
+
+      .account-role.admin {
+        color: var(--primary);
+        font-weight: 500;
+      }
+
+      .delete-btn {
+        background: none;
+        border: none;
+        color: var(--error);
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+      }
+
+      .delete-btn:hover {
+        background: rgba(200, 72, 72, 0.1);
+      }
+
+      /* Logo Preview */
+      .logo-preview-container {
+        margin-top: 1rem;
+        padding: 1.5rem;
+        background: var(--bg);
+        border: 2px dashed var(--border);
+        border-radius: 8px;
+        text-align: center;
+      }
+
+      .logo-preview {
+        max-width: 200px;
+        max-height: 100px;
+        object-fit: contain;
+        margin: 0 auto;
+        display: block;
+      }
+
+      .logo-placeholder {
+        color: var(--text-light);
+        font-size: 0.95rem;
+      }
+
+      .logo-placeholder .icon {
+        font-size: 2.5rem;
+        display: block;
+        margin-bottom: 0.5rem;
+        opacity: 0.5;
+      }
+
+      /* Color Theme Preview */
+      .theme-preview {
+        margin-top: 1.5rem;
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 2px solid var(--border);
+        background: var(--bg);
+      }
+
+      .theme-preview-title {
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--text);
+      }
+
+      .theme-preview-bar {
+        height: 50px;
+        border-radius: 8px;
+        background: linear-gradient(
+          90deg,
+          var(--primary) 0%,
+          var(--primary-light) 50%,
+          var(--accent) 100%
+        );
+        margin-bottom: 1rem;
+      }
+
+      .theme-preview-buttons {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .theme-preview-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        border: none;
+        cursor: default;
+      }
+
+      /* Preset Colors */
+      .preset-colors {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1rem;
+      }
+
+      .preset-color {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .preset-color:hover {
+        transform: scale(1.1);
+        border-color: var(--text);
+      }
+
+      .preset-color.selected {
+        border-color: var(--text);
+        box-shadow:
+          0 0 0 2px var(--surface),
+          0 0 0 4px var(--text);
+      }
+
+      /* Status Messages */
+      .status-message {
+        padding: 0.875rem 1rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+        display: none;
+      }
+
+      .status-message.success {
+        display: block;
+        background: rgba(74, 139, 111, 0.1);
+        color: var(--success);
+        border: 1px solid var(--success);
+      }
+
+      .status-message.error {
+        display: block;
+        background: rgba(200, 72, 72, 0.1);
+        color: var(--error);
+        border: 1px solid var(--error);
+      }
+
+      /* Divider */
+      .divider {
+        height: 1px;
+        background: var(--border);
+        margin: 1.5rem 0;
+      }
+
+      /* Full Width Panel */
+      .panel-full {
+        grid-column: 1 / -1;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        /* Header */
-        .page-header {
-            text-align: center;
-            margin-bottom: 3rem;
-            padding-bottom: 2rem;
-            border-bottom: 2px solid var(--border);
+          padding: 1rem;
         }
 
         .page-header h1 {
-            font-family: 'Crimson Pro', serif;
-            font-size: 2.5rem;
-            color: var(--primary);
-            margin-bottom: 0.5rem;
+          font-size: 2rem;
         }
 
-        .page-header p {
-            color: var(--text-light);
-            font-size: 1.1rem;
-        }
-
-        /* Back Link */
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 500;
-            margin-bottom: 1.5rem;
-            transition: all 0.2s ease;
-        }
-
-        .back-link:hover {
-            color: var(--primary-light);
-            transform: translateX(-4px);
-        }
-
-        /* Config Sections Grid */
         .config-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-            gap: 2rem;
-        }
-
-        /* Panel Styling */
-        .panel {
-            background: var(--surface);
-            border-radius: 12px;
-            padding: 1.5rem;
-            border: 1px solid var(--border);
-            box-shadow: 0 4px 20px var(--shadow);
-        }
-
-        .panel-title {
-            font-family: 'Crimson Pro', serif;
-            font-size: 1.5rem;
-            color: var(--primary);
-            margin-bottom: 1rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 2px solid var(--border);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .panel-title .icon {
-            font-size: 1.3rem;
-        }
-
-        .panel-description {
-            color: var(--text-light);
-            font-size: 0.95rem;
-            margin-bottom: 1.5rem;
-        }
-
-        /* Form Elements */
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-            color: var(--text);
-        }
-
-        .form-group input[type="text"],
-        .form-group input[type="email"],
-        .form-group input[type="password"],
-        .form-group select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            font-family: inherit;
-            font-size: 1rem;
-            background: var(--bg);
-            transition: all 0.2s ease;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: var(--surface);
-        }
-
-        .form-group input[type="color"] {
-            width: 60px;
-            height: 40px;
-            padding: 0;
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            cursor: pointer;
-            background: transparent;
-        }
-
-        .form-group input[type="file"] {
-            width: 100%;
-            padding: 0.75rem;
-            border: 2px dashed var(--border);
-            border-radius: 8px;
-            background: var(--bg);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .form-group input[type="file"]:hover {
-            border-color: var(--primary);
-            background: var(--surface);
-        }
-
-        .form-hint {
-            font-size: 0.85rem;
-            color: var(--text-light);
-            margin-top: 0.35rem;
-        }
-
-        /* Color Picker Row */
-        .color-picker-row {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .color-picker-row label {
-            flex: 1;
-            margin-bottom: 0;
-        }
-
-        .color-preview {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .color-preview .color-box {
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
-            border: 2px solid var(--border);
-        }
-
-        .color-preview .color-hex {
-            font-family: monospace;
-            font-size: 0.9rem;
-            color: var(--text-light);
-        }
-
-        /* Buttons */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            padding: 0.875rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            font-family: inherit;
-            font-size: 0.95rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-light);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px var(--shadow);
-        }
-
-        .btn-secondary {
-            background: var(--accent);
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background: #c49564;
-            transform: translateY(-2px);
-        }
-
-        .btn-danger {
-            background: var(--error);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #b83c3c;
-            transform: translateY(-2px);
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 2px solid var(--border);
-            color: var(--text);
-        }
-
-        .btn-outline:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        .btn-full {
-            width: 100%;
+          grid-template-columns: 1fr;
         }
 
         .btn-group {
-            display: flex;
-            gap: 0.75rem;
-            margin-top: 1.5rem;
+          flex-direction: column;
         }
 
-        .btn-group .btn {
-            flex: 1;
+        .color-picker-row {
+          flex-direction: column;
+          align-items: flex-start;
         }
+      }
 
-        /* Account List */
-        .account-list {
-            max-height: 250px;
-            overflow-y: auto;
-            margin-bottom: 1.5rem;
-            border: 1px solid var(--border);
-            border-radius: 8px;
+      /* Scrollbar Styling */
+      .account-list::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      .account-list::-webkit-scrollbar-track {
+        background: var(--bg);
+        border-radius: 4px;
+      }
+
+      .account-list::-webkit-scrollbar-thumb {
+        background: var(--primary);
+        border-radius: 4px;
+      }
+
+      .account-list::-webkit-scrollbar-thumb:hover {
+        background: var(--primary-dark);
+      }
+
+      /* Reset Theme Section */
+      .reset-section {
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+      }
+
+      .reset-section p {
+        color: var(--text-light);
+        font-size: 0.9rem;
+        margin-bottom: 0.75rem;
+      }
+
+      /* Tab Navigation */
+      .tab-nav {
+        display: flex;
+        gap: 0.25rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border);
+      }
+
+      .tab-btn {
+        padding: 0.75rem 1.25rem;
+        border: none;
+        background: transparent;
+        font-family: inherit;
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: var(--text-light);
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -2px;
+        transition: all 0.2s ease;
+      }
+
+      .tab-btn:hover {
+        color: var(--primary);
+      }
+
+      .tab-btn.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      /* Add Account Form */
+      .add-account-form {
+        display: none;
+        padding: 1rem;
+        background: var(--bg);
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        border: 1px solid var(--border);
+      }
+
+      .add-account-form.active {
+        display: block;
+      }
+
+      /* Warning Box */
+      .warning-box {
+        background: rgba(245, 158, 11, 0.1);
+        border: 1px solid var(--warning);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .warning-box .warning-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        color: var(--warning);
+        margin-bottom: 0.5rem;
+      }
+
+      .warning-box p {
+        color: var(--text);
+        font-size: 0.9rem;
+      }
+
+      /* Loading Overlay */
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+      }
+
+      .loading-overlay.active {
+        display: flex;
+      }
+
+      .loading-spinner {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        text-align: center;
+      }
+
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid var(--border);
+        border-top-color: var(--primary);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto 1rem;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
         }
-
-        .account-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.875rem 1rem;
-            border-bottom: 1px solid var(--border);
-            background: var(--bg);
-            transition: all 0.2s ease;
-        }
-
-        .account-item:last-child {
-            border-bottom: none;
-        }
-
-        .account-item:hover {
-            background: var(--surface);
-        }
-
-        .account-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .account-email {
-            font-weight: 500;
-            color: var(--text);
-        }
-
-        .account-role {
-            font-size: 0.85rem;
-            color: var(--text-light);
-        }
-
-        .account-role.admin {
-            color: var(--primary);
-            font-weight: 500;
-        }
-
-        .delete-btn {
-            background: none;
-            border: none;
-            color: var(--error);
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 4px;
-            transition: all 0.2s ease;
-        }
-
-        .delete-btn:hover {
-            background: rgba(200, 72, 72, 0.1);
-        }
-
-        /* Logo Preview */
-        .logo-preview-container {
-            margin-top: 1rem;
-            padding: 1.5rem;
-            background: var(--bg);
-            border: 2px dashed var(--border);
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .logo-preview {
-            max-width: 200px;
-            max-height: 100px;
-            object-fit: contain;
-            margin: 0 auto;
-            display: block;
-        }
-
-        .logo-placeholder {
-            color: var(--text-light);
-            font-size: 0.95rem;
-        }
-
-        .logo-placeholder .icon {
-            font-size: 2.5rem;
-            display: block;
-            margin-bottom: 0.5rem;
-            opacity: 0.5;
-        }
-
-        /* Color Theme Preview */
-        .theme-preview {
-            margin-top: 1.5rem;
-            padding: 1.5rem;
-            border-radius: 8px;
-            border: 2px solid var(--border);
-            background: var(--bg);
-        }
-
-        .theme-preview-title {
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: var(--text);
-        }
-
-        .theme-preview-bar {
-            height: 50px;
-            border-radius: 8px;
-            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 50%, var(--accent) 100%);
-            margin-bottom: 1rem;
-        }
-
-        .theme-preview-buttons {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .theme-preview-btn {
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            border: none;
-            cursor: default;
-        }
-
-        /* Preset Colors */
-        .preset-colors {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
-        .preset-color {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            border: 2px solid transparent;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .preset-color:hover {
-            transform: scale(1.1);
-            border-color: var(--text);
-        }
-
-        .preset-color.selected {
-            border-color: var(--text);
-            box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--text);
-        }
-
-        /* Status Messages */
-        .status-message {
-            padding: 0.875rem 1rem;
-            border-radius: 8px;
-            margin-top: 1rem;
-            display: none;
-        }
-
-        .status-message.success {
-            display: block;
-            background: rgba(74, 139, 111, 0.1);
-            color: var(--success);
-            border: 1px solid var(--success);
-        }
-
-        .status-message.error {
-            display: block;
-            background: rgba(200, 72, 72, 0.1);
-            color: var(--error);
-            border: 1px solid var(--error);
-        }
-
-        /* Divider */
-        .divider {
-            height: 1px;
-            background: var(--border);
-            margin: 1.5rem 0;
-        }
-
-        /* Full Width Panel */
-        .panel-full {
-            grid-column: 1 / -1;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-            }
-
-            .page-header h1 {
-                font-size: 2rem;
-            }
-
-            .config-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .btn-group {
-                flex-direction: column;
-            }
-
-            .color-picker-row {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-        }
-
-        /* Scrollbar Styling */
-        .account-list::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .account-list::-webkit-scrollbar-track {
-            background: var(--bg);
-            border-radius: 4px;
-        }
-
-        .account-list::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 4px;
-        }
-
-        .account-list::-webkit-scrollbar-thumb:hover {
-            background: var(--text-light);
-        }
-
-        /* Reset Theme Section */
-        .reset-section {
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--border);
-        }
-
-        .reset-section p {
-            color: var(--text-light);
-            font-size: 0.9rem;
-            margin-bottom: 0.75rem;
-        }
-
-        /* Tab Navigation */
-        .tab-nav {
-            display: flex;
-            gap: 0.25rem;
-            margin-bottom: 1.5rem;
-            border-bottom: 2px solid var(--border);
-        }
-
-        .tab-btn {
-            padding: 0.75rem 1.25rem;
-            border: none;
-            background: transparent;
-            font-family: inherit;
-            font-size: 0.95rem;
-            font-weight: 500;
-            color: var(--text-light);
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            margin-bottom: -2px;
-            transition: all 0.2s ease;
-        }
-
-        .tab-btn:hover {
-            color: var(--primary);
-        }
-
-        .tab-btn.active {
-            color: var(--primary);
-            border-bottom-color: var(--primary);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Add Account Form */
-        .add-account-form {
-            display: none;
-            padding: 1rem;
-            background: var(--bg);
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            border: 1px solid var(--border);
-        }
-
-        .add-account-form.active {
-            display: block;
-        }
-
-        /* Warning Box */
-        .warning-box {
-            background: rgba(245, 158, 11, 0.1);
-            border: 1px solid var(--warning);
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .warning-box .warning-title {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: 600;
-            color: var(--warning);
-            margin-bottom: 0.5rem;
-        }
-
-        .warning-box p {
-            color: var(--text);
-            font-size: 0.9rem;
-        }
+      }
     </style>
-</head>
-<body>
-    <div class="container">
-        <a href="admin.html" class="back-link">
-            <span>←</span> Back to Admin
-        </a>
-
-        <header class="page-header">
-            <h1>Configuration Settings</h1>
-            <p>Manage accounts, customize appearance, and configure your branding</p>
-        </header>
-
-        <div class="config-grid">
-            <!-- ESO Account Management -->
-            <div class="panel">
-                <h2 class="panel-title">
-                    <span class="icon">👥</span>
-                    ESO Account Management
-                </h2>
-                <p class="panel-description">Add, edit, or remove ESO staff and leadership accounts that can access the timetable system.</p>
-
-                <!-- Tab Navigation -->
-                <div class="tab-nav">
-                    <button class="tab-btn active" data-tab="existing-accounts">Existing Accounts</button>
-                    <button class="tab-btn" data-tab="add-account">Add Account</button>
-                </div>
-
-                <!-- Existing Accounts Tab -->
-                <div class="tab-content active" id="existing-accounts">
-                    <div class="account-list">
-                        <div class="account-item">
-                            <div class="account-info">
-                                <span class="account-email">cfrasca@whitefriars.catholic.edu.au</span>
-                                <span class="account-role admin">Administrator</span>
-                            </div>
-                            <button class="delete-btn" title="Remove account">🗑️</button>
-                        </div>
-                        <div class="account-item">
-                            <div class="account-info">
-                                <span class="account-email">mfrasca@whitefriars.catholic.edu.au</span>
-                                <span class="account-role admin">Administrator</span>
-                            </div>
-                            <button class="delete-btn" title="Remove account">🗑️</button>
-                        </div>
-                        <div class="account-item">
-                            <div class="account-info">
-                                <span class="account-email">leadership@yourschool.com</span>
-                                <span class="account-role admin">Administrator</span>
-                            </div>
-                            <button class="delete-btn" title="Remove account">🗑️</button>
-                        </div>
-                        <div class="account-item">
-                            <div class="account-info">
-                                <span class="account-email">staff@yourschool.com</span>
-                                <span class="account-role">ESO Staff (Viewer)</span>
-                            </div>
-                            <button class="delete-btn" title="Remove account">🗑️</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Add Account Tab -->
-                <div class="tab-content" id="add-account">
-                    <div class="warning-box">
-                        <div class="warning-title">
-                            <span>⚠️</span> Important
-                        </div>
-                        <p>New accounts will need to be registered in Firebase Authentication. This form prepares the account details.</p>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="new-email">Email Address</label>
-                        <input type="email" id="new-email" placeholder="user@school.edu.au">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="new-password">Temporary Password</label>
-                        <input type="password" id="new-password" placeholder="Minimum 6 characters">
-                        <p class="form-hint">User will be prompted to change this on first login.</p>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="new-role">Account Role</label>
-                        <select id="new-role">
-                            <option value="viewer">ESO Staff (Viewer) - Read-only access</option>
-                            <option value="admin">Administrator - Full access</option>
-                        </select>
-                    </div>
-
-                    <div class="btn-group">
-                        <button class="btn btn-primary" id="create-account-btn">Create Account</button>
-                    </div>
-
-                    <div class="status-message" id="account-status"></div>
-                </div>
-            </div>
-
-            <!-- Theme Color Configuration -->
-            <div class="panel">
-                <h2 class="panel-title">
-                    <span class="icon">🎨</span>
-                    Theme Colors
-                </h2>
-                <p class="panel-description">Customize the color scheme used throughout the application. Changes will apply to all pages.</p>
-
-                <div class="color-picker-row">
-                    <label for="color-primary">Primary Color</label>
-                    <div class="color-preview">
-                        <input type="color" id="color-primary" value="#2c5f4f">
-                        <span class="color-hex" id="primary-hex">#2c5f4f</span>
-                    </div>
-                </div>
-
-                <div class="color-picker-row">
-                    <label for="color-primary-light">Primary Light</label>
-                    <div class="color-preview">
-                        <input type="color" id="color-primary-light" value="#3d7861">
-                        <span class="color-hex" id="primary-light-hex">#3d7861</span>
-                    </div>
-                </div>
-
-                <div class="color-picker-row">
-                    <label for="color-accent">Accent Color</label>
-                    <div class="color-preview">
-                        <input type="color" id="color-accent" value="#d4a574">
-                        <span class="color-hex" id="accent-hex">#d4a574</span>
-                    </div>
-                </div>
-
-                <p class="form-hint" style="margin-top: 1rem;">Quick presets:</p>
-                <div class="preset-colors">
-                    <div class="preset-color selected" style="background: #2c5f4f;" data-color="#2c5f4f" title="Forest Green (Default)"></div>
-                    <div class="preset-color" style="background: #1e3a5f;" data-color="#1e3a5f" title="Navy Blue"></div>
-                    <div class="preset-color" style="background: #5f2c2c;" data-color="#5f2c2c" title="Burgundy"></div>
-                    <div class="preset-color" style="background: #4a3d5f;" data-color="#4a3d5f" title="Purple"></div>
-                    <div class="preset-color" style="background: #5f4a2c;" data-color="#5f4a2c" title="Brown"></div>
-                    <div class="preset-color" style="background: #2c5f5f;" data-color="#2c5f5f" title="Teal"></div>
-                    <div class="preset-color" style="background: #3d3d3d;" data-color="#3d3d3d" title="Charcoal"></div>
-                    <div class="preset-color" style="background: #5f2c4a;" data-color="#5f2c4a" title="Maroon"></div>
-                </div>
-
-                <div class="theme-preview">
-                    <div class="theme-preview-title">Preview</div>
-                    <div class="theme-preview-bar" id="theme-preview-bar"></div>
-                    <div class="theme-preview-buttons">
-                        <span class="theme-preview-btn" id="preview-btn-primary" style="background: var(--primary); color: white;">Primary</span>
-                        <span class="theme-preview-btn" id="preview-btn-light" style="background: var(--primary-light); color: white;">Light</span>
-                        <span class="theme-preview-btn" id="preview-btn-accent" style="background: var(--accent); color: white;">Accent</span>
-                    </div>
-                </div>
-
-                <div class="btn-group">
-                    <button class="btn btn-primary" id="save-colors-btn">Save Colors</button>
-                    <button class="btn btn-outline" id="reset-colors-btn">Reset to Default</button>
-                </div>
-
-                <div class="status-message" id="color-status"></div>
-            </div>
-
-            <!-- Logo Configuration -->
-            <div class="panel panel-full">
-                <h2 class="panel-title">
-                    <span class="icon">🏫</span>
-                    Organization Logo
-                </h2>
-                <p class="panel-description">Upload your organization's logo to display on all pages. The logo will appear in the header area.</p>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
-                    <div>
-                        <div class="form-group">
-                            <label for="logo-upload">Upload Logo</label>
-                            <input type="file" id="logo-upload" accept="image/png,image/jpeg,image/svg+xml">
-                            <p class="form-hint">Recommended: PNG or SVG, max 500KB. Ideal dimensions: 200x100 pixels.</p>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="logo-position">Logo Position</label>
-                            <select id="logo-position">
-                                <option value="header-left">Header - Left Side</option>
-                                <option value="header-center">Header - Center</option>
-                                <option value="header-right">Header - Right Side</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="logo-size">Logo Size</label>
-                            <select id="logo-size">
-                                <option value="small">Small (80px height)</option>
-                                <option value="medium" selected>Medium (100px height)</option>
-                                <option value="large">Large (120px height)</option>
-                            </select>
-                        </div>
-
-                        <div class="btn-group">
-                            <button class="btn btn-primary" id="save-logo-btn">Save Logo Settings</button>
-                            <button class="btn btn-danger" id="remove-logo-btn">Remove Logo</button>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label style="display: block; font-weight: 500; margin-bottom: 0.5rem;">Preview</label>
-                        <div class="logo-preview-container" id="logo-preview-container">
-                            <div class="logo-placeholder" id="logo-placeholder">
-                                <span class="icon">🖼️</span>
-                                No logo uploaded<br>
-                                <small>Upload an image to see preview</small>
-                            </div>
-                            <img src="" alt="Logo preview" class="logo-preview" id="logo-preview" style="display: none;">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="status-message" id="logo-status"></div>
-            </div>
-        </div>
+  </head>
+  <body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="loading-spinner">
+        <div class="spinner"></div>
+        <p>Processing...</p>
+      </div>
     </div>
 
+    <div class="container">
+      <a href="admin.html" class="back-link"> <span>←</span> Back to Admin </a>
+
+      <header class="page-header">
+        <h1>Configuration Settings</h1>
+        <p>
+          Manage accounts, customize appearance, and configure your branding
+        </p>
+      </header>
+
+      <div class="config-grid">
+        <!-- ESO Account Management -->
+        <div class="panel">
+          <h2 class="panel-title">
+            <span class="icon">👥</span>
+            ESO Account Management
+          </h2>
+          <p class="panel-description">
+            Add, edit, or remove ESO staff and leadership accounts that can
+            access the timetable system.
+          </p>
+
+          <!-- Tab Navigation -->
+          <div class="tab-nav">
+            <button class="tab-btn active" data-tab="existing-accounts">
+              Existing Accounts
+            </button>
+            <button class="tab-btn" data-tab="add-account">Add Account</button>
+          </div>
+
+          <!-- Existing Accounts Tab -->
+          <div class="tab-content active" id="existing-accounts">
+            <div class="account-list" id="accountListContainer">
+              <!-- Accounts will be loaded here -->
+            </div>
+          </div>
+
+          <!-- Add Account Tab -->
+          <div class="tab-content" id="add-account">
+            <div class="warning-box">
+              <div class="warning-title"><span>⚠️</span> Important</div>
+              <p>
+                New accounts will be created in Firebase Authentication. User
+                will receive credentials and must change password on first
+                login.
+              </p>
+            </div>
+
+            <div class="form-group">
+              <label for="new-email">Email Address</label>
+              <input
+                type="email"
+                id="new-email"
+                placeholder="user@school.edu.au"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="new-password">Temporary Password</label>
+              <input
+                type="password"
+                id="new-password"
+                placeholder="Minimum 6 characters"
+              />
+              <p class="form-hint">
+                User will be prompted to change this on first login.
+              </p>
+            </div>
+
+            <div class="form-group">
+              <label for="new-role">Account Role</label>
+              <select id="new-role">
+                <option value="viewer">
+                  ESO Staff (Viewer) - Read-only access
+                </option>
+                <option value="admin">Administrator - Full access</option>
+              </select>
+            </div>
+
+            <div class="btn-group">
+              <button class="btn btn-primary" id="create-account-btn">
+                Create Account
+              </button>
+            </div>
+
+            <div class="status-message" id="account-status"></div>
+          </div>
+        </div>
+
+        <!-- Theme Color Configuration -->
+        <div class="panel">
+          <h2 class="panel-title">
+            <span class="icon">🎨</span>
+            Theme Colors
+          </h2>
+          <p class="panel-description">
+            Customize the color scheme used throughout the application. Changes
+            will apply to all pages.
+          </p>
+
+          <div class="color-picker-row">
+            <label for="color-primary">Primary Color</label>
+            <div class="color-preview">
+              <input type="color" id="color-primary" value="#2c5f4f" />
+              <span class="color-hex" id="primary-hex">#2c5f4f</span>
+            </div>
+          </div>
+
+          <div class="color-picker-row">
+            <label for="color-primary-light">Primary Light</label>
+            <div class="color-preview">
+              <input type="color" id="color-primary-light" value="#3d7861" />
+              <span class="color-hex" id="primary-light-hex">#3d7861</span>
+            </div>
+          </div>
+
+          <div class="color-picker-row">
+            <label for="color-accent">Accent Color</label>
+            <div class="color-preview">
+              <input type="color" id="color-accent" value="#d4a574" />
+              <span class="color-hex" id="accent-hex">#d4a574</span>
+            </div>
+          </div>
+
+          <p class="form-hint" style="margin-top: 1rem">Quick presets:</p>
+          <div class="preset-colors">
+            <div
+              class="preset-color selected"
+              style="background: #2c5f4f"
+              data-color="#2c5f4f"
+              title="Forest Green (Default)"
+            ></div>
+            <div
+              class="preset-color"
+              style="background: #1e3a5f"
+              data-color="#1e3a5f"
+              title="Navy Blue"
+            ></div>
+            <div
+              class="preset-color"
+              style="background: #5f2c2c"
+              data-color="#5f2c2c"
+              title="Burgundy"
+            ></div>
+            <div
+              class="preset-color"
+              style="background: #4a3d5f"
+              data-color="#4a3d5f"
+              title="Purple"
+            ></div>
+            <div
+              class="preset-color"
+              style="background: #5f4a2c"
+              data-color="#5f4a2c"
+              title="Brown"
+            ></div>
+            <div
+              class="preset-color"
+              style="background: #2c5f5f"
+              data-color="#2c5f5f"
+              title="Teal"
+            ></div>
+            <div
+              class="preset-color"
+              style="background: #3d3d3d"
+              data-color="#3d3d3d"
+              title="Charcoal"
+            ></div>
+            <div
+              class="preset-color"
+              style="background: #5f2c4a"
+              data-color="#5f2c4a"
+              title="Maroon"
+            ></div>
+          </div>
+
+          <div class="theme-preview">
+            <div class="theme-preview-title">Preview</div>
+            <div class="theme-preview-bar" id="theme-preview-bar"></div>
+            <div class="theme-preview-buttons">
+              <span
+                class="theme-preview-btn"
+                id="preview-btn-primary"
+                style="background: var(--primary); color: white"
+                >Primary</span
+              >
+              <span
+                class="theme-preview-btn"
+                id="preview-btn-light"
+                style="background: var(--primary-light); color: white"
+                >Light</span
+              >
+              <span
+                class="theme-preview-btn"
+                id="preview-btn-accent"
+                style="background: var(--accent); color: white"
+                >Accent</span
+              >
+            </div>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn btn-primary" id="save-colors-btn">
+              Save Colors
+            </button>
+            <button class="btn btn-outline" id="reset-colors-btn">
+              Reset to Default
+            </button>
+          </div>
+
+          <div class="status-message" id="color-status"></div>
+        </div>
+
+        <!-- Logo Configuration -->
+        <div class="panel panel-full">
+          <h2 class="panel-title">
+            <span class="icon">🏫</span>
+            Organization Logo
+          </h2>
+          <p class="panel-description">
+            Upload your organization's logo to display on all pages. The logo
+            will appear in the header area.
+          </p>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem">
+            <div>
+              <div class="form-group">
+                <label for="logo-upload">Upload Logo</label>
+                <input
+                  type="file"
+                  id="logo-upload"
+                  accept="image/png,image/jpeg,image/svg+xml"
+                />
+                <p class="form-hint">
+                  Recommended: PNG or SVG, max 500KB. Ideal dimensions: 200x100
+                  pixels.
+                </p>
+              </div>
+
+              <div class="form-group">
+                <label for="logo-position">Logo Position</label>
+                <select id="logo-position">
+                  <option value="header-left">Header - Left Side</option>
+                  <option value="header-center">Header - Center</option>
+                  <option value="header-right">Header - Right Side</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="logo-size">Logo Size</label>
+                <select id="logo-size">
+                  <option value="small">Small (80px height)</option>
+                  <option value="medium" selected>Medium (100px height)</option>
+                  <option value="large">Large (120px height)</option>
+                </select>
+              </div>
+
+              <div class="btn-group">
+                <button class="btn btn-primary" id="save-logo-btn">
+                  Save Logo Settings
+                </button>
+                <button class="btn btn-danger" id="remove-logo-btn">
+                  Remove Logo
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label
+                style="display: block; font-weight: 500; margin-bottom: 0.5rem"
+                >Preview</label
+              >
+              <div class="logo-preview-container" id="logo-preview-container">
+                <div class="logo-placeholder" id="logo-placeholder">
+                  <span class="icon">🖼️</span>
+                  No logo uploaded<br />
+                  <small>Upload an image to see preview</small>
+                </div>
+                <img
+                  src=""
+                  alt="Logo preview"
+                  class="logo-preview"
+                  id="logo-preview"
+                  style="display: none"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="status-message" id="logo-status"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+
+    <!-- Shared utilities -->
+    <script src="shared.js"></script>
+
     <script>
-        // Tab Navigation
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const tabId = btn.dataset.tab;
+      // Use shared.js utilities - no need to reinitialize Firebase
+      let currentUser = null;
+      let currentUserRole = null;
 
-                // Update active tab button
-                btn.closest('.tab-nav').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
+      // Initialize after DOM loads
+      window.addEventListener("load", () => {
+        // First check sessionStorage for quick access
+        const storedRole = sessionStorage.getItem("userRole");
+        const storedEmail = sessionStorage.getItem("userEmail");
 
-                // Update active tab content
-                btn.closest('.panel').querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                document.getElementById(tabId).classList.add('active');
+        // DEBUG: Allow admins who are already logged into admin.html
+        // Check if coming from admin.html
+        const referrer = document.referrer;
+        const isFromAdmin = referrer.includes("admin.html");
+
+        if (!storedRole || !storedEmail) {
+          // Not logged in
+          alert("Please log in first.");
+          window.location.href = "index.html";
+          return;
+        }
+
+        if (storedRole !== "admin") {
+          // Not an admin
+          alert(
+            "Access denied. Only administrators can access configuration settings.",
+          );
+          window.location.href =
+            storedRole === "viewer" ? "view.html" : "admin.html";
+          return;
+        }
+
+        // User is admin, proceed
+        console.log("✅ Admin access granted to:", storedEmail);
+
+        // Verify with Firebase auth
+        auth.onAuthStateChanged((user) => {
+          if (user) {
+            currentUser = user;
+            currentUserRole = storedRole;
+            initializePage();
+          } else {
+            // Firebase session expired
+            sessionStorage.clear();
+            alert("Session expired. Please log in again.");
+            window.location.href = "index.html";
+          }
+        });
+      });
+
+      function initializePage() {
+        loadAccounts();
+        loadTheme();
+        loadLogo();
+      }
+
+      // ==========================================
+      // ACCOUNT MANAGEMENT (uses shared.js)
+      // ==========================================
+
+      function loadAccounts() {
+        loadAllUsers()
+          .then((snapshot) => {
+            const users = snapshot.val();
+            renderAccountList(users);
+          })
+          .catch((error) => {
+            console.error("Error loading accounts:", error);
+            showNotification("Error loading accounts", true);
+          });
+      }
+
+      function renderAccountList(users) {
+        const container = document.getElementById("accountListContainer");
+
+        if (!users) {
+          container.innerHTML =
+            '<div class="account-item"><div class="account-info">No accounts found</div></div>';
+          return;
+        }
+
+        const fragment = document.createDocumentFragment();
+
+        Object.keys(users).forEach((uid) => {
+          const user = users[uid];
+
+          const itemDiv = document.createElement("div");
+          itemDiv.className = "account-item";
+          itemDiv.dataset.uid = uid;
+
+          const infoDiv = document.createElement("div");
+          infoDiv.className = "account-info";
+
+          const emailSpan = document.createElement("span");
+          emailSpan.className = "account-email";
+          emailSpan.textContent = user.email || "Unknown email";
+
+          const roleSpan = document.createElement("span");
+          roleSpan.className = `account-role ${user.role === "admin" ? "admin" : ""}`;
+          roleSpan.textContent =
+            user.role === "admin" ? "Administrator" : "ESO Staff (Viewer)";
+
+          infoDiv.appendChild(emailSpan);
+          infoDiv.appendChild(roleSpan);
+
+          const deleteBtn = document.createElement("button");
+          deleteBtn.className = "delete-btn";
+          deleteBtn.textContent = "🗑️";
+          deleteBtn.title = "Remove account";
+          deleteBtn.onclick = () => handleRemoveAccount(uid, user.email);
+
+          itemDiv.appendChild(infoDiv);
+          itemDiv.appendChild(deleteBtn);
+          fragment.appendChild(itemDiv);
+        });
+
+        container.innerHTML = "";
+        container.appendChild(fragment);
+      }
+
+      function handleRemoveAccount(uid, email) {
+        if (
+          !confirm(
+            `Remove ${email}?\n\nNote: This removes their database entry. You must manually delete the user from Firebase Authentication console.`,
+          )
+        ) {
+          return;
+        }
+
+        showLoading(true);
+        removeUserFromDatabase(uid)
+          .then(() => {
+            showLoading(false);
+            showNotification(
+              `Account removed. Please delete ${email} from Firebase Auth console.`,
+            );
+            loadAccounts();
+          })
+          .catch((error) => {
+            showLoading(false);
+            console.error("Error removing account:", error);
+            showNotification("Error removing account", true);
+          });
+      }
+
+      // Create Account using shared.js
+      document
+        .getElementById("create-account-btn")
+        .addEventListener("click", () => {
+          const email = document.getElementById("new-email").value.trim();
+          const password = document.getElementById("new-password").value;
+          const role = document.getElementById("new-role").value;
+
+          if (!email || !password) {
+            showStatus("account-status", "Please fill in all fields.", "error");
+            return;
+          }
+
+          if (password.length < 6) {
+            showStatus(
+              "account-status",
+              "Password must be at least 6 characters.",
+              "error",
+            );
+            return;
+          }
+
+          showLoading(true);
+
+          createUserAccount(email, password, role, currentUser.email)
+            .then(() => {
+              showLoading(false);
+              showNotification("Account created successfully!");
+              document.getElementById("new-email").value = "";
+              document.getElementById("new-password").value = "";
+              loadAccounts();
+              document
+                .querySelector('.tab-btn[data-tab="existing-accounts"]')
+                .click();
+            })
+            .catch((error) => {
+              showLoading(false);
+              let errorMessage = "Error creating account";
+              if (error.code === "auth/email-already-in-use") {
+                errorMessage = "Email already in use";
+              } else if (error.code === "auth/invalid-email") {
+                errorMessage = "Invalid email address";
+              } else if (error.code === "auth/weak-password") {
+                errorMessage = "Password is too weak";
+              }
+              showStatus("account-status", errorMessage, "error");
             });
         });
 
-        // Color Picker Updates
-        const colorInputs = {
-            primary: document.getElementById('color-primary'),
-            primaryLight: document.getElementById('color-primary-light'),
-            accent: document.getElementById('color-accent')
+      // ==========================================
+      // THEME MANAGEMENT (uses shared.js)
+      // ==========================================
+
+      const colorInputs = {
+        primary: document.getElementById("color-primary"),
+        primaryLight: document.getElementById("color-primary-light"),
+        accent: document.getElementById("color-accent"),
+      };
+
+      const hexDisplays = {
+        primary: document.getElementById("primary-hex"),
+        primaryLight: document.getElementById("primary-light-hex"),
+        accent: document.getElementById("accent-hex"),
+      };
+
+      function loadTheme() {
+        loadThemeColors()
+          .then((snapshot) => {
+            const theme = snapshot.val();
+
+            if (theme) {
+              colorInputs.primary.value = theme.primary || "#2c5f4f";
+              colorInputs.primaryLight.value = theme.primaryLight || "#3d7861";
+              colorInputs.accent.value = theme.accent || "#d4a574";
+
+              hexDisplays.primary.textContent = theme.primary || "#2c5f4f";
+              hexDisplays.primaryLight.textContent =
+                theme.primaryLight || "#3d7861";
+              hexDisplays.accent.textContent = theme.accent || "#d4a574";
+
+              updateThemePreview();
+            }
+          })
+          .catch((error) => {
+            console.error("Error loading theme:", error);
+          });
+      }
+
+      Object.keys(colorInputs).forEach((key) => {
+        colorInputs[key].addEventListener("input", (e) => {
+          hexDisplays[key].textContent = e.target.value;
+          updateThemePreview();
+        });
+      });
+
+      function updateThemePreview() {
+        const primary = colorInputs.primary.value;
+        const primaryLight = colorInputs.primaryLight.value;
+        const accent = colorInputs.accent.value;
+
+        document.getElementById("theme-preview-bar").style.background =
+          `linear-gradient(90deg, ${primary} 0%, ${primaryLight} 50%, ${accent} 100%)`;
+
+        document.getElementById("preview-btn-primary").style.background =
+          primary;
+        document.getElementById("preview-btn-light").style.background =
+          primaryLight;
+        document.getElementById("preview-btn-accent").style.background = accent;
+      }
+
+      // Preset colors
+      document.querySelectorAll(".preset-color").forEach((preset) => {
+        preset.addEventListener("click", () => {
+          const color = preset.dataset.color;
+          document
+            .querySelectorAll(".preset-color")
+            .forEach((p) => p.classList.remove("selected"));
+          preset.classList.add("selected");
+
+          colorInputs.primary.value = color;
+          hexDisplays.primary.textContent = color;
+
+          const lighterColor = lightenColor(color, 20);
+          colorInputs.primaryLight.value = lighterColor;
+          hexDisplays.primaryLight.textContent = lighterColor;
+
+          updateThemePreview();
+        });
+      });
+
+      // Save colors using shared.js
+      document
+        .getElementById("save-colors-btn")
+        .addEventListener("click", () => {
+          const colors = {
+            primary: colorInputs.primary.value,
+            primaryLight: colorInputs.primaryLight.value,
+            accent: colorInputs.accent.value,
+          };
+
+          showLoading(true);
+          saveThemeColors(colors, currentUser.email)
+            .then(() => {
+              showLoading(false);
+              showNotification(
+                "Color theme saved! Refresh pages to see changes.",
+              );
+            })
+            .catch((error) => {
+              showLoading(false);
+              console.error("Error saving colors:", error);
+              showNotification("Error saving color theme", true);
+            });
+        });
+
+      // Reset colors using shared.js
+      document
+        .getElementById("reset-colors-btn")
+        .addEventListener("click", () => {
+          if (!confirm("Reset colors to default theme?")) return;
+
+          colorInputs.primary.value = "#2c5f4f";
+          colorInputs.primaryLight.value = "#3d7861";
+          colorInputs.accent.value = "#d4a574";
+
+          hexDisplays.primary.textContent = "#2c5f4f";
+          hexDisplays.primaryLight.textContent = "#3d7861";
+          hexDisplays.accent.textContent = "#d4a574";
+
+          document
+            .querySelectorAll(".preset-color")
+            .forEach((p) => p.classList.remove("selected"));
+          document
+            .querySelector('.preset-color[data-color="#2c5f4f"]')
+            .classList.add("selected");
+
+          updateThemePreview();
+          showNotification("Colors reset to default.");
+        });
+
+      // ==========================================
+      // LOGO MANAGEMENT (uses shared.js)
+      // ==========================================
+
+      let currentLogoFile = null;
+
+      function loadLogo() {
+        loadLogoSettings()
+          .then((snapshot) => {
+            const logoSettings = snapshot.val();
+
+            if (logoSettings) {
+              document.getElementById("logo-position").value =
+                logoSettings.position || "header-left";
+              document.getElementById("logo-size").value =
+                logoSettings.size || "medium";
+
+              if (logoSettings.url) {
+                const preview = document.getElementById("logo-preview");
+                preview.src = logoSettings.url;
+                preview.style.display = "block";
+                document.getElementById("logo-placeholder").style.display =
+                  "none";
+              }
+            }
+          })
+          .catch((error) => {
+            console.error("Error loading logo settings:", error);
+          });
+      }
+
+      document.getElementById("logo-upload").addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (file.size > 500 * 1024) {
+          showStatus("logo-status", "File size exceeds 500KB limit.", "error");
+          e.target.value = "";
+          return;
+        }
+
+        if (!file.type.match("image.*")) {
+          showStatus("logo-status", "Please upload an image file.", "error");
+          e.target.value = "";
+          return;
+        }
+
+        currentLogoFile = file;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          document.getElementById("logo-placeholder").style.display = "none";
+          const preview = document.getElementById("logo-preview");
+          preview.src = event.target.result;
+          preview.style.display = "block";
         };
+        reader.readAsDataURL(file);
+      });
 
-        const hexDisplays = {
-            primary: document.getElementById('primary-hex'),
-            primaryLight: document.getElementById('primary-light-hex'),
-            accent: document.getElementById('accent-hex')
-        };
+      // Save logo using shared.js
+      document.getElementById("save-logo-btn").addEventListener("click", () => {
+        const position = document.getElementById("logo-position").value;
+        const size = document.getElementById("logo-size").value;
 
-        // Update hex display and preview when color changes
-        Object.keys(colorInputs).forEach(key => {
-            colorInputs[key].addEventListener('input', (e) => {
-                hexDisplays[key].textContent = e.target.value;
-                updateThemePreview();
+        showLoading(true);
+
+        if (currentLogoFile) {
+          uploadLogoToStorage(currentLogoFile)
+            .then((downloadURL) => {
+              return saveLogoSettings(
+                downloadURL,
+                position,
+                size,
+                currentUser.email,
+              );
+            })
+            .then(() => {
+              showLoading(false);
+              showNotification("Logo uploaded and settings saved!");
+              currentLogoFile = null;
+            })
+            .catch((error) => {
+              showLoading(false);
+              console.error("Error uploading logo:", error);
+              showNotification("Error uploading logo", true);
+            });
+        } else {
+          updateLogoPosition(position, size, currentUser.email)
+            .then(() => {
+              showLoading(false);
+              showNotification("Logo settings saved!");
+            })
+            .catch((error) => {
+              showLoading(false);
+              console.error("Error saving logo settings:", error);
+              showNotification("Error saving settings", true);
+            });
+        }
+      });
+
+      // Remove logo using shared.js
+      document
+        .getElementById("remove-logo-btn")
+        .addEventListener("click", () => {
+          if (!confirm("Remove the organization logo?")) return;
+
+          showLoading(true);
+          removeLogo()
+            .then(() => {
+              showLoading(false);
+              document.getElementById("logo-upload").value = "";
+              document.getElementById("logo-preview").style.display = "none";
+              document.getElementById("logo-placeholder").style.display =
+                "block";
+              currentLogoFile = null;
+              showNotification("Logo removed successfully!");
+            })
+            .catch((error) => {
+              showLoading(false);
+              console.error("Error removing logo:", error);
+              showNotification("Error removing logo", true);
             });
         });
 
-        function updateThemePreview() {
-            const primary = colorInputs.primary.value;
-            const primaryLight = colorInputs.primaryLight.value;
-            const accent = colorInputs.accent.value;
+      // ==========================================
+      // UTILITY FUNCTIONS
+      // ==========================================
 
-            // Update preview bar gradient
-            document.getElementById('theme-preview-bar').style.background =
-                `linear-gradient(90deg, ${primary} 0%, ${primaryLight} 50%, ${accent} 100%)`;
+      // Tab Navigation
+      document.querySelectorAll(".tab-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const tabId = btn.dataset.tab;
+          btn
+            .closest(".tab-nav")
+            .querySelectorAll(".tab-btn")
+            .forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          btn
+            .closest(".panel")
+            .querySelectorAll(".tab-content")
+            .forEach((c) => c.classList.remove("active"));
+          document.getElementById(tabId).classList.add("active");
+        });
+      });
 
-            // Update preview buttons
-            document.getElementById('preview-btn-primary').style.background = primary;
-            document.getElementById('preview-btn-light').style.background = primaryLight;
-            document.getElementById('preview-btn-accent').style.background = accent;
+      function showStatus(elementId, message, type) {
+        const statusEl = document.getElementById(elementId);
+        statusEl.textContent = message;
+        statusEl.className = "status-message " + type;
+        setTimeout(() => {
+          statusEl.className = "status-message";
+        }, 5000);
+      }
+
+      function showLoading(show) {
+        const overlay = document.getElementById("loadingOverlay");
+        if (show) {
+          overlay.classList.add("active");
+        } else {
+          overlay.classList.remove("active");
         }
+      }
 
-        // Preset Color Selection
-        document.querySelectorAll('.preset-color').forEach(preset => {
-            preset.addEventListener('click', () => {
-                const color = preset.dataset.color;
-
-                // Remove selected class from all presets
-                document.querySelectorAll('.preset-color').forEach(p => p.classList.remove('selected'));
-                preset.classList.add('selected');
-
-                // Calculate lighter version and complementary accent
-                colorInputs.primary.value = color;
-                hexDisplays.primary.textContent = color;
-
-                // Generate a lighter version (simple approach)
-                const lighterColor = lightenColor(color, 20);
-                colorInputs.primaryLight.value = lighterColor;
-                hexDisplays.primaryLight.textContent = lighterColor;
-
-                updateThemePreview();
-            });
-        });
-
-        function lightenColor(hex, percent) {
-            const num = parseInt(hex.replace('#', ''), 16);
-            const amt = Math.round(2.55 * percent);
-            const R = Math.min(255, (num >> 16) + amt);
-            const G = Math.min(255, ((num >> 8) & 0x00FF) + amt);
-            const B = Math.min(255, (num & 0x0000FF) + amt);
-            return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
-        }
-
-        // Logo Upload Preview
-        document.getElementById('logo-upload').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                // Validate file size (500KB max)
-                if (file.size > 500 * 1024) {
-                    showStatus('logo-status', 'File size exceeds 500KB limit.', 'error');
-                    e.target.value = '';
-                    return;
-                }
-
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    document.getElementById('logo-placeholder').style.display = 'none';
-                    const preview = document.getElementById('logo-preview');
-                    preview.src = event.target.result;
-                    preview.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // Remove Logo
-        document.getElementById('remove-logo-btn').addEventListener('click', () => {
-            document.getElementById('logo-upload').value = '';
-            document.getElementById('logo-preview').style.display = 'none';
-            document.getElementById('logo-placeholder').style.display = 'block';
-            showStatus('logo-status', 'Logo removed.', 'success');
-        });
-
-        // Reset Colors to Default
-        document.getElementById('reset-colors-btn').addEventListener('click', () => {
-            colorInputs.primary.value = '#2c5f4f';
-            colorInputs.primaryLight.value = '#3d7861';
-            colorInputs.accent.value = '#d4a574';
-
-            hexDisplays.primary.textContent = '#2c5f4f';
-            hexDisplays.primaryLight.textContent = '#3d7861';
-            hexDisplays.accent.textContent = '#d4a574';
-
-            // Reset preset selection
-            document.querySelectorAll('.preset-color').forEach(p => p.classList.remove('selected'));
-            document.querySelector('.preset-color[data-color="#2c5f4f"]').classList.add('selected');
-
-            updateThemePreview();
-            showStatus('color-status', 'Colors reset to default.', 'success');
-        });
-
-        // Save Buttons (placeholder functionality)
-        document.getElementById('save-colors-btn').addEventListener('click', () => {
-            const colors = {
-                primary: colorInputs.primary.value,
-                primaryLight: colorInputs.primaryLight.value,
-                accent: colorInputs.accent.value
-            };
-            console.log('Saving colors:', colors);
-            // TODO: Save to Firebase/localStorage
-            showStatus('color-status', 'Color theme saved successfully!', 'success');
-        });
-
-        document.getElementById('save-logo-btn').addEventListener('click', () => {
-            const logoFile = document.getElementById('logo-upload').files[0];
-            const position = document.getElementById('logo-position').value;
-            const size = document.getElementById('logo-size').value;
-
-            console.log('Saving logo settings:', { logoFile, position, size });
-            // TODO: Upload to Firebase Storage and save settings
-            showStatus('logo-status', 'Logo settings saved successfully!', 'success');
-        });
-
-        document.getElementById('create-account-btn').addEventListener('click', () => {
-            const email = document.getElementById('new-email').value;
-            const password = document.getElementById('new-password').value;
-            const role = document.getElementById('new-role').value;
-
-            if (!email || !password) {
-                showStatus('account-status', 'Please fill in all fields.', 'error');
-                return;
-            }
-
-            if (password.length < 6) {
-                showStatus('account-status', 'Password must be at least 6 characters.', 'error');
-                return;
-            }
-
-            console.log('Creating account:', { email, role });
-            // TODO: Create account in Firebase Auth
-            showStatus('account-status', 'Account created successfully!', 'success');
-
-            // Clear form
-            document.getElementById('new-email').value = '';
-            document.getElementById('new-password').value = '';
-        });
-
-        // Delete account buttons
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const accountItem = e.target.closest('.account-item');
-                const email = accountItem.querySelector('.account-email').textContent;
-
-                if (confirm(`Are you sure you want to remove ${email}?`)) {
-                    accountItem.style.opacity = '0.5';
-                    // TODO: Remove from Firebase Auth
-                    console.log('Removing account:', email);
-                    setTimeout(() => {
-                        accountItem.remove();
-                    }, 300);
-                }
-            });
-        });
-
-        // Status message helper
-        function showStatus(elementId, message, type) {
-            const statusEl = document.getElementById(elementId);
-            statusEl.textContent = message;
-            statusEl.className = 'status-message ' + type;
-
-            // Auto-hide after 5 seconds
-            setTimeout(() => {
-                statusEl.className = 'status-message';
-            }, 5000);
-        }
-
-        // Initialize theme preview
-        updateThemePreview();
+      updateThemePreview();
     </script>
-</body>
+  </body>
 </html>

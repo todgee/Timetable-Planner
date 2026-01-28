@@ -1086,6 +1086,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 
     <!-- Shared utilities -->
     <script src="shared.js"></script>
@@ -1710,7 +1711,11 @@
       let currentCounterTab = "day";
       let colorIndex = 0;
 
-      // Note: 'days' and 'defaultColors' are defined in shared.js
+      // Use days from shared.js, or fallback to local definition
+      const daysArray =
+        typeof days !== "undefined"
+          ? days
+          : ["monday", "tuesday", "wednesday", "thursday", "friday"];
 
       // People Management
       function addPeople() {
@@ -1772,7 +1777,7 @@
         ) {
           peopleList = peopleList.filter((person) => person !== name);
 
-          days.forEach((day) => {
+          daysArray.forEach((day) => {
             if (assignments[day]) {
               Object.keys(assignments[day]).forEach((key) => {
                 if (key.includes(`-${name}`)) {
@@ -1899,7 +1904,7 @@
           classList = classList.filter((cls) => cls !== name);
           delete classColors[name];
 
-          days.forEach((day) => {
+          daysArray.forEach((day) => {
             if (assignments[day]) {
               Object.keys(assignments[day]).forEach((key) => {
                 if (assignments[day][key].class === name) {
@@ -2054,7 +2059,7 @@
           timeSlots.push({ start: slotStart, end: slotEnd });
         }
 
-        days.forEach((day) => {
+        daysArray.forEach((day) => {
           if (!assignments[day]) {
             assignments[day] = {};
           }
@@ -2141,7 +2146,7 @@
           timeSlots.splice(index, 1);
 
           // Remove assignments in this slot
-          days.forEach((day) => {
+          daysArray.forEach((day) => {
             if (assignments[day]) {
               Object.keys(assignments[day]).forEach((key) => {
                 if (key.startsWith(removedSlot.start + "-")) {
@@ -2375,15 +2380,26 @@
         const weekCounts = {};
         classList.forEach((cls) => (weekCounts[cls] = 0));
 
-        days.forEach((day) => {
+        console.log("Calculating week counters...", { daysArray, assignments });
+
+        daysArray.forEach((day) => {
           if (assignments[day]) {
             Object.values(assignments[day]).forEach((assignment) => {
-              weekCounts[assignment.class]++;
+              if (assignment && assignment.class) {
+                weekCounts[assignment.class]++;
+              }
             });
           }
         });
 
+        console.log("Week counts:", weekCounts);
+
         const weekGrid = document.getElementById("weekCounterGrid");
+        if (!weekGrid) {
+          console.error("weekCounterGrid element not found!");
+          return;
+        }
+
         weekGrid.innerHTML = classList
           .map(
             (cls) => `
@@ -2397,6 +2413,8 @@
             `,
           )
           .join("");
+
+        console.log("Week counter updated successfully");
       }
 
       // Note: Time utilities (timeToMinutes, minutesToTime, formatTime12Hour) are defined in shared.js
@@ -2563,7 +2581,7 @@
       // Export Functions
       function exportSchedule() {
         let hasAssignments = false;
-        days.forEach((day) => {
+        daysArray.forEach((day) => {
           if (assignments[day] && Object.keys(assignments[day]).length > 0) {
             hasAssignments = true;
           }
@@ -2588,7 +2606,7 @@
         const timestamp = new Date().toISOString().split("T")[0];
 
         // Create a sheet for each day
-        days.forEach((day) => {
+        daysArray.forEach((day) => {
           const dayName = day.charAt(0).toUpperCase() + day.slice(1);
           const sheetData = [];
 
@@ -2634,7 +2652,7 @@
         const summaryData = [["Class Summary", "Count"]];
         const weekCounts = {};
         classList.forEach((cls) => (weekCounts[cls] = 0));
-        days.forEach((day) => {
+        daysArray.forEach((day) => {
           if (assignments[day]) {
             Object.values(assignments[day]).forEach((assignment) => {
               weekCounts[assignment.class]++;
