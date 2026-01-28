@@ -1572,7 +1572,7 @@
 
         auth.onAuthStateChanged((user) => {
           if (!user) {
-            window.location.href = "login.html";
+            window.location.href = "index.html";
             return;
           }
 
@@ -1582,6 +1582,10 @@
             window.location.href = "view.html";
             return;
           }
+
+          // Set user state
+          currentUser = user;
+          currentUserRole = savedRole || "admin";
 
           // Show admin UI
           document.getElementById("userInfo").style.display = "flex";
@@ -1595,6 +1599,11 @@
       // ADMIN APPLICATION CODE
       // ============================================
 
+      // User state (set by auth check)
+      let currentUser = null;
+      let currentUserRole = null;
+
+      // Timetable data
       let peopleList = [];
       let classList = [];
       let classColors = {};
@@ -1603,26 +1612,9 @@
       let currentEditCell = null;
       let timeSlots = [];
       let currentCounterTab = "day";
-
-      const days = ["monday", "tuesday", "wednesday", "thursday", "friday"];
-      const defaultColors = [
-        "#3b82f6",
-        "#8b5cf6",
-        "#ec4899",
-        "#f97316",
-        "#10b981",
-        "#06b6d4",
-        "#6366f1",
-        "#a855f7",
-        "#f43f5e",
-        "#14b8a6",
-        "#84cc16",
-        "#eab308",
-        "#f59e0b",
-        "#ef4444",
-        "#22c55e",
-      ];
       let colorIndex = 0;
+
+      // Note: 'days' and 'defaultColors' are defined in shared.js
 
       // People Management
       function addPeople() {
@@ -1674,8 +1666,9 @@
         } else {
           alert("All names were already in the list");
         }
+      }
 
-        function removePerson(name) {
+      function removePerson(name) {
           if (
             confirm(
               `Remove ${name} from the list? All their assignments will be deleted.`,
@@ -2120,9 +2113,7 @@
               currentData.notes || "";
           } else {
             document.getElementById("modalClass").value = "";
-            document.getElementById("modalDuration").value = parseInt(
-              document.getElementById("lessonDuration").value,
-            );
+            document.getElementById("modalDuration").value = 60; // Default duration
             document.getElementById("modalNotes").value = "";
           }
 
@@ -2251,41 +2242,7 @@
             .join("");
         }
 
-        // Time Utilities
-        function timeToMinutes(time) {
-          const [hours, minutes] = time.split(":").map(Number);
-          return hours * 60 + minutes;
-        }
-
-        function minutesToTime(minutes) {
-          const hours = Math.floor(minutes / 60);
-          const mins = minutes % 60;
-          return `${hours.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}`;
-        }
-
-        function formatTime12Hour(time24) {
-          // Safety check for undefined or invalid time
-          if (!time24 || typeof time24 !== "string") {
-            console.error("Invalid time passed to formatTime12Hour:", time24);
-            return "Invalid Time";
-          }
-
-          const parts = time24.split(":");
-          if (parts.length !== 2) {
-            console.error("Invalid time format:", time24);
-            return time24; // Return as-is if invalid
-          }
-
-          const [hours, minutes] = parts.map(Number);
-          if (isNaN(hours) || isNaN(minutes)) {
-            console.error("Non-numeric time values:", time24);
-            return time24;
-          }
-
-          const period = hours >= 12 ? "PM" : "AM";
-          const hours12 = hours % 12 || 12;
-          return `${hours12}:${minutes.toString().padStart(2, "0")} ${period}`;
-        }
+        // Note: Time utilities (timeToMinutes, minutesToTime, formatTime12Hour) are defined in shared.js
 
         // Save & Load Project
         function saveProject() {
@@ -2343,15 +2300,8 @@
               timeSlots = projectData.timeSlots || [];
               colorIndex = classList.length;
 
-              // Restore settings
-              if (projectData.settings) {
-                document.getElementById("startTime").value =
-                  projectData.settings.startTime;
-                document.getElementById("endTime").value =
-                  projectData.settings.endTime;
-                document.getElementById("lessonDuration").value =
-                  projectData.settings.lessonDuration;
-              }
+              // Note: Settings (startTime, endTime, lessonDuration) are no longer used
+              // Time slots are now managed directly via Edit Time Slots
 
               // Update UI
               updatePeopleList();
@@ -2392,19 +2342,20 @@
             classColors: classColors,
             assignments: assignments,
             timeSlots: timeSlots,
-            settings: {
-              startTime: document.getElementById("startTime").value,
-              endTime: document.getElementById("endTime").value,
-              lessonDuration: document.getElementById("lessonDuration").value,
-            },
           };
 
           try {
+            // Save to localStorage for local persistence
             localStorage.setItem(
               "timetableProject",
               JSON.stringify(projectData),
             );
             showAutoSaveIndicator();
+
+            // Also save to Firebase if admin
+            if (currentUserRole === "admin") {
+              saveToFirebase();
+            }
           } catch (error) {
             console.error("Auto-save failed:", error);
           }
@@ -2730,9 +2681,9 @@
             if (e.key === "Enter" && e.ctrlKey) addClasses();
           });
 
-        // Load saved project on page load
+        // Initialize PWA features on page load
         window.addEventListener("DOMContentLoaded", function () {
-          loadFromLocalStorage();
+          // Note: loadFromLocalStorage() is called in the auth check above
           registerServiceWorker();
           handlePWAInstall();
         });
@@ -2914,71 +2865,7 @@
         // ======================
         // Firebase Integration
         // ======================
-
-        async function handleLogin() {
-          try {
-            loginButton.disabled = true;
-            loginButton.textContent = "Logging in...";
-            errorDiv.classList.remove("active");
-
-            // Sign in with Firebase
-            const userCredential = await auth.signInWithEmailAndPassword(
-              email,
-              password,
-            );
-            currentUser = userCredential.user;
-
-            // Determine role based on email
-            if (email.includes("admin") || email.includes("leadership")) {
-              currentUserRole = "admin";
-            } else {
-              currentUserRole = "viewer";
-            }
-
-            // Save to session
-            sessionStorage.setItem("userRole", currentUserRole);
-            sessionStorage.setItem("userEmail", email);
-
-            // Show app
-            showApp();
-          } catch (error) {
-            console.error("Login error:", error);
-            let errorMessage = "Login failed. Please check your credentials.";
-
-            if (error.code === "auth/wrong-password") {
-              errorMessage = "Incorrect password. Please try again.";
-            } else if (error.code === "auth/user-not-found") {
-              errorMessage =
-                "User not found. Please contact your administrator.";
-            } else if (error.code === "auth/invalid-email") {
-              errorMessage = "Invalid email address.";
-            }
-
-            showLoginError(errorMessage);
-            loginButton.disabled = false;
-            loginButton.textContent = "Login";
-          }
-        }
-
-        function handleLogout() {
-          if (confirm("Are you sure you want to logout?")) {
-            auth.signOut().then(() => {
-              currentUser = null;
-              currentUserRole = null;
-              sessionStorage.clear();
-
-              // Hide app, show login
-              document
-                .getElementById("appContainer")
-                .classList.remove("active");
-              document.getElementById("loginScreen").style.display = "flex";
-              document.getElementById("userInfo").style.display = "none";
-
-              // Reset login form
-              backToRoleSelection();
-            });
-          }
-        }
+        // Note: handleLogin() is in index.html, handleLogout() is in shared.js
 
         function saveToFirebase() {
           if (currentUserRole !== "admin") {
@@ -3001,11 +2888,11 @@
             .ref("timetable/current")
             .set(timetableData)
             .then(() => {
-              showSyncIndicator("✓ Saved to server");
+              showNotification("✓ Saved to server");
             })
             .catch((error) => {
               console.error("Firebase save error:", error);
-              showSyncIndicator("❌ Save failed", true);
+              showNotification("❌ Save failed", true);
             });
         }
 
@@ -3018,7 +2905,7 @@
             return;
           }
 
-          showSyncIndicator("⏳ Loading from database...", false);
+          showNotification("⏳ Loading from database...", false);
 
           database
             .ref("timetable/current")
@@ -3058,62 +2945,18 @@
                 renderTimetable();
                 updateCounters();
 
-                showSyncIndicator("✓ Loaded from database");
+                showNotification("✓ Loaded from database");
               } else {
-                showSyncIndicator("⚠️ No data in database", true);
+                showNotification("⚠️ No data in database", true);
               }
             })
             .catch((error) => {
               console.error("Firebase load error:", error);
-              showSyncIndicator("❌ Load failed", true);
+              showNotification("❌ Load failed", true);
             });
         }
 
-        function showSyncIndicator(message, isError = false) {
-          const indicator = document.getElementById("syncIndicator");
-          const messageSpan = document.getElementById("syncMessage");
-
-          messageSpan.textContent = message;
-          indicator.style.borderColor = isError
-            ? "var(--error)"
-            : "var(--success)";
-          indicator.classList.add("active");
-
-          setTimeout(() => {
-            indicator.classList.remove("active");
-          }, 3000);
-        }
-
-        // Override auto-save to use Firebase instead of localStorage
-        function autoSaveToFirebase() {
-          if (currentUserRole === "admin") {
-            saveToFirebase();
-          }
-        }
-
-        // Check for existing session on load
-        window.addEventListener("DOMContentLoaded", function () {
-          const savedRole = sessionStorage.getItem("userRole");
-          const savedEmail = sessionStorage.getItem("userEmail");
-
-          if (savedRole && savedEmail) {
-            // Check if still authenticated
-            auth.onAuthStateChanged((user) => {
-              if (user) {
-                currentUser = user;
-                currentUserRole = savedRole;
-                showApp();
-              } else {
-                // Session expired, show login
-                sessionStorage.clear();
-              }
-            });
-          }
-
-          // Don't load from localStorage anymore - Firebase handles it
-          // registerServiceWorker(); // Keeping PWA functionality
-          // handlePWAInstall();
-        });
+        // Note: showNotification() is defined in shared.js
 
         // Add CSS for view-only mode
         const style = document.createElement("style");
@@ -3127,18 +2970,6 @@
       `;
         document.head.appendChild(style);
 
-        // Handle Enter key in password field
-        document.addEventListener("DOMContentLoaded", function () {
-          const passwordInput = document.getElementById("passwordInput");
-          if (passwordInput) {
-            passwordInput.addEventListener("keypress", function (e) {
-              if (e.key === "Enter") {
-                handleLogin();
-              }
-            });
-          }
-        });
-      }
     </script>
   </body>
 </html>
