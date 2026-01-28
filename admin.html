@@ -1590,8 +1590,8 @@
           // Show admin UI
           document.getElementById("userInfo").style.display = "flex";
 
-          // Load timetable from localStorage
-          loadFromLocalStorage();
+          // Auto-load timetable from Firebase (same as view.html)
+          autoLoadFromFirebase();
         });
       });
 
@@ -1669,171 +1669,169 @@
       }
 
       function removePerson(name) {
-          if (
-            confirm(
-              `Remove ${name} from the list? All their assignments will be deleted.`,
-            )
-          ) {
-            peopleList = peopleList.filter((person) => person !== name);
+        if (
+          confirm(
+            `Remove ${name} from the list? All their assignments will be deleted.`,
+          )
+        ) {
+          peopleList = peopleList.filter((person) => person !== name);
 
-            days.forEach((day) => {
-              if (assignments[day]) {
-                Object.keys(assignments[day]).forEach((key) => {
-                  if (key.includes(`-${name}`)) {
-                    delete assignments[day][key];
-                  }
-                });
-              }
-            });
+          days.forEach((day) => {
+            if (assignments[day]) {
+              Object.keys(assignments[day]).forEach((key) => {
+                if (key.includes(`-${name}`)) {
+                  delete assignments[day][key];
+                }
+              });
+            }
+          });
 
-            updatePeopleList();
-            updateModalSelects();
-            renderCurrentTimetable();
-            updateCounters();
-            autoSaveToFirebase();
-          }
+          updatePeopleList();
+          updateModalSelects();
+          renderCurrentTimetable();
+          updateCounters();
+          autoSaveToFirebase();
         }
+      }
 
-        function updatePeopleList() {
-          const listContainer = document.getElementById("peopleList");
+      function updatePeopleList() {
+        const listContainer = document.getElementById("peopleList");
 
-          // Update counters
-          document.getElementById("peopleCount").textContent =
-            peopleList.length;
-          const modalCounter = document.getElementById("peopleCountInModal");
-          if (modalCounter) modalCounter.textContent = peopleList.length;
+        // Update counters
+        document.getElementById("peopleCount").textContent = peopleList.length;
+        const modalCounter = document.getElementById("peopleCountInModal");
+        if (modalCounter) modalCounter.textContent = peopleList.length;
 
-          if (peopleList.length === 0) {
-            listContainer.innerHTML = `
+        if (peopleList.length === 0) {
+          listContainer.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">👤</div>
                         <p>No people added yet</p>
                     </div>
                 `;
-            return;
-          }
+          return;
+        }
 
-          listContainer.innerHTML = peopleList
-            .map(
-              (person) => `
+        listContainer.innerHTML = peopleList
+          .map(
+            (person) => `
                 <div class="list-item">
                     <span class="item-name">${person}</span>
                     <button class="delete-btn" onclick="removePerson('${person.replace(/'/g, "\\'")}')">Remove</button>
                 </div>
             `,
-            )
-            .join("");
+          )
+          .join("");
+      }
+
+      // Classes Management
+      function addClasses() {
+        const input = document.getElementById("classesInput");
+        const text = input.value.trim();
+
+        if (!text) {
+          alert("Please enter at least one class name");
+          return;
         }
 
-        // Classes Management
-        function addClasses() {
-          const input = document.getElementById("classesInput");
-          const text = input.value.trim();
+        // Split by newlines first, then by commas
+        const lines = text.split("\n");
+        const names = [];
+        lines.forEach((line) => {
+          const parts = line
+            .split(",")
+            .map((name) => name.trim())
+            .filter((name) => name);
+          names.push(...parts);
+        });
 
-          if (!text) {
-            alert("Please enter at least one class name");
-            return;
+        if (names.length === 0) {
+          alert("Please enter at least one class name");
+          return;
+        }
+
+        let added = 0;
+        let skipped = 0;
+
+        names.forEach((name) => {
+          if (!classList.includes(name)) {
+            classList.push(name);
+            classColors[name] =
+              defaultColors[colorIndex % defaultColors.length];
+            colorIndex++;
+            added++;
+          } else {
+            skipped++;
           }
+        });
 
-          // Split by newlines first, then by commas
-          const lines = text.split("\n");
-          const names = [];
-          lines.forEach((line) => {
-            const parts = line
-              .split(",")
-              .map((name) => name.trim())
-              .filter((name) => name);
-            names.push(...parts);
-          });
+        input.value = "";
+        updateClassList();
+        updateModalSelects();
+        autoSaveToFirebase();
 
-          if (names.length === 0) {
-            alert("Please enter at least one class name");
-            return;
-          }
+        if (added > 0) {
+          alert(
+            `Added ${added} ${added === 1 ? "class" : "classes"}${skipped > 0 ? `, skipped ${skipped} duplicate${skipped === 1 ? "" : "s"}` : ""}`,
+          );
+        } else {
+          alert("All classes were already in the list");
+        }
+      }
+      function removeClass(name) {
+        if (
+          confirm(
+            `Remove ${name} from the list? All assignments using this class will be deleted.`,
+          )
+        ) {
+          classList = classList.filter((cls) => cls !== name);
+          delete classColors[name];
 
-          let added = 0;
-          let skipped = 0;
-
-          names.forEach((name) => {
-            if (!classList.includes(name)) {
-              classList.push(name);
-              classColors[name] =
-                defaultColors[colorIndex % defaultColors.length];
-              colorIndex++;
-              added++;
-            } else {
-              skipped++;
+          days.forEach((day) => {
+            if (assignments[day]) {
+              Object.keys(assignments[day]).forEach((key) => {
+                if (assignments[day][key].class === name) {
+                  delete assignments[day][key];
+                }
+              });
             }
           });
 
-          input.value = "";
           updateClassList();
           updateModalSelects();
-          autoSaveToFirebase();
-
-          if (added > 0) {
-            alert(
-              `Added ${added} ${added === 1 ? "class" : "classes"}${skipped > 0 ? `, skipped ${skipped} duplicate${skipped === 1 ? "" : "s"}` : ""}`,
-            );
-          } else {
-            alert("All classes were already in the list");
-          }
-        }
-        function removeClass(name) {
-          if (
-            confirm(
-              `Remove ${name} from the list? All assignments using this class will be deleted.`,
-            )
-          ) {
-            classList = classList.filter((cls) => cls !== name);
-            delete classColors[name];
-
-            days.forEach((day) => {
-              if (assignments[day]) {
-                Object.keys(assignments[day]).forEach((key) => {
-                  if (assignments[day][key].class === name) {
-                    delete assignments[day][key];
-                  }
-                });
-              }
-            });
-
-            updateClassList();
-            updateModalSelects();
-            renderCurrentTimetable();
-            updateCounters();
-            autoSaveToFirebase();
-          }
-        }
-
-        function updateClassColor(name, color) {
-          classColors[name] = color;
           renderCurrentTimetable();
+          updateCounters();
           autoSaveToFirebase();
         }
+      }
 
-        function updateClassList() {
-          const listContainer = document.getElementById("classList");
+      function updateClassColor(name, color) {
+        classColors[name] = color;
+        renderCurrentTimetable();
+        autoSaveToFirebase();
+      }
 
-          // Update counters
-          document.getElementById("classesCount").textContent =
-            classList.length;
-          const modalCounter = document.getElementById("classesCountInModal");
-          if (modalCounter) modalCounter.textContent = classList.length;
+      function updateClassList() {
+        const listContainer = document.getElementById("classList");
 
-          if (classList.length === 0) {
-            listContainer.innerHTML = `
+        // Update counters
+        document.getElementById("classesCount").textContent = classList.length;
+        const modalCounter = document.getElementById("classesCountInModal");
+        if (modalCounter) modalCounter.textContent = classList.length;
+
+        if (classList.length === 0) {
+          listContainer.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">📖</div>
                         <p>No classes added yet</p>
                     </div>
                 `;
-            return;
-          }
+          return;
+        }
 
-          listContainer.innerHTML = classList
-            .map(
-              (cls) => `
+        listContainer.innerHTML = classList
+          .map(
+            (cls) => `
                 <div class="list-item">
                     <div class="class-item">
                         <input type="color" value="${classColors[cls]}" 
@@ -1844,46 +1842,44 @@
                     <button class="delete-btn" onclick="removeClass('${cls.replace(/'/g, "\\'")}')">Remove</button>
                 </div>
             `,
-            )
+          )
+          .join("");
+      }
+
+      // Modal Management
+      function openPeopleManager() {
+        document.getElementById("peopleManagerModal").classList.add("active");
+      }
+
+      function closePeopleManager() {
+        document
+          .getElementById("peopleManagerModal")
+          .classList.remove("active");
+      }
+
+      function openClassesManager() {
+        document.getElementById("classesManagerModal").classList.add("active");
+      }
+
+      function closeClassesManager() {
+        document
+          .getElementById("classesManagerModal")
+          .classList.remove("active");
+      }
+
+      function updateModalSelects() {
+        const classSelect = document.getElementById("modalClass");
+
+        classSelect.innerHTML =
+          '<option value="">Select a class...</option>' +
+          classList
+            .map((cls) => `<option value="${cls}">${cls}</option>`)
             .join("");
-        }
+      }
 
-        // Modal Management
-        function openPeopleManager() {
-          document.getElementById("peopleManagerModal").classList.add("active");
-        }
-
-        function closePeopleManager() {
-          document
-            .getElementById("peopleManagerModal")
-            .classList.remove("active");
-        }
-
-        function openClassesManager() {
-          document
-            .getElementById("classesManagerModal")
-            .classList.add("active");
-        }
-
-        function closeClassesManager() {
-          document
-            .getElementById("classesManagerModal")
-            .classList.remove("active");
-        }
-
-        function updateModalSelects() {
-          const classSelect = document.getElementById("modalClass");
-
-          classSelect.innerHTML =
-            '<option value="">Select a class...</option>' +
-            classList
-              .map((cls) => `<option value="${cls}">${cls}</option>`)
-              .join("");
-        }
-
-        // Time Slots Management
-        // REMOVED: Generate Timetable function (timetable now loads automatically from Firebase)
-        /*
+      // Time Slots Management
+      // REMOVED: Generate Timetable function (timetable now loads automatically from Firebase)
+      /*
       function generateTimetable() {
         const startTime = document.getElementById("startTime").value;
         const endTime = document.getElementById("endTime").value;
@@ -1938,271 +1934,265 @@
       }
       */
 
-        function openEditTimeSlots() {
-          const listContainer = document.getElementById("timeSlotList");
-          listContainer.innerHTML = timeSlots
-            .map(
-              (slot, index) => `
+      function openEditTimeSlots() {
+        const listContainer = document.getElementById("timeSlotList");
+        listContainer.innerHTML = timeSlots
+          .map(
+            (slot, index) => `
                 <div class="time-slot-item">
                     <input type="time" value="${slot.start}" onchange="updateTimeSlot(${index}, 'start', this.value)">
                     <input type="time" value="${slot.end}" onchange="updateTimeSlot(${index}, 'end', this.value)">
                     <button class="btn btn-secondary btn-small delete-btn" onclick="removeTimeSlot(${index})">Remove</button>
                 </div>
             `,
-            )
-            .join("");
+          )
+          .join("");
 
-          document.getElementById("editTimeSlotsModal").classList.add("active");
-        }
+        document.getElementById("editTimeSlotsModal").classList.add("active");
+      }
 
-        function updateTimeSlot(index, field, value) {
-          timeSlots[index][field] = value;
-        }
+      function updateTimeSlot(index, field, value) {
+        timeSlots[index][field] = value;
+      }
 
-        function addNewTimeSlot() {
-          const lastSlot = timeSlots[timeSlots.length - 1];
-          const newStart = lastSlot ? lastSlot.end : "08:00";
-          const newEnd = minutesToTime(timeToMinutes(newStart) + 60);
+      function addNewTimeSlot() {
+        const lastSlot = timeSlots[timeSlots.length - 1];
+        const newStart = lastSlot ? lastSlot.end : "08:00";
+        const newEnd = minutesToTime(timeToMinutes(newStart) + 60);
 
-          timeSlots.push({ start: newStart, end: newEnd });
+        timeSlots.push({ start: newStart, end: newEnd });
+        openEditTimeSlots();
+      }
+
+      function removeTimeSlot(index) {
+        if (
+          confirm(
+            "Remove this time slot? Any assignments during this time will be deleted.",
+          )
+        ) {
+          const removedSlot = timeSlots[index];
+          timeSlots.splice(index, 1);
+
+          // Remove assignments in this slot
+          days.forEach((day) => {
+            if (assignments[day]) {
+              Object.keys(assignments[day]).forEach((key) => {
+                if (key.startsWith(removedSlot.start + "-")) {
+                  delete assignments[day][key];
+                }
+              });
+            }
+          });
+
           openEditTimeSlots();
         }
+      }
 
-        function removeTimeSlot(index) {
-          if (
-            confirm(
-              "Remove this time slot? Any assignments during this time will be deleted.",
-            )
-          ) {
-            const removedSlot = timeSlots[index];
-            timeSlots.splice(index, 1);
+      function closeEditTimeSlotsModal() {
+        document
+          .getElementById("editTimeSlotsModal")
+          .classList.remove("active");
+      }
 
-            // Remove assignments in this slot
-            days.forEach((day) => {
-              if (assignments[day]) {
-                Object.keys(assignments[day]).forEach((key) => {
-                  if (key.startsWith(removedSlot.start + "-")) {
-                    delete assignments[day][key];
-                  }
-                });
-              }
-            });
+      function saveTimeSlots() {
+        // Sort time slots
+        timeSlots.sort(
+          (a, b) => timeToMinutes(a.start) - timeToMinutes(b.start),
+        );
 
-            openEditTimeSlots();
-          }
-        }
+        closeEditTimeSlotsModal();
+        renderTimetable();
+        updateCounters();
+        autoSaveToFirebase();
+      }
 
-        function closeEditTimeSlotsModal() {
-          document
-            .getElementById("editTimeSlotsModal")
-            .classList.remove("active");
-        }
-
-        function saveTimeSlots() {
-          // Sort time slots
-          timeSlots.sort(
-            (a, b) => timeToMinutes(a.start) - timeToMinutes(b.start),
-          );
-
-          closeEditTimeSlotsModal();
+      function renderCurrentTimetable() {
+        if (timeSlots.length > 0) {
           renderTimetable();
-          updateCounters();
-          autoSaveToFirebase();
         }
+      }
 
-        function renderCurrentTimetable() {
-          if (timeSlots.length > 0) {
-            renderTimetable();
-          }
-        }
+      function renderTimetable() {
+        const container = document.getElementById("timetableContainer");
 
-        function renderTimetable() {
-          const container = document.getElementById("timetableContainer");
+        let html = '<div style="display: inline-block; min-width: 100%;">';
+        html += `<div class="day-title ${currentDay}">${currentDay.charAt(0).toUpperCase() + currentDay.slice(1)}</div>`;
+        html += '<div class="timetable">';
 
-          let html = '<div style="display: inline-block; min-width: 100%;">';
-          html += `<div class="day-title ${currentDay}">${currentDay.charAt(0).toUpperCase() + currentDay.slice(1)}</div>`;
-          html += '<div class="timetable">';
+        html += '<div class="timetable-header-row">';
+        html += "<div>Time</div>";
+        peopleList.forEach((name) => {
+          html += `<div>${name}</div>`;
+        });
+        html += "</div>";
 
-          html += '<div class="timetable-header-row">';
-          html += "<div>Time</div>";
-          peopleList.forEach((name) => {
-            html += `<div>${name}</div>`;
-          });
-          html += "</div>";
+        // Filter out invalid time slots
+        const validTimeSlots = timeSlots.filter(
+          (slot) =>
+            slot &&
+            slot.start &&
+            slot.end &&
+            typeof slot.start === "string" &&
+            typeof slot.end === "string",
+        );
 
-          // Filter out invalid time slots
-          const validTimeSlots = timeSlots.filter(
-            (slot) =>
-              slot &&
-              slot.start &&
-              slot.end &&
-              typeof slot.start === "string" &&
-              typeof slot.end === "string",
-          );
+        validTimeSlots.forEach((slot) => {
+          html += '<div class="timetable-row">';
+          html += `<div class="time-cell"><div class="time-range">${formatTime12Hour(slot.start)}<br>${formatTime12Hour(slot.end)}</div></div>`;
 
-          validTimeSlots.forEach((slot) => {
-            html += '<div class="timetable-row">';
-            html += `<div class="time-cell"><div class="time-range">${formatTime12Hour(slot.start)}<br>${formatTime12Hour(slot.end)}</div></div>`;
+          peopleList.forEach((person) => {
+            const cellKey = `${slot.start}-${person}`;
+            const cellData = assignments[currentDay]?.[cellKey];
+            const hasContent = cellData !== undefined;
 
-            peopleList.forEach((person) => {
-              const cellKey = `${slot.start}-${person}`;
-              const cellData = assignments[currentDay]?.[cellKey];
-              const hasContent = cellData !== undefined;
+            const bgColor = hasContent ? classColors[cellData.class] : "";
+            const style = hasContent ? `style="background: ${bgColor};"` : "";
 
-              const bgColor = hasContent ? classColors[cellData.class] : "";
-              const style = hasContent ? `style="background: ${bgColor};"` : "";
+            // Only make clickable for admin users
+            const clickHandler =
+              currentUserRole === "admin"
+                ? `onclick="editCell('${slot.start}', '${person.replace(/'/g, "\\'")}')"`
+                : "";
 
-              // Only make clickable for admin users
-              const clickHandler =
-                currentUserRole === "admin"
-                  ? `onclick="editCell('${slot.start}', '${person.replace(/'/g, "\\'")}')"`
-                  : "";
+            html += `<div class="roster-cell ${hasContent ? "has-content" : ""}" ${style} ${clickHandler}>`;
 
-              html += `<div class="roster-cell ${hasContent ? "has-content" : ""}" ${style} ${clickHandler}>`;
-
-              if (hasContent) {
-                // Only show remove button for admin
-                if (currentUserRole === "admin") {
-                  html += `<button class="remove-btn-cell" onclick="event.stopPropagation(); removeCell('${slot.start}', '${person.replace(/'/g, "\\'")}')">×</button>`;
-                }
-                html += `<div class="cell-content">`;
-                html += `<div class="assignment-class">${cellData.class}</div>`;
-                html += `<div class="assignment-duration">${cellData.duration} min</div>`;
-                if (cellData.notes) {
-                  html += `<div class="assignment-notes">${cellData.notes}</div>`;
-                }
-                html += `</div>`;
+            if (hasContent) {
+              // Only show remove button for admin
+              if (currentUserRole === "admin") {
+                html += `<button class="remove-btn-cell" onclick="event.stopPropagation(); removeCell('${slot.start}', '${person.replace(/'/g, "\\'")}')">×</button>`;
               }
-
-              html += "</div>";
-            });
+              html += `<div class="cell-content">`;
+              html += `<div class="assignment-class">${cellData.class}</div>`;
+              html += `<div class="assignment-duration">${cellData.duration} min</div>`;
+              if (cellData.notes) {
+                html += `<div class="assignment-notes">${cellData.notes}</div>`;
+              }
+              html += `</div>`;
+            }
 
             html += "</div>";
           });
 
           html += "</div>";
-          html += "</div>";
-          container.innerHTML = html;
+        });
+
+        html += "</div>";
+        html += "</div>";
+        container.innerHTML = html;
+      }
+
+      function switchDay(day) {
+        currentDay = day;
+
+        document.querySelectorAll(".day-btn").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+        document.querySelector(`[data-day="${day}"]`).classList.add("active");
+
+        renderTimetable();
+        updateCounters();
+      }
+
+      function editCell(time, person) {
+        currentEditCell = { time, person };
+        const cellKey = `${time}-${person}`;
+        const currentData = assignments[currentDay][cellKey];
+
+        document.getElementById("modalInfo").textContent =
+          `${currentDay.charAt(0).toUpperCase() + currentDay.slice(1)} - ${formatTime12Hour(time)} - ${person}`;
+
+        if (currentData) {
+          document.getElementById("modalClass").value = currentData.class;
+          document.getElementById("modalDuration").value = currentData.duration;
+          document.getElementById("modalNotes").value = currentData.notes || "";
+        } else {
+          document.getElementById("modalClass").value = "";
+          document.getElementById("modalDuration").value = 60; // Default duration
+          document.getElementById("modalNotes").value = "";
         }
 
-        function switchDay(day) {
-          currentDay = day;
+        document.getElementById("assignmentModal").classList.add("active");
+      }
 
-          document.querySelectorAll(".day-btn").forEach((btn) => {
-            btn.classList.remove("active");
+      function closeModal() {
+        document.getElementById("assignmentModal").classList.remove("active");
+        currentEditCell = null;
+      }
+
+      function confirmAssignment() {
+        if (!currentEditCell) return;
+
+        const className = document.getElementById("modalClass").value;
+        const duration = parseInt(
+          document.getElementById("modalDuration").value,
+        );
+        const notes = document.getElementById("modalNotes").value.trim();
+
+        if (!className) {
+          alert("Please select a class");
+          return;
+        }
+
+        const cellKey = `${currentEditCell.time}-${currentEditCell.person}`;
+
+        assignments[currentDay][cellKey] = {
+          class: className,
+          duration: duration,
+          notes: notes,
+        };
+
+        closeModal();
+        renderTimetable();
+        updateCounters();
+        autoSaveToFirebase();
+      }
+
+      function removeCell(time, person) {
+        const cellKey = `${time}-${person}`;
+        delete assignments[currentDay][cellKey];
+        renderTimetable();
+        updateCounters();
+        autoSaveToFirebase();
+      }
+
+      // Counters
+      function switchCounterTab(tab) {
+        currentCounterTab = tab;
+
+        document
+          .querySelectorAll(".counter-tab")
+          .forEach((t) => t.classList.remove("active"));
+        document
+          .querySelectorAll(".counter-content")
+          .forEach((c) => c.classList.remove("active"));
+
+        if (tab === "day") {
+          document.querySelectorAll(".counter-tab")[0].classList.add("active");
+          document.getElementById("dayCounters").classList.add("active");
+        } else {
+          document.querySelectorAll(".counter-tab")[1].classList.add("active");
+          document.getElementById("weekCounters").classList.add("active");
+        }
+      }
+
+      function updateCounters() {
+        document.getElementById("currentDayLabel").textContent =
+          currentDay.charAt(0).toUpperCase() + currentDay.slice(1);
+
+        // Day counters
+        const dayCounts = {};
+        classList.forEach((cls) => (dayCounts[cls] = 0));
+
+        if (assignments[currentDay]) {
+          Object.values(assignments[currentDay]).forEach((assignment) => {
+            dayCounts[assignment.class]++;
           });
-          document.querySelector(`[data-day="${day}"]`).classList.add("active");
-
-          renderTimetable();
-          updateCounters();
         }
 
-        function editCell(time, person) {
-          currentEditCell = { time, person };
-          const cellKey = `${time}-${person}`;
-          const currentData = assignments[currentDay][cellKey];
-
-          document.getElementById("modalInfo").textContent =
-            `${currentDay.charAt(0).toUpperCase() + currentDay.slice(1)} - ${formatTime12Hour(time)} - ${person}`;
-
-          if (currentData) {
-            document.getElementById("modalClass").value = currentData.class;
-            document.getElementById("modalDuration").value =
-              currentData.duration;
-            document.getElementById("modalNotes").value =
-              currentData.notes || "";
-          } else {
-            document.getElementById("modalClass").value = "";
-            document.getElementById("modalDuration").value = 60; // Default duration
-            document.getElementById("modalNotes").value = "";
-          }
-
-          document.getElementById("assignmentModal").classList.add("active");
-        }
-
-        function closeModal() {
-          document.getElementById("assignmentModal").classList.remove("active");
-          currentEditCell = null;
-        }
-
-        function confirmAssignment() {
-          if (!currentEditCell) return;
-
-          const className = document.getElementById("modalClass").value;
-          const duration = parseInt(
-            document.getElementById("modalDuration").value,
-          );
-          const notes = document.getElementById("modalNotes").value.trim();
-
-          if (!className) {
-            alert("Please select a class");
-            return;
-          }
-
-          const cellKey = `${currentEditCell.time}-${currentEditCell.person}`;
-
-          assignments[currentDay][cellKey] = {
-            class: className,
-            duration: duration,
-            notes: notes,
-          };
-
-          closeModal();
-          renderTimetable();
-          updateCounters();
-          autoSaveToFirebase();
-        }
-
-        function removeCell(time, person) {
-          const cellKey = `${time}-${person}`;
-          delete assignments[currentDay][cellKey];
-          renderTimetable();
-          updateCounters();
-          autoSaveToFirebase();
-        }
-
-        // Counters
-        function switchCounterTab(tab) {
-          currentCounterTab = tab;
-
-          document
-            .querySelectorAll(".counter-tab")
-            .forEach((t) => t.classList.remove("active"));
-          document
-            .querySelectorAll(".counter-content")
-            .forEach((c) => c.classList.remove("active"));
-
-          if (tab === "day") {
-            document
-              .querySelectorAll(".counter-tab")[0]
-              .classList.add("active");
-            document.getElementById("dayCounters").classList.add("active");
-          } else {
-            document
-              .querySelectorAll(".counter-tab")[1]
-              .classList.add("active");
-            document.getElementById("weekCounters").classList.add("active");
-          }
-        }
-
-        function updateCounters() {
-          document.getElementById("currentDayLabel").textContent =
-            currentDay.charAt(0).toUpperCase() + currentDay.slice(1);
-
-          // Day counters
-          const dayCounts = {};
-          classList.forEach((cls) => (dayCounts[cls] = 0));
-
-          if (assignments[currentDay]) {
-            Object.values(assignments[currentDay]).forEach((assignment) => {
-              dayCounts[assignment.class]++;
-            });
-          }
-
-          const dayGrid = document.getElementById("dayCounterGrid");
-          dayGrid.innerHTML = classList
-            .map(
-              (cls) => `
+        const dayGrid = document.getElementById("dayCounterGrid");
+        dayGrid.innerHTML = classList
+          .map(
+            (cls) => `
                 <div class="counter-item">
                     <div class="counter-class">
                         <div class="counter-color" style="background: ${classColors[cls]}"></div>
@@ -2211,25 +2201,25 @@
                     <div class="counter-value">${dayCounts[cls]}</div>
                 </div>
             `,
-            )
-            .join("");
+          )
+          .join("");
 
-          // Week counters
-          const weekCounts = {};
-          classList.forEach((cls) => (weekCounts[cls] = 0));
+        // Week counters
+        const weekCounts = {};
+        classList.forEach((cls) => (weekCounts[cls] = 0));
 
-          days.forEach((day) => {
-            if (assignments[day]) {
-              Object.values(assignments[day]).forEach((assignment) => {
-                weekCounts[assignment.class]++;
-              });
-            }
-          });
+        days.forEach((day) => {
+          if (assignments[day]) {
+            Object.values(assignments[day]).forEach((assignment) => {
+              weekCounts[assignment.class]++;
+            });
+          }
+        });
 
-          const weekGrid = document.getElementById("weekCounterGrid");
-          weekGrid.innerHTML = classList
-            .map(
-              (cls) => `
+        const weekGrid = document.getElementById("weekCounterGrid");
+        weekGrid.innerHTML = classList
+          .map(
+            (cls) => `
                 <div class="counter-item">
                     <div class="counter-class">
                         <div class="counter-color" style="background: ${classColors[cls]}"></div>
@@ -2238,135 +2228,59 @@
                     <div class="counter-value">${weekCounts[cls]}</div>
                 </div>
             `,
-            )
-            .join("");
-        }
+          )
+          .join("");
+      }
 
-        // Note: Time utilities (timeToMinutes, minutesToTime, formatTime12Hour) are defined in shared.js
+      // Note: Time utilities (timeToMinutes, minutesToTime, formatTime12Hour) are defined in shared.js
 
-        // Save & Load Project
-        function saveProject() {
-          const projectData = {
-            version: "1.0",
-            savedDate: new Date().toISOString(),
-            peopleList: peopleList,
-            classList: classList,
-            classColors: classColors,
-            assignments: assignments,
-            timeSlots: timeSlots,
-          };
+      // Save & Load Project
+      function saveProject() {
+        const projectData = {
+          version: "1.0",
+          savedDate: new Date().toISOString(),
+          peopleList: peopleList,
+          classList: classList,
+          classColors: classColors,
+          assignments: assignments,
+          timeSlots: timeSlots,
+        };
 
-          const jsonString = JSON.stringify(projectData, null, 2);
-          const blob = new Blob([jsonString], { type: "application/json" });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = `Timetable_Project_${new Date().toISOString().split("T")[0]}.json`;
-          a.click();
-          URL.revokeObjectURL(url);
+        const jsonString = JSON.stringify(projectData, null, 2);
+        const blob = new Blob([jsonString], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `Timetable_Project_${new Date().toISOString().split("T")[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
 
-          showAutoSaveIndicator("Project saved!");
-        }
+        showAutoSaveIndicator("Project saved!");
+      }
 
-        function loadProject(event) {
-          const file = event.target.files[0];
-          if (!file) return;
+      function loadProject(event) {
+        const file = event.target.files[0];
+        if (!file) return;
 
-          const reader = new FileReader();
-          reader.onload = function (e) {
-            try {
-              const projectData = JSON.parse(e.target.result);
-
-              // Validate version
-              if (!projectData.version) {
-                alert("Invalid project file");
-                return;
-              }
-
-              // Confirm load
-              if (
-                !confirm(
-                  "Loading this project will replace your current work. Continue?",
-                )
-              ) {
-                return;
-              }
-
-              // Restore data
-              peopleList = projectData.peopleList || [];
-              classList = projectData.classList || [];
-              classColors = projectData.classColors || {};
-              assignments = projectData.assignments || {};
-              timeSlots = projectData.timeSlots || [];
-              colorIndex = classList.length;
-
-              // Note: Settings (startTime, endTime, lessonDuration) are no longer used
-              // Time slots are now managed directly via Edit Time Slots
-
-              // Update UI
-              updatePeopleList();
-              updateClassList();
-              updateModalSelects();
-
-              // Show timetable if data exists
-              if (timeSlots.length > 0) {
-                document.getElementById("daySelector").style.display = "flex";
-                document.getElementById("timetableWrapper").style.display =
-                  "block";
-                document.getElementById("editTimeSlotsBtn").style.display =
-                  "inline-block";
-                document.getElementById("countersSection").style.display =
-                  "block";
-                renderTimetable();
-                updateCounters();
-              }
-
-              alert("Project loaded successfully!");
-              autoSaveToFirebase();
-            } catch (error) {
-              alert("Error loading project file: " + error.message);
-            }
-          };
-          reader.readAsText(file);
-
-          // Reset file input
-          event.target.value = "";
-        }
-
-        function autoSaveToFirebase() {
-          const projectData = {
-            version: "1.0",
-            savedDate: new Date().toISOString(),
-            peopleList: peopleList,
-            classList: classList,
-            classColors: classColors,
-            assignments: assignments,
-            timeSlots: timeSlots,
-          };
-
+        const reader = new FileReader();
+        reader.onload = function (e) {
           try {
-            // Save to localStorage for local persistence
-            localStorage.setItem(
-              "timetableProject",
-              JSON.stringify(projectData),
-            );
-            showAutoSaveIndicator();
+            const projectData = JSON.parse(e.target.result);
 
-            // Also save to Firebase if admin
-            if (currentUserRole === "admin") {
-              saveToFirebase();
+            // Validate version
+            if (!projectData.version) {
+              alert("Invalid project file");
+              return;
             }
-          } catch (error) {
-            console.error("Auto-save failed:", error);
-          }
-        }
 
-        function loadFromLocalStorage() {
-          try {
-            const saved = localStorage.getItem("timetableProject");
-            if (!saved) return;
-
-            const projectData = JSON.parse(saved);
+            // Confirm load
+            if (
+              !confirm(
+                "Loading this project will replace your current work. Continue?",
+              )
+            ) {
+              return;
+            }
 
             // Restore data
             peopleList = projectData.peopleList || [];
@@ -2375,6 +2289,9 @@
             assignments = projectData.assignments || {};
             timeSlots = projectData.timeSlots || [];
             colorIndex = classList.length;
+
+            // Note: Settings (startTime, endTime, lessonDuration) are no longer used
+            // Time slots are now managed directly via Edit Time Slots
 
             // Update UI
             updatePeopleList();
@@ -2393,362 +2310,428 @@
               renderTimetable();
               updateCounters();
             }
+
+            alert("Project loaded successfully!");
+            autoSaveToFirebase();
           } catch (error) {
-            console.error("Error loading from localStorage:", error);
+            alert("Error loading project file: " + error.message);
           }
-        }
+        };
+        reader.readAsText(file);
 
-        function showAutoSaveIndicator(message = "✓ Auto-saved") {
-          const indicator = document.getElementById("autoSaveIndicator");
-          indicator.textContent = message;
-          indicator.style.display = "block";
+        // Reset file input
+        event.target.value = "";
+      }
 
-          setTimeout(() => {
-            indicator.style.display = "none";
-          }, 2000);
-        }
+      function autoSaveToFirebase() {
+        const projectData = {
+          version: "1.0",
+          savedDate: new Date().toISOString(),
+          peopleList: peopleList,
+          classList: classList,
+          classColors: classColors,
+          assignments: assignments,
+          timeSlots: timeSlots,
+        };
 
-        // Export Functions
-        function exportSchedule() {
-          let hasAssignments = false;
-          days.forEach((day) => {
-            if (assignments[day] && Object.keys(assignments[day]).length > 0) {
-              hasAssignments = true;
-            }
-          });
+        try {
+          // Save to localStorage for local persistence
+          localStorage.setItem("timetableProject", JSON.stringify(projectData));
+          showAutoSaveIndicator();
 
-          if (!hasAssignments) {
-            alert("No assignments to export");
-            return;
+          // Also save to Firebase if admin
+          if (currentUserRole === "admin") {
+            saveToFirebase();
           }
-
-          // Open export modal
-          document.getElementById("exportModal").classList.add("active");
+        } catch (error) {
+          console.error("Auto-save failed:", error);
         }
+      }
 
-        function closeExportModal() {
-          document.getElementById("exportModal").classList.remove("active");
-        }
+      function loadFromLocalStorage() {
+        try {
+          const saved = localStorage.getItem("timetableProject");
+          if (!saved) return;
 
-        // Excel Export
-        function exportToExcel() {
-          const workbook = XLSX.utils.book_new();
-          const timestamp = new Date().toISOString().split("T")[0];
+          const projectData = JSON.parse(saved);
 
-          // Create a sheet for each day
-          days.forEach((day) => {
-            const dayName = day.charAt(0).toUpperCase() + day.slice(1);
-            const sheetData = [];
+          // Restore data
+          peopleList = projectData.peopleList || [];
+          classList = projectData.classList || [];
+          classColors = projectData.classColors || {};
+          assignments = projectData.assignments || {};
+          timeSlots = projectData.timeSlots || [];
+          colorIndex = classList.length;
 
-            // Header row
-            const headerRow = ["Time"];
-            peopleList.forEach((person) => headerRow.push(person));
-            sheetData.push(headerRow);
+          // Update UI
+          updatePeopleList();
+          updateClassList();
+          updateModalSelects();
 
-            // Data rows
-            timeSlots.forEach((slot) => {
-              const row = [
-                `${formatTime12Hour(slot.start)} - ${formatTime12Hour(slot.end)}`,
-              ];
-
-              peopleList.forEach((person) => {
-                const cellKey = `${slot.start}-${person}`;
-                const data = assignments[day]?.[cellKey];
-
-                if (data) {
-                  let cellText = `${data.class}`;
-                  if (data.duration !== 60)
-                    cellText += ` (${data.duration}min)`;
-                  if (data.notes) cellText += `\n${data.notes}`;
-                  row.push(cellText);
-                } else {
-                  row.push("");
-                }
-              });
-
-              sheetData.push(row);
-            });
-
-            const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
-
-            // Set column widths
-            const colWidths = [{ wch: 20 }];
-            peopleList.forEach(() => colWidths.push({ wch: 25 }));
-            worksheet["!cols"] = colWidths;
-
-            XLSX.utils.book_append_sheet(workbook, worksheet, dayName);
-          });
-
-          // Summary sheet
-          const summaryData = [["Class Summary", "Count"]];
-          const weekCounts = {};
-          classList.forEach((cls) => (weekCounts[cls] = 0));
-          days.forEach((day) => {
-            if (assignments[day]) {
-              Object.values(assignments[day]).forEach((assignment) => {
-                weekCounts[assignment.class]++;
-              });
-            }
-          });
-
-          classList.forEach((cls) => {
-            summaryData.push([cls, weekCounts[cls]]);
-          });
-          summaryData.push(["", ""]);
-          summaryData.push(["Total People", peopleList.length]);
-          summaryData.push(["Total Classes", classList.length]);
-
-          const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
-          summarySheet["!cols"] = [{ wch: 40 }, { wch: 10 }];
-          XLSX.utils.book_append_sheet(workbook, summarySheet, "Summary");
-
-          XLSX.writeFile(workbook, `Timetable_${timestamp}.xlsx`);
-          showAutoSaveIndicator("✅ Excel file downloaded!");
-        }
-
-        // PDF Export
-        async function exportToPDF() {
-          const { jsPDF } = window.jspdf;
-          const pdf = new jsPDF("l", "mm", "a4"); // landscape
-          const timestamp = new Date().toISOString().split("T")[0];
-          let pageNum = 0;
-
-          for (const day of days) {
-            if (pageNum > 0) pdf.addPage();
-
-            const dayName = day.charAt(0).toUpperCase() + day.slice(1);
-
-            // Title
-            pdf.setFontSize(20);
-            pdf.setTextColor(44, 95, 79);
-            pdf.text(dayName, 148, 20, { align: "center" });
-
-            // Table
-            const tableData = [];
-            timeSlots.forEach((slot) => {
-              const row = [
-                `${formatTime12Hour(slot.start)}-${formatTime12Hour(slot.end)}`,
-              ];
-
-              peopleList.forEach((person) => {
-                const cellKey = `${slot.start}-${person}`;
-                const data = assignments[day]?.[cellKey];
-
-                if (data) {
-                  let cellText = data.class;
-                  if (data.duration !== 60)
-                    cellText += `\n(${data.duration}min)`;
-                  if (data.notes) cellText += `\n${data.notes}`;
-                  row.push(cellText);
-                } else {
-                  row.push("");
-                }
-              });
-
-              tableData.push(row);
-            });
-
-            pdf.autoTable({
-              head: [["Time", ...peopleList]],
-              body: tableData,
-              startY: 30,
-              theme: "grid",
-              styles: { fontSize: 8, cellPadding: 2 },
-              headStyles: { fillColor: [44, 95, 79], textColor: 255 },
-              columnStyles: {
-                0: { cellWidth: 25, fontStyle: "bold" },
-              },
-              margin: { left: 10, right: 10 },
-            });
-
-            // Footer
-            pdf.setFontSize(8);
-            pdf.setTextColor(107, 107, 107);
-            pdf.text(`Generated: ${new Date().toLocaleString()}`, 10, 200);
-            pdf.text(`Page ${pageNum + 1} of 5`, 280, 200);
-
-            pageNum++;
-          }
-
-          pdf.save(`Timetable_${timestamp}.pdf`);
-          showAutoSaveIndicator("✅ PDF downloaded!");
-        }
-
-        // PNG Export
-        async function exportToPNG() {
-          const originalDay = currentDay;
-          let downloadCount = 0;
-
-          for (const day of days) {
-            // Switch to the day
-            currentDay = day;
+          // Show timetable if data exists
+          if (timeSlots.length > 0) {
+            document.getElementById("daySelector").style.display = "flex";
+            document.getElementById("timetableWrapper").style.display = "block";
+            document.getElementById("editTimeSlotsBtn").style.display =
+              "inline-block";
+            document.getElementById("countersSection").style.display = "block";
             renderTimetable();
+            updateCounters();
+          }
+        } catch (error) {
+          console.error("Error loading from localStorage:", error);
+        }
+      }
 
-            // Wait for render
-            await new Promise((resolve) => setTimeout(resolve, 100));
+      function showAutoSaveIndicator(message = "✓ Auto-saved") {
+        const indicator = document.getElementById("autoSaveIndicator");
+        indicator.textContent = message;
+        indicator.style.display = "block";
 
-            // Capture the timetable
-            const element = document.getElementById("timetableContainer");
-            const canvas = await html2canvas(element, {
-              scale: 2,
-              backgroundColor: "#ffffff",
-              logging: false,
-            });
+        setTimeout(() => {
+          indicator.style.display = "none";
+        }, 2000);
+      }
 
-            // Download
-            const dayName = day.charAt(0).toUpperCase() + day.slice(1);
-            const timestamp = new Date().toISOString().split("T")[0];
+      // Export Functions
+      function exportSchedule() {
+        let hasAssignments = false;
+        days.forEach((day) => {
+          if (assignments[day] && Object.keys(assignments[day]).length > 0) {
+            hasAssignments = true;
+          }
+        });
 
-            canvas.toBlob((blob) => {
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement("a");
-              a.href = url;
-              a.download = `Timetable_${dayName}_${timestamp}.png`;
-              a.click();
-              URL.revokeObjectURL(url);
+        if (!hasAssignments) {
+          alert("No assignments to export");
+          return;
+        }
 
-              downloadCount++;
-              if (downloadCount === days.length) {
-                showAutoSaveIndicator("✅ All images downloaded!");
+        // Open export modal
+        document.getElementById("exportModal").classList.add("active");
+      }
+
+      function closeExportModal() {
+        document.getElementById("exportModal").classList.remove("active");
+      }
+
+      // Excel Export
+      function exportToExcel() {
+        const workbook = XLSX.utils.book_new();
+        const timestamp = new Date().toISOString().split("T")[0];
+
+        // Create a sheet for each day
+        days.forEach((day) => {
+          const dayName = day.charAt(0).toUpperCase() + day.slice(1);
+          const sheetData = [];
+
+          // Header row
+          const headerRow = ["Time"];
+          peopleList.forEach((person) => headerRow.push(person));
+          sheetData.push(headerRow);
+
+          // Data rows
+          timeSlots.forEach((slot) => {
+            const row = [
+              `${formatTime12Hour(slot.start)} - ${formatTime12Hour(slot.end)}`,
+            ];
+
+            peopleList.forEach((person) => {
+              const cellKey = `${slot.start}-${person}`;
+              const data = assignments[day]?.[cellKey];
+
+              if (data) {
+                let cellText = `${data.class}`;
+                if (data.duration !== 60) cellText += ` (${data.duration}min)`;
+                if (data.notes) cellText += `\n${data.notes}`;
+                row.push(cellText);
+              } else {
+                row.push("");
               }
             });
 
-            // Small delay between downloads
-            await new Promise((resolve) => setTimeout(resolve, 500));
-          }
-
-          // Restore original day
-          currentDay = originalDay;
-          renderTimetable();
-        }
-
-        // Export All Formats
-        async function exportAll() {
-          showAutoSaveIndicator("⏳ Exporting all formats...");
-
-          exportToExcel();
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-
-          await exportToPDF();
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-
-          await exportToPNG();
-
-          showAutoSaveIndicator("✅ All formats exported!");
-        }
-
-        // Event Listeners
-        document
-          .getElementById("assignmentModal")
-          .addEventListener("click", function (e) {
-            if (e.target === this) closeModal();
+            sheetData.push(row);
           });
 
-        document
-          .getElementById("editTimeSlotsModal")
-          .addEventListener("click", function (e) {
-            if (e.target === this) closeEditTimeSlotsModal();
-          });
+          const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
 
-        document
-          .getElementById("exportModal")
-          .addEventListener("click", function (e) {
-            if (e.target === this) closeExportModal();
-          });
+          // Set column widths
+          const colWidths = [{ wch: 20 }];
+          peopleList.forEach(() => colWidths.push({ wch: 25 }));
+          worksheet["!cols"] = colWidths;
 
-        document
-          .getElementById("peopleManagerModal")
-          .addEventListener("click", function (e) {
-            if (e.target === this) closePeopleManager();
-          });
-
-        document
-          .getElementById("classesManagerModal")
-          .addEventListener("click", function (e) {
-            if (e.target === this) closeClassesManager();
-          });
-
-        // Allow Enter to submit textareas with Ctrl+Enter
-        document
-          .getElementById("peopleInput")
-          .addEventListener("keydown", function (e) {
-            if (e.key === "Enter" && e.ctrlKey) addPeople();
-          });
-
-        document
-          .getElementById("classesInput")
-          .addEventListener("keydown", function (e) {
-            if (e.key === "Enter" && e.ctrlKey) addClasses();
-          });
-
-        // Initialize PWA features on page load
-        window.addEventListener("DOMContentLoaded", function () {
-          // Note: loadFromLocalStorage() is called in the auth check above
-          registerServiceWorker();
-          handlePWAInstall();
+          XLSX.utils.book_append_sheet(workbook, worksheet, dayName);
         });
 
-        // Service Worker Registration
-        function registerServiceWorker() {
-          if ("serviceWorker" in navigator) {
-            navigator.serviceWorker
-              .register("./service-worker.js")
-              .then((registration) => {
-                console.log(
-                  "Service Worker registered successfully:",
-                  registration.scope,
-                );
-
-                // Check for updates
-                registration.addEventListener("updatefound", () => {
-                  const newWorker = registration.installing;
-                  newWorker.addEventListener("statechange", () => {
-                    if (
-                      newWorker.state === "installed" &&
-                      navigator.serviceWorker.controller
-                    ) {
-                      // New version available
-                      showUpdateNotification();
-                    }
-                  });
-                });
-              })
-              .catch((error) => {
-                console.log("Service Worker registration failed:", error);
-              });
+        // Summary sheet
+        const summaryData = [["Class Summary", "Count"]];
+        const weekCounts = {};
+        classList.forEach((cls) => (weekCounts[cls] = 0));
+        days.forEach((day) => {
+          if (assignments[day]) {
+            Object.values(assignments[day]).forEach((assignment) => {
+              weekCounts[assignment.class]++;
+            });
           }
-        }
+        });
 
-        // PWA Install Prompt
-        let deferredPrompt;
+        classList.forEach((cls) => {
+          summaryData.push([cls, weekCounts[cls]]);
+        });
+        summaryData.push(["", ""]);
+        summaryData.push(["Total People", peopleList.length]);
+        summaryData.push(["Total Classes", classList.length]);
 
-        function handlePWAInstall() {
-          window.addEventListener("beforeinstallprompt", (e) => {
-            // Prevent the mini-infobar from appearing
-            e.preventDefault();
-            deferredPrompt = e;
+        const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
+        summarySheet["!cols"] = [{ wch: 40 }, { wch: 10 }];
+        XLSX.utils.book_append_sheet(workbook, summarySheet, "Summary");
 
-            // Show custom install button
-            showInstallButton();
+        XLSX.writeFile(workbook, `Timetable_${timestamp}.xlsx`);
+        showAutoSaveIndicator("✅ Excel file downloaded!");
+      }
+
+      // PDF Export
+      async function exportToPDF() {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF("l", "mm", "a4"); // landscape
+        const timestamp = new Date().toISOString().split("T")[0];
+        let pageNum = 0;
+
+        for (const day of days) {
+          if (pageNum > 0) pdf.addPage();
+
+          const dayName = day.charAt(0).toUpperCase() + day.slice(1);
+
+          // Title
+          pdf.setFontSize(20);
+          pdf.setTextColor(44, 95, 79);
+          pdf.text(dayName, 148, 20, { align: "center" });
+
+          // Table
+          const tableData = [];
+          timeSlots.forEach((slot) => {
+            const row = [
+              `${formatTime12Hour(slot.start)}-${formatTime12Hour(slot.end)}`,
+            ];
+
+            peopleList.forEach((person) => {
+              const cellKey = `${slot.start}-${person}`;
+              const data = assignments[day]?.[cellKey];
+
+              if (data) {
+                let cellText = data.class;
+                if (data.duration !== 60) cellText += `\n(${data.duration}min)`;
+                if (data.notes) cellText += `\n${data.notes}`;
+                row.push(cellText);
+              } else {
+                row.push("");
+              }
+            });
+
+            tableData.push(row);
           });
 
-          window.addEventListener("appinstalled", () => {
-            console.log("PWA installed successfully");
-            deferredPrompt = null;
-            hideInstallButton();
+          pdf.autoTable({
+            head: [["Time", ...peopleList]],
+            body: tableData,
+            startY: 30,
+            theme: "grid",
+            styles: { fontSize: 8, cellPadding: 2 },
+            headStyles: { fillColor: [44, 95, 79], textColor: 255 },
+            columnStyles: {
+              0: { cellWidth: 25, fontStyle: "bold" },
+            },
+            margin: { left: 10, right: 10 },
           });
+
+          // Footer
+          pdf.setFontSize(8);
+          pdf.setTextColor(107, 107, 107);
+          pdf.text(`Generated: ${new Date().toLocaleString()}`, 10, 200);
+          pdf.text(`Page ${pageNum + 1} of 5`, 280, 200);
+
+          pageNum++;
         }
 
-        function showInstallButton() {
-          // Create install button if it doesn't exist
-          if (document.getElementById("pwaInstallBtn")) return;
+        pdf.save(`Timetable_${timestamp}.pdf`);
+        showAutoSaveIndicator("✅ PDF downloaded!");
+      }
 
-          const installBtn = document.createElement("button");
-          installBtn.id = "pwaInstallBtn";
-          installBtn.className = "btn btn-primary btn-icon";
-          installBtn.innerHTML = "📱 Install App";
-          installBtn.onclick = installPWA;
-          installBtn.style.cssText = `
+      // PNG Export
+      async function exportToPNG() {
+        const originalDay = currentDay;
+        let downloadCount = 0;
+
+        for (const day of days) {
+          // Switch to the day
+          currentDay = day;
+          renderTimetable();
+
+          // Wait for render
+          await new Promise((resolve) => setTimeout(resolve, 100));
+
+          // Capture the timetable
+          const element = document.getElementById("timetableContainer");
+          const canvas = await html2canvas(element, {
+            scale: 2,
+            backgroundColor: "#ffffff",
+            logging: false,
+          });
+
+          // Download
+          const dayName = day.charAt(0).toUpperCase() + day.slice(1);
+          const timestamp = new Date().toISOString().split("T")[0];
+
+          canvas.toBlob((blob) => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `Timetable_${dayName}_${timestamp}.png`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            downloadCount++;
+            if (downloadCount === days.length) {
+              showAutoSaveIndicator("✅ All images downloaded!");
+            }
+          });
+
+          // Small delay between downloads
+          await new Promise((resolve) => setTimeout(resolve, 500));
+        }
+
+        // Restore original day
+        currentDay = originalDay;
+        renderTimetable();
+      }
+
+      // Export All Formats
+      async function exportAll() {
+        showAutoSaveIndicator("⏳ Exporting all formats...");
+
+        exportToExcel();
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        await exportToPDF();
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        await exportToPNG();
+
+        showAutoSaveIndicator("✅ All formats exported!");
+      }
+
+      // Event Listeners
+      document
+        .getElementById("assignmentModal")
+        .addEventListener("click", function (e) {
+          if (e.target === this) closeModal();
+        });
+
+      document
+        .getElementById("editTimeSlotsModal")
+        .addEventListener("click", function (e) {
+          if (e.target === this) closeEditTimeSlotsModal();
+        });
+
+      document
+        .getElementById("exportModal")
+        .addEventListener("click", function (e) {
+          if (e.target === this) closeExportModal();
+        });
+
+      document
+        .getElementById("peopleManagerModal")
+        .addEventListener("click", function (e) {
+          if (e.target === this) closePeopleManager();
+        });
+
+      document
+        .getElementById("classesManagerModal")
+        .addEventListener("click", function (e) {
+          if (e.target === this) closeClassesManager();
+        });
+
+      // Allow Enter to submit textareas with Ctrl+Enter
+      document
+        .getElementById("peopleInput")
+        .addEventListener("keydown", function (e) {
+          if (e.key === "Enter" && e.ctrlKey) addPeople();
+        });
+
+      document
+        .getElementById("classesInput")
+        .addEventListener("keydown", function (e) {
+          if (e.key === "Enter" && e.ctrlKey) addClasses();
+        });
+
+      // Initialize PWA features on page load
+      window.addEventListener("DOMContentLoaded", function () {
+        // Note: loadFromLocalStorage() is called in the auth check above
+        registerServiceWorker();
+        handlePWAInstall();
+      });
+
+      // Service Worker Registration
+      function registerServiceWorker() {
+        if ("serviceWorker" in navigator) {
+          navigator.serviceWorker
+            .register("./service-worker.js")
+            .then((registration) => {
+              console.log(
+                "Service Worker registered successfully:",
+                registration.scope,
+              );
+
+              // Check for updates
+              registration.addEventListener("updatefound", () => {
+                const newWorker = registration.installing;
+                newWorker.addEventListener("statechange", () => {
+                  if (
+                    newWorker.state === "installed" &&
+                    navigator.serviceWorker.controller
+                  ) {
+                    // New version available
+                    showUpdateNotification();
+                  }
+                });
+              });
+            })
+            .catch((error) => {
+              console.log("Service Worker registration failed:", error);
+            });
+        }
+      }
+
+      // PWA Install Prompt
+      let deferredPrompt;
+
+      function handlePWAInstall() {
+        window.addEventListener("beforeinstallprompt", (e) => {
+          // Prevent the mini-infobar from appearing
+          e.preventDefault();
+          deferredPrompt = e;
+
+          // Show custom install button
+          showInstallButton();
+        });
+
+        window.addEventListener("appinstalled", () => {
+          console.log("PWA installed successfully");
+          deferredPrompt = null;
+          hideInstallButton();
+        });
+      }
+
+      function showInstallButton() {
+        // Create install button if it doesn't exist
+        if (document.getElementById("pwaInstallBtn")) return;
+
+        const installBtn = document.createElement("button");
+        installBtn.id = "pwaInstallBtn";
+        installBtn.className = "btn btn-primary btn-icon";
+        installBtn.innerHTML = "📱 Install App";
+        installBtn.onclick = installPWA;
+        installBtn.style.cssText = `
                 position: fixed;
                 bottom: 2rem;
                 right: 2rem;
@@ -2757,11 +2740,11 @@
                 animation: slideInUp 0.5s ease;
             `;
 
-          document.body.appendChild(installBtn);
+        document.body.appendChild(installBtn);
 
-          // Add animation
-          const style = document.createElement("style");
-          style.textContent = `
+        // Add animation
+        const style = document.createElement("style");
+        style.textContent = `
                 @keyframes slideInUp {
                     from {
                         transform: translateY(100px);
@@ -2773,35 +2756,35 @@
                     }
                 }
             `;
-          document.head.appendChild(style);
+        document.head.appendChild(style);
+      }
+
+      function hideInstallButton() {
+        const btn = document.getElementById("pwaInstallBtn");
+        if (btn) {
+          btn.style.animation = "slideInUp 0.3s ease reverse";
+          setTimeout(() => btn.remove(), 300);
         }
+      }
 
-        function hideInstallButton() {
-          const btn = document.getElementById("pwaInstallBtn");
-          if (btn) {
-            btn.style.animation = "slideInUp 0.3s ease reverse";
-            setTimeout(() => btn.remove(), 300);
-          }
-        }
+      async function installPWA() {
+        if (!deferredPrompt) return;
 
-        async function installPWA() {
-          if (!deferredPrompt) return;
+        // Show the install prompt
+        deferredPrompt.prompt();
 
-          // Show the install prompt
-          deferredPrompt.prompt();
+        // Wait for the user's response
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User response to install prompt: ${outcome}`);
 
-          // Wait for the user's response
-          const { outcome } = await deferredPrompt.userChoice;
-          console.log(`User response to install prompt: ${outcome}`);
+        // Clear the deferred prompt
+        deferredPrompt = null;
+        hideInstallButton();
+      }
 
-          // Clear the deferred prompt
-          deferredPrompt = null;
-          hideInstallButton();
-        }
-
-        function showUpdateNotification() {
-          const updateBanner = document.createElement("div");
-          updateBanner.style.cssText = `
+      function showUpdateNotification() {
+        const updateBanner = document.createElement("div");
+        updateBanner.style.cssText = `
                 position: fixed;
                 top: 2rem;
                 right: 2rem;
@@ -2816,7 +2799,7 @@
                 gap: 1rem;
                 animation: slideInRight 0.3s ease;
             `;
-          updateBanner.innerHTML = `
+        updateBanner.innerHTML = `
                 <span>🎉 New version available!</span>
                 <button onclick="window.location.reload()" style="
                     background: white;
@@ -2837,8 +2820,8 @@
                 ">×</button>
             `;
 
-          const style = document.createElement("style");
-          style.textContent = `
+        const style = document.createElement("style");
+        style.textContent = `
                 @keyframes slideInRight {
                     from {
                         transform: translateX(400px);
@@ -2850,117 +2833,178 @@
                     }
                 }
             `;
-          document.head.appendChild(style);
+        document.head.appendChild(style);
 
-          document.body.appendChild(updateBanner);
+        document.body.appendChild(updateBanner);
 
-          // Auto-hide after 10 seconds
-          setTimeout(() => {
-            if (updateBanner.parentElement) {
-              updateBanner.remove();
-            }
-          }, 10000);
+        // Auto-hide after 10 seconds
+        setTimeout(() => {
+          if (updateBanner.parentElement) {
+            updateBanner.remove();
+          }
+        }, 10000);
+      }
+
+      // ======================
+      // Firebase Integration
+      // ======================
+      // Note: handleLogin() is in index.html, handleLogout() is in shared.js
+
+      function saveToFirebase() {
+        if (currentUserRole !== "admin") {
+          console.log("Only admins can save changes");
+          return;
         }
 
-        // ======================
-        // Firebase Integration
-        // ======================
-        // Note: handleLogin() is in index.html, handleLogout() is in shared.js
+        const timetableData = {
+          version: "1.0",
+          lastUpdated: new Date().toISOString(),
+          updatedBy: currentUser.email,
+          peopleList: peopleList,
+          classList: classList,
+          classColors: classColors,
+          assignments: assignments,
+          timeSlots: timeSlots,
+        };
 
-        function saveToFirebase() {
-          if (currentUserRole !== "admin") {
-            console.log("Only admins can save changes");
-            return;
-          }
+        database
+          .ref("timetable/current")
+          .set(timetableData)
+          .then(() => {
+            showNotification("✓ Saved to server");
+          })
+          .catch((error) => {
+            console.error("Firebase save error:", error);
+            showNotification("❌ Save failed", true);
+          });
+      }
 
-          const timetableData = {
-            version: "1.0",
-            lastUpdated: new Date().toISOString(),
-            updatedBy: currentUser.email,
-            peopleList: peopleList,
-            classList: classList,
-            classColors: classColors,
-            assignments: assignments,
-            timeSlots: timeSlots,
-          };
-
-          database
-            .ref("timetable/current")
-            .set(timetableData)
-            .then(() => {
-              showNotification("✓ Saved to server");
-            })
-            .catch((error) => {
-              console.error("Firebase save error:", error);
-              showNotification("❌ Save failed", true);
-            });
+      function loadFromDatabase() {
+        if (
+          !confirm(
+            "Load timetable from database? This will replace your current work.",
+          )
+        ) {
+          return;
         }
 
-        function loadFromDatabase() {
-          if (
-            !confirm(
-              "Load timetable from database? This will replace your current work.",
-            )
-          ) {
-            return;
-          }
+        showNotification("⏳ Loading from database...", false);
 
-          showNotification("⏳ Loading from database...", false);
+        database
+          .ref("timetable/current")
+          .once("value")
+          .then((snapshot) => {
+            const data = snapshot.val();
 
-          database
-            .ref("timetable/current")
-            .once("value")
-            .then((snapshot) => {
-              const data = snapshot.val();
+            if (data) {
+              // Update local data
+              peopleList = data.peopleList || [];
+              classList = data.classList || [];
+              classColors = data.classColors || {};
 
-              if (data) {
-                // Update local data
-                peopleList = data.peopleList || [];
-                classList = data.classList || [];
-                classColors = data.classColors || {};
+              // Properly initialize assignments with all days
+              assignments = {
+                monday: data.assignments?.monday || {},
+                tuesday: data.assignments?.tuesday || {},
+                wednesday: data.assignments?.wednesday || {},
+                thursday: data.assignments?.thursday || {},
+                friday: data.assignments?.friday || {},
+              };
 
-                // Properly initialize assignments with all days
-                assignments = {
-                  monday: data.assignments?.monday || {},
-                  tuesday: data.assignments?.tuesday || {},
-                  wednesday: data.assignments?.wednesday || {},
-                  thursday: data.assignments?.thursday || {},
-                  friday: data.assignments?.friday || {},
-                };
+              timeSlots = data.timeSlots || [];
+              colorIndex = classList.length;
 
-                timeSlots = data.timeSlots || [];
-                colorIndex = classList.length;
+              // Update UI
+              updatePeopleList();
+              updateClassList();
+              updateModalSelects();
 
-                // Update UI
-                updatePeopleList();
-                updateClassList();
-                updateModalSelects();
-
-                // Show edit button for admin
-                if (currentUserRole === "admin") {
-                  document.getElementById("editTimeSlotsBtn").style.display =
-                    "inline-block";
-                }
-
-                renderTimetable();
-                updateCounters();
-
-                showNotification("✓ Loaded from database");
-              } else {
-                showNotification("⚠️ No data in database", true);
+              // Show edit button for admin
+              if (currentUserRole === "admin") {
+                document.getElementById("editTimeSlotsBtn").style.display =
+                  "inline-block";
               }
-            })
-            .catch((error) => {
-              console.error("Firebase load error:", error);
-              showNotification("❌ Load failed", true);
-            });
-        }
 
-        // Note: showNotification() is defined in shared.js
+              renderTimetable();
+              updateCounters();
 
-        // Add CSS for view-only mode
-        const style = document.createElement("style");
-        style.textContent = `
+              showNotification("✓ Loaded from database");
+            } else {
+              showNotification("⚠️ No data in database", true);
+            }
+          })
+          .catch((error) => {
+            console.error("Firebase load error:", error);
+            showNotification("❌ Load failed", true);
+          });
+      }
+
+      // Note: showNotification() is defined in shared.js
+
+      // Auto-load from Firebase on page load (no confirmation needed)
+      function autoLoadFromFirebase() {
+        console.log("Auto-loading timetable from Firebase...");
+
+        database
+          .ref("timetable/current")
+          .once("value")
+          .then((snapshot) => {
+            const data = snapshot.val();
+
+            if (data) {
+              // Update local data
+              peopleList = data.peopleList || [];
+              classList = data.classList || [];
+              classColors = data.classColors || {};
+
+              // Properly initialize assignments with all days
+              assignments = {
+                monday: data.assignments?.monday || {},
+                tuesday: data.assignments?.tuesday || {},
+                wednesday: data.assignments?.wednesday || {},
+                thursday: data.assignments?.thursday || {},
+                friday: data.assignments?.friday || {},
+              };
+
+              timeSlots = data.timeSlots || [];
+              colorIndex = classList.length;
+
+              // Update UI
+              updatePeopleList();
+              updateClassList();
+              updateModalSelects();
+
+              // Show edit button for admin
+              if (currentUserRole === "admin") {
+                document.getElementById("editTimeSlotsBtn").style.display =
+                  "inline-block";
+              }
+
+              renderTimetable();
+              updateCounters();
+
+              console.log("Timetable loaded from Firebase successfully");
+            } else {
+              console.log("No timetable data in database yet");
+              // Show empty state message
+              document.getElementById("timetableContainer").innerHTML = `
+                  <div class="empty-state" style="padding: 4rem 2rem;">
+                    <div class="empty-state-icon">📋</div>
+                    <p>No timetable data yet. Add people and classes to get started!</p>
+                  </div>
+                `;
+            }
+          })
+          .catch((error) => {
+            console.error("Firebase auto-load error:", error);
+            // Fall back to localStorage if Firebase fails
+            loadFromLocalStorage();
+          });
+      }
+
+      // Add CSS for view-only mode
+      const style = document.createElement("style");
+      style.textContent = `
         .view-only-mode .roster-cell {
           cursor: default !important;
         }
@@ -2968,8 +3012,7 @@
           background: inherit !important;
         }
       `;
-        document.head.appendChild(style);
-
+      document.head.appendChild(style);
     </script>
   </body>
 </html>
