@@ -254,20 +254,28 @@
         overflow-y: auto;
         margin-bottom: 1rem;
         padding-right: 0.5rem;
+        /* Performance optimizations for smooth scrolling */
+        will-change: scroll-position;
+        -webkit-overflow-scrolling: touch;
+        transform: translateZ(0);
       }
 
       .item-list::-webkit-scrollbar {
-        width: 6px;
+        width: 8px;
       }
 
       .item-list::-webkit-scrollbar-track {
         background: var(--bg);
-        border-radius: 3px;
+        border-radius: 4px;
       }
 
       .item-list::-webkit-scrollbar-thumb {
         background: var(--primary);
-        border-radius: 3px;
+        border-radius: 4px;
+      }
+
+      .item-list::-webkit-scrollbar-thumb:hover {
+        background: var(--primary-dark);
       }
 
       .list-item {
@@ -280,6 +288,10 @@
         border-radius: 6px;
         border: 1px solid var(--border);
         transition: all 0.2s ease;
+        /* Performance optimization */
+        will-change: transform;
+        transform: translateZ(0);
+        contain: layout style paint;
       }
 
       .list-item:hover {
@@ -357,18 +369,42 @@
       }
 
       .timetable-header {
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 20px var(--shadow);
+        border: 1px solid var(--border);
+      }
+
+      .timetable-header-top {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 1.5rem;
-        flex-wrap: wrap;
-        gap: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--border);
       }
 
       .timetable-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 0.75rem;
+      }
+
+      .action-group {
         display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .action-group-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text-light);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.25rem;
       }
 
       .btn-icon {
@@ -709,6 +745,31 @@
         max-height: 400px;
         overflow-y: auto;
         margin-bottom: 1rem;
+        /* Performance optimizations for smooth scrolling */
+        will-change: scroll-position;
+        -webkit-overflow-scrolling: touch;
+        transform: translateZ(0);
+        /* Custom scrollbar styling */
+        scrollbar-width: thin;
+        scrollbar-color: var(--primary) var(--bg);
+      }
+
+      .time-slot-list::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      .time-slot-list::-webkit-scrollbar-track {
+        background: var(--bg);
+        border-radius: 4px;
+      }
+
+      .time-slot-list::-webkit-scrollbar-thumb {
+        background: var(--primary);
+        border-radius: 4px;
+      }
+
+      .time-slot-list::-webkit-scrollbar-thumb:hover {
+        background: var(--primary-dark);
       }
 
       .time-slot-item {
@@ -721,6 +782,10 @@
         background: var(--bg);
         border-radius: 6px;
         border: 1px solid var(--border);
+        /* Performance optimization */
+        will-change: transform;
+        transform: translateZ(0);
+        contain: layout style paint;
       }
 
       .time-slot-item input[type="time"] {
@@ -757,9 +822,14 @@
           font-size: 2rem;
         }
 
-        .timetable-actions {
+        .timetable-header-top {
           flex-direction: column;
-          width: 100%;
+          align-items: flex-start;
+          gap: 1rem;
+        }
+
+        .timetable-actions {
+          grid-template-columns: 1fr;
         }
 
         .btn-icon {
@@ -1186,38 +1256,64 @@
       <!-- Timetable Section -->
       <div class="timetable-section">
         <div class="timetable-header">
-          <h2 class="panel-title" style="border: none; padding: 0; margin: 0">
-            <span class="panel-icon">📅</span>
-            Weekly Timetable
-          </h2>
-          <div class="timetable-actions">
-            <button
-              class="btn btn-secondary btn-icon"
-              onclick="openEditTimeSlots()"
-              id="editTimeSlotsBtn"
-              style="display: none"
-            >
-              ✏️ Edit Time Slots
-            </button>
-            <button
-              class="btn btn-success btn-icon"
-              onclick="loadFromDatabase()"
-            >
-              ☁️ Load from Database
-            </button>
-            <button class="btn btn-primary btn-icon" onclick="saveProject()">
-              💾 Save Project
-            </button>
-            <button
-              class="btn btn-primary btn-icon"
-              onclick="document.getElementById('loadProjectInput').click()"
-            >
-              📂 Load Project
-            </button>
-            <button class="btn btn-primary btn-icon" onclick="exportSchedule()">
-              📤 Export for SharePoint
-            </button>
+          <div class="timetable-header-top">
+            <h2 class="panel-title" style="border: none; padding: 0; margin: 0">
+              <span class="panel-icon">📅</span>
+              Weekly Timetable
+            </h2>
           </div>
+
+          <div class="timetable-actions">
+            <!-- Edit Group -->
+            <div class="action-group">
+              <span class="action-group-label">Configure</span>
+              <button
+                class="btn btn-secondary btn-icon"
+                onclick="openEditTimeSlots()"
+                id="editTimeSlotsBtn"
+                style="display: none"
+              >
+                ✏️ Edit Time Slots
+              </button>
+            </div>
+
+            <!-- Database Group -->
+            <div class="action-group">
+              <span class="action-group-label">Database</span>
+              <button
+                class="btn btn-success btn-icon"
+                onclick="loadFromDatabase()"
+              >
+                ☁️ Load from Database
+              </button>
+            </div>
+
+            <!-- Project Group -->
+            <div class="action-group">
+              <span class="action-group-label">Project Files</span>
+              <button class="btn btn-primary btn-icon" onclick="saveProject()">
+                💾 Save Project
+              </button>
+              <button
+                class="btn btn-primary btn-icon"
+                onclick="document.getElementById('loadProjectInput').click()"
+              >
+                📂 Load Project
+              </button>
+            </div>
+
+            <!-- Export Group -->
+            <div class="action-group">
+              <span class="action-group-label">Export</span>
+              <button
+                class="btn btn-primary btn-icon"
+                onclick="exportSchedule()"
+              >
+                📤 Export for SharePoint
+              </button>
+            </div>
+          </div>
+
           <input
             type="file"
             id="loadProjectInput"
@@ -1712,16 +1808,32 @@
           return;
         }
 
-        listContainer.innerHTML = peopleList
-          .map(
-            (person) => `
-                <div class="list-item">
-                    <span class="item-name">${person}</span>
-                    <button class="delete-btn" onclick="removePerson('${person.replace(/'/g, "\\'")}')">Remove</button>
-                </div>
-            `,
-          )
-          .join("");
+        // Use DocumentFragment for better performance
+        const fragment = document.createDocumentFragment();
+
+        peopleList.forEach((person) => {
+          const itemDiv = document.createElement("div");
+          itemDiv.className = "list-item";
+
+          const nameSpan = document.createElement("span");
+          nameSpan.className = "item-name";
+          nameSpan.textContent = person;
+
+          const removeBtn = document.createElement("button");
+          removeBtn.className = "delete-btn";
+          removeBtn.textContent = "Remove";
+          removeBtn.onclick = function () {
+            removePerson(person);
+          };
+
+          itemDiv.appendChild(nameSpan);
+          itemDiv.appendChild(removeBtn);
+          fragment.appendChild(itemDiv);
+        });
+
+        // Clear and append all at once (single reflow)
+        listContainer.innerHTML = "";
+        listContainer.appendChild(fragment);
       }
 
       // Classes Management
@@ -1829,21 +1941,46 @@
           return;
         }
 
-        listContainer.innerHTML = classList
-          .map(
-            (cls) => `
-                <div class="list-item">
-                    <div class="class-item">
-                        <input type="color" value="${classColors[cls]}" 
-                               onchange="updateClassColor('${cls.replace(/'/g, "\\'")}', this.value)"
-                               title="Choose color">
-                        <span class="item-name">${cls}</span>
-                    </div>
-                    <button class="delete-btn" onclick="removeClass('${cls.replace(/'/g, "\\'")}')">Remove</button>
-                </div>
-            `,
-          )
-          .join("");
+        // Use DocumentFragment for better performance
+        const fragment = document.createDocumentFragment();
+
+        classList.forEach((cls) => {
+          const itemDiv = document.createElement("div");
+          itemDiv.className = "list-item";
+
+          const classItemDiv = document.createElement("div");
+          classItemDiv.className = "class-item";
+
+          const colorInput = document.createElement("input");
+          colorInput.type = "color";
+          colorInput.value = classColors[cls];
+          colorInput.title = "Choose color";
+          colorInput.onchange = function () {
+            updateClassColor(cls, this.value);
+          };
+
+          const nameSpan = document.createElement("span");
+          nameSpan.className = "item-name";
+          nameSpan.textContent = cls;
+
+          classItemDiv.appendChild(colorInput);
+          classItemDiv.appendChild(nameSpan);
+
+          const removeBtn = document.createElement("button");
+          removeBtn.className = "delete-btn";
+          removeBtn.textContent = "Remove";
+          removeBtn.onclick = function () {
+            removeClass(cls);
+          };
+
+          itemDiv.appendChild(classItemDiv);
+          itemDiv.appendChild(removeBtn);
+          fragment.appendChild(itemDiv);
+        });
+
+        // Clear and append all at once (single reflow)
+        listContainer.innerHTML = "";
+        listContainer.appendChild(fragment);
       }
 
       // Modal Management
@@ -1936,17 +2073,47 @@
 
       function openEditTimeSlots() {
         const listContainer = document.getElementById("timeSlotList");
-        listContainer.innerHTML = timeSlots
-          .map(
-            (slot, index) => `
-                <div class="time-slot-item">
-                    <input type="time" value="${slot.start}" onchange="updateTimeSlot(${index}, 'start', this.value)">
-                    <input type="time" value="${slot.end}" onchange="updateTimeSlot(${index}, 'end', this.value)">
-                    <button class="btn btn-secondary btn-small delete-btn" onclick="removeTimeSlot(${index})">Remove</button>
-                </div>
-            `,
-          )
-          .join("");
+
+        // Use DocumentFragment for better performance
+        const fragment = document.createDocumentFragment();
+
+        timeSlots.forEach((slot, index) => {
+          const itemDiv = document.createElement("div");
+          itemDiv.className = "time-slot-item";
+
+          // Create start time input
+          const startInput = document.createElement("input");
+          startInput.type = "time";
+          startInput.value = slot.start;
+          startInput.onchange = function () {
+            updateTimeSlot(index, "start", this.value);
+          };
+
+          // Create end time input
+          const endInput = document.createElement("input");
+          endInput.type = "time";
+          endInput.value = slot.end;
+          endInput.onchange = function () {
+            updateTimeSlot(index, "end", this.value);
+          };
+
+          // Create remove button
+          const removeBtn = document.createElement("button");
+          removeBtn.className = "btn btn-secondary btn-small delete-btn";
+          removeBtn.textContent = "Remove";
+          removeBtn.onclick = function () {
+            removeTimeSlot(index);
+          };
+
+          itemDiv.appendChild(startInput);
+          itemDiv.appendChild(endInput);
+          itemDiv.appendChild(removeBtn);
+          fragment.appendChild(itemDiv);
+        });
+
+        // Clear and append all at once (single reflow)
+        listContainer.innerHTML = "";
+        listContainer.appendChild(fragment);
 
         document.getElementById("editTimeSlotsModal").classList.add("active");
       }
