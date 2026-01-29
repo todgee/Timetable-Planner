@@ -1,9 +1,14 @@
-const CACHE_NAME = 'timetable-v2';
+const CACHE_NAME = 'timetable-v3';
 const urlsToCache = [
-  '/ index.html',
+  '/index.html',
   '/admin.html',
   '/view.html',
-  '/shared.js',
+  '/config.html',
+  '/css/styles.css',
+  '/js/shared.js',
+  '/js/admin.js',
+  '/js/view.js',
+  '/js/config.js',
   '/manifest.json',
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',
