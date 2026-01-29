@@ -1,10 +1,14 @@
-const CACHE_NAME = 'timetable-v3';
+const CACHE_NAME = 'timetable-v4';
 const urlsToCache = [
   '/index.html',
   '/admin.html',
   '/view.html',
   '/config.html',
   '/css/styles.css',
+  '/js/aws-config.js',
+  '/js/aws-auth.js',
+  '/js/aws-api.js',
+  '/js/aws-storage.js',
   '/js/shared.js',
   '/js/admin.js',
   '/js/view.js',
@@ -14,6 +18,10 @@ const urlsToCache = [
   '/icons/icon-512x512.png',
   'https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Work+Sans:wght@300;400;500;600&display=swap'
 ];
+
+// API endpoint pattern - don't cache these
+const API_PATTERN = /execute-api.*\.amazonaws\.com/;
+const COGNITO_PATTERN = /cognito-idp.*\.amazonaws\.com/;
 
 // Install event - cache resources
 self.addEventListener('install', (event) => {
@@ -45,6 +53,14 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
+  const url = event.request.url;
+
+  // Never cache API calls or Cognito requests - always fetch fresh
+  if (API_PATTERN.test(url) || COGNITO_PATTERN.test(url)) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then((response) => {

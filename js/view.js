@@ -11,45 +11,58 @@ let timeSlots = [];
 let currentDay = "monday";
 let currentCounterTab = "day";
 
-// Check authentication (ESO only)
-checkAuth("viewer");
+// ============================================
+// Authentication Check (AWS Cognito)
+// ============================================
+(function initAuth() {
+  // Check if user is authenticated with AWS Cognito
+  if (!isAuthenticated()) {
+    window.location.href = "index.html";
+    return;
+  }
+
+  // Viewer role check
+  const userRole = getCurrentUserRole();
+  if (userRole !== "viewer" && userRole !== "admin") {
+    window.location.href = "index.html";
+    return;
+  }
+})();
 
 // ============================================
-// Load Timetable
+// Load Timetable Data from AWS
 // ============================================
-function loadTimetable() {
-  loadFromFirebase()
-    .then((snapshot) => {
-      const data = snapshot.val();
+async function loadTimetableData() {
+  try {
+    const data = await loadTimetable();
 
-      if (data) {
-        peopleList = data.peopleList || [];
-        classList = data.classList || [];
-        classColors = data.classColors || {};
-        assignments = {
-          monday: data.assignments?.monday || {},
-          tuesday: data.assignments?.tuesday || {},
-          wednesday: data.assignments?.wednesday || {},
-          thursday: data.assignments?.thursday || {},
-          friday: data.assignments?.friday || {},
-        };
-        timeSlots = data.timeSlots || [];
+    if (data) {
+      peopleList = data.peopleList || [];
+      classList = data.classList || [];
+      classColors = data.classColors || {};
+      assignments = {
+        monday: data.assignments?.monday || {},
+        tuesday: data.assignments?.tuesday || {},
+        wednesday: data.assignments?.wednesday || {},
+        thursday: data.assignments?.thursday || {},
+        friday: data.assignments?.friday || {},
+      };
+      timeSlots = data.timeSlots || [];
 
-        renderTimetable();
-        updateCounters();
-      } else {
-        document.getElementById("timetableContainer").innerHTML = `
-          <div class="empty-state" style="padding: 4rem 2rem;">
-            <div class="empty-state-icon">📋</div>
-            <p>No timetable data available yet.</p>
-          </div>
-        `;
-      }
-    })
-    .catch((error) => {
-      console.error("Error loading timetable:", error);
-      showNotification("Error loading timetable", true);
-    });
+      renderTimetable();
+      updateCounters();
+    } else {
+      document.getElementById("timetableContainer").innerHTML = `
+        <div class="empty-state" style="padding: 4rem 2rem;">
+          <div class="empty-state-icon">📋</div>
+          <p>No timetable data available yet.</p>
+        </div>
+      `;
+    }
+  } catch (error) {
+    console.error("Error loading timetable:", error);
+    showNotification("Error loading timetable. Please try again.", true);
+  }
 }
 
 // ============================================
@@ -210,8 +223,8 @@ function switchCounterTab(tab) {
 // Initialize on Page Load
 // ============================================
 window.addEventListener("DOMContentLoaded", function () {
-  loadTimetable();
+  loadTimetableData();
   updateDayLabel();
 });
 
-console.log("view.js loaded");
+console.log("view.js loaded (AWS version)");

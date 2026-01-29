@@ -20,37 +20,33 @@ const hexDisplays = {
 };
 
 // ============================================
-// Authentication Check
+// Authentication Check (AWS Cognito)
 // ============================================
 window.addEventListener("load", () => {
-  const storedRole = sessionStorage.getItem("userRole");
-  const storedEmail = sessionStorage.getItem("userEmail");
-
-  if (!storedRole || !storedEmail) {
+  // Check if user is authenticated with AWS Cognito
+  if (!isAuthenticated()) {
     alert("Please log in first.");
     window.location.href = "index.html";
     return;
   }
 
-  if (storedRole !== "admin") {
+  // Get user info from AWS Cognito
+  currentUserRole = getCurrentUserRole();
+  const storedEmail = sessionStorage.getItem("userEmail");
+
+  if (currentUserRole !== "admin") {
     alert("Access denied. Only administrators can access configuration settings.");
-    window.location.href = storedRole === "viewer" ? "view.html" : "admin.html";
+    window.location.href = currentUserRole === "viewer" ? "view.html" : "admin.html";
     return;
   }
 
   console.log("Admin access granted to:", storedEmail);
 
-  auth.onAuthStateChanged((user) => {
-    if (user) {
-      currentUser = user;
-      currentUserRole = storedRole;
-      initializePage();
-    } else {
-      sessionStorage.clear();
-      alert("Session expired. Please log in again.");
-      window.location.href = "index.html";
-    }
-  });
+  // Set current user object for compatibility
+  currentUser = { email: storedEmail };
+
+  // Initialize the page
+  initializePage();
 });
 
 function initializePage() {
@@ -141,7 +137,7 @@ function renderAccountList(users) {
 function handleRemoveAccount(uid, email) {
   if (
     !confirm(
-      `Remove ${email}?\n\nNote: This removes their database entry. You must manually delete the user from Firebase Authentication console.`
+      `Remove ${email}?\n\nThis will permanently delete the user account.`
     )
   ) {
     return;
@@ -151,15 +147,13 @@ function handleRemoveAccount(uid, email) {
   removeUserFromDatabase(uid)
     .then(() => {
       showLoading(false);
-      showNotification(
-        `Account removed. Please delete ${email} from Firebase Auth console.`
-      );
+      showNotification(`Account ${email} removed successfully.`);
       loadAccounts();
     })
     .catch((error) => {
       showLoading(false);
       console.error("Error removing account:", error);
-      showNotification("Error removing account", true);
+      showNotification("Error removing account. Please try again.", true);
     });
 }
 
@@ -192,12 +186,17 @@ function handleCreateAccount() {
     .catch((error) => {
       showLoading(false);
       let errorMessage = "Error creating account";
-      if (error.code === "auth/email-already-in-use") {
-        errorMessage = "Email already in use";
-      } else if (error.code === "auth/invalid-email") {
-        errorMessage = "Invalid email address";
-      } else if (error.code === "auth/weak-password") {
-        errorMessage = "Password is too weak";
+      // Handle AWS Cognito error messages
+      if (error.message) {
+        if (error.message.includes("already exists") || error.message.includes("UsernameExistsException")) {
+          errorMessage = "Email already in use";
+        } else if (error.message.includes("invalid") || error.message.includes("InvalidParameterException")) {
+          errorMessage = "Invalid email address";
+        } else if (error.message.includes("password") || error.message.includes("InvalidPasswordException")) {
+          errorMessage = "Password does not meet requirements";
+        } else {
+          errorMessage = error.message;
+        }
       }
       showStatus("account-status", errorMessage, "error");
     });
@@ -478,4 +477,4 @@ function showLoading(show) {
   }
 }
 
-console.log("config.js loaded");
+console.log("config.js loaded (AWS version)");

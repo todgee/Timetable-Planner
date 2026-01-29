@@ -25,35 +25,30 @@ let currentUserRole = null;
 const daysArray = days;
 
 // ============================================
-// Authentication Check
+// Authentication Check (AWS Cognito)
 // ============================================
-(function initAuth() {
-  const userRole = sessionStorage.getItem("userRole");
-  const userEmail = sessionStorage.getItem("userEmail");
-
-  if (!userRole || !userEmail) {
+(async function initAuth() {
+  // Check if user is authenticated with AWS Cognito
+  if (!isAuthenticated()) {
     window.location.href = "index.html";
     return;
   }
 
-  currentUserRole = userRole;
+  // Get user info from Cognito tokens
+  currentUserRole = getCurrentUserRole();
+  const userEmail = sessionStorage.getItem("userEmail");
 
   // Show user info
   const userInfo = document.getElementById("userInfo");
   const userRoleEl = document.getElementById("userRole");
   if (userInfo) userInfo.style.display = "flex";
-  if (userRoleEl) userRoleEl.textContent = `${userRole === "admin" ? "Leadership (Admin)" : "Viewer"}`;
+  if (userRoleEl) userRoleEl.textContent = `${currentUserRole === "admin" ? "Leadership (Admin)" : "Viewer"}`;
 
-  // Verify with Firebase
-  auth.onAuthStateChanged((user) => {
-    if (user) {
-      currentUser = user;
-      autoLoadFromFirebase();
-    } else {
-      sessionStorage.clear();
-      window.location.href = "index.html";
-    }
-  });
+  // Set current user object for compatibility
+  currentUser = { email: userEmail };
+
+  // Load timetable from AWS
+  await autoLoadFromAWS();
 })();
 
 // ============================================
@@ -771,7 +766,7 @@ function autoSaveToFirebase() {
     showAutoSaveIndicator();
 
     if (currentUserRole === "admin") {
-      saveToFirebaseDB();
+      saveToAWS();
     }
   } catch (error) {
     console.error("Auto-save failed:", error);
@@ -1031,9 +1026,9 @@ async function exportAll() {
 }
 
 // ============================================
-// Firebase Integration
+// AWS Integration
 // ============================================
-function saveToFirebaseDB() {
+async function saveToAWS() {
   if (currentUserRole !== "admin") {
     console.log("Only admins can save changes");
     return;
@@ -1050,19 +1045,16 @@ function saveToFirebaseDB() {
     timeSlots: timeSlots,
   };
 
-  database
-    .ref("timetable/current")
-    .set(timetableData)
-    .then(() => {
-      showNotification("Saved to server");
-    })
-    .catch((error) => {
-      console.error("Firebase save error:", error);
-      showNotification("Save failed", true);
-    });
+  try {
+    await saveTimetable(timetableData);
+    showNotification("Saved to server");
+  } catch (error) {
+    console.error("AWS save error:", error);
+    showNotification("Save failed. Please try again.", true);
+  }
 }
 
-function loadFromDatabase() {
+async function loadFromDatabase() {
   if (
     !confirm(
       "Load timetable from database? This will replace your current work."
@@ -1073,103 +1065,96 @@ function loadFromDatabase() {
 
   showNotification("Loading from database...", false);
 
-  database
-    .ref("timetable/current")
-    .once("value")
-    .then((snapshot) => {
-      const data = snapshot.val();
+  try {
+    const data = await loadTimetable();
 
-      if (data) {
-        peopleList = data.peopleList || [];
-        classList = data.classList || [];
-        classColors = data.classColors || {};
+    if (data) {
+      peopleList = data.peopleList || [];
+      classList = data.classList || [];
+      classColors = data.classColors || {};
 
-        assignments = {
-          monday: data.assignments?.monday || {},
-          tuesday: data.assignments?.tuesday || {},
-          wednesday: data.assignments?.wednesday || {},
-          thursday: data.assignments?.thursday || {},
-          friday: data.assignments?.friday || {},
-        };
+      assignments = {
+        monday: data.assignments?.monday || {},
+        tuesday: data.assignments?.tuesday || {},
+        wednesday: data.assignments?.wednesday || {},
+        thursday: data.assignments?.thursday || {},
+        friday: data.assignments?.friday || {},
+      };
 
-        timeSlots = data.timeSlots || [];
-        colorIndex = classList.length;
+      timeSlots = data.timeSlots || [];
+      colorIndex = classList.length;
 
-        updatePeopleList();
-        updateClassList();
-        updateModalSelects();
+      updatePeopleList();
+      updateClassList();
+      updateModalSelects();
 
-        if (currentUserRole === "admin") {
-          document.getElementById("editTimeSlotsBtn").style.display =
-            "inline-block";
-        }
-
-        renderTimetable();
-        updateCounters();
-
-        showNotification("Loaded from database");
-      } else {
-        showNotification("No data in database", true);
+      if (currentUserRole === "admin") {
+        document.getElementById("editTimeSlotsBtn").style.display =
+          "inline-block";
       }
-    })
-    .catch((error) => {
-      console.error("Firebase load error:", error);
-      showNotification("Load failed", true);
-    });
+
+      renderTimetable();
+      updateCounters();
+
+      showNotification("Loaded from database");
+    } else {
+      showNotification("No data in database", true);
+    }
+  } catch (error) {
+    console.error("AWS load error:", error);
+    showNotification("Load failed. Please try again.", true);
+  }
 }
 
-function autoLoadFromFirebase() {
-  console.log("Auto-loading timetable from Firebase...");
+async function autoLoadFromAWS() {
+  console.log("Auto-loading timetable from AWS...");
 
-  database
-    .ref("timetable/current")
-    .once("value")
-    .then((snapshot) => {
-      const data = snapshot.val();
+  try {
+    const data = await loadTimetable();
 
-      if (data) {
-        peopleList = data.peopleList || [];
-        classList = data.classList || [];
-        classColors = data.classColors || {};
+    if (data) {
+      peopleList = data.peopleList || [];
+      classList = data.classList || [];
+      classColors = data.classColors || {};
 
-        assignments = {
-          monday: data.assignments?.monday || {},
-          tuesday: data.assignments?.tuesday || {},
-          wednesday: data.assignments?.wednesday || {},
-          thursday: data.assignments?.thursday || {},
-          friday: data.assignments?.friday || {},
-        };
+      assignments = {
+        monday: data.assignments?.monday || {},
+        tuesday: data.assignments?.tuesday || {},
+        wednesday: data.assignments?.wednesday || {},
+        thursday: data.assignments?.thursday || {},
+        friday: data.assignments?.friday || {},
+      };
 
-        timeSlots = data.timeSlots || [];
-        colorIndex = classList.length;
+      timeSlots = data.timeSlots || [];
+      colorIndex = classList.length;
 
-        updatePeopleList();
-        updateClassList();
-        updateModalSelects();
+      updatePeopleList();
+      updateClassList();
+      updateModalSelects();
 
-        if (currentUserRole === "admin") {
-          document.getElementById("editTimeSlotsBtn").style.display =
-            "inline-block";
-        }
-
-        renderTimetable();
-        updateCounters();
-
-        console.log("Timetable loaded from Firebase successfully");
-      } else {
-        console.log("No timetable data in database yet");
-        document.getElementById("timetableContainer").innerHTML = `
-          <div class="empty-state" style="padding: 4rem 2rem;">
-            <div class="empty-state-icon">📋</div>
-            <p>No timetable data yet. Add people and classes to get started!</p>
-          </div>
-        `;
+      if (currentUserRole === "admin") {
+        document.getElementById("editTimeSlotsBtn").style.display =
+          "inline-block";
       }
-    })
-    .catch((error) => {
-      console.error("Firebase auto-load error:", error);
-      loadFromLocalStorage();
-    });
+
+      renderTimetable();
+      updateCounters();
+
+      console.log("Timetable loaded from AWS successfully");
+    } else {
+      console.log("No timetable data in database yet");
+      document.getElementById("timetableContainer").innerHTML = `
+        <div class="empty-state" style="padding: 4rem 2rem;">
+          <div class="empty-state-icon">📋</div>
+          <p>No timetable data yet. Add people and classes to get started!</p>
+        </div>
+      `;
+    }
+  } catch (error) {
+    console.error("AWS auto-load error:", error);
+    // Fall back to localStorage if AWS fails
+    loadFromLocalStorage();
+  }
 }
 
 // ============================================
@@ -1340,4 +1325,4 @@ function showUpdateNotification() {
   }, 10000);
 }
 
-console.log("admin.js loaded");
+console.log("admin.js loaded (AWS version)");
