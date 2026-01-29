@@ -14,7 +14,7 @@ async function apiRequest(url, options = {}) {
     // Setup headers
     const headers = {
       'Content-Type': 'application/json',
-      'Authorization': idToken,
+      'Authorization': `Bearer ${idToken}`,
       ...options.headers
     };
 
