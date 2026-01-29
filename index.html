@@ -24,6 +24,7 @@
     <!-- AWS Configuration -->
     <script src="js/aws-config.js"></script>
     <script src="js/aws-auth.js"></script>
+    <script src="js/aws-api.js"></script>
 
     <!-- Login page specific styles -->
     <style>
@@ -80,15 +81,10 @@
 
     <script>
       // Check if already logged in on page load
-      document.addEventListener("DOMContentLoaded", function () {
-        // If user is already authenticated, redirect to appropriate page
+      document.addEventListener("DOMContentLoaded", async function () {
+        // If user is already authenticated, check for timetable and redirect
         if (isAuthenticated()) {
-          const userRole = getCurrentUserRole();
-          if (userRole === 'admin') {
-            window.location.href = 'admin.html';
-          } else {
-            window.location.href = 'view.html';
-          }
+          await redirectAfterAuth();
           return;
         }
 
@@ -143,12 +139,8 @@
 
           console.log("Login successful:", result.email, "Role:", result.role, "School:", result.schoolId);
 
-          // Redirect based on role (role comes from Cognito token)
-          if (result.role === 'admin') {
-            window.location.href = 'admin.html';
-          } else {
-            window.location.href = 'view.html';
-          }
+          // Check for existing timetable and redirect appropriately
+          await redirectAfterAuth();
 
         } catch (error) {
           console.error("Login error:", error);
@@ -165,6 +157,39 @@
         const errorDiv = document.getElementById("loginError");
         errorDiv.textContent = message;
         errorDiv.classList.add("active");
+      }
+
+      /**
+       * Check for existing timetable and redirect to appropriate page
+       */
+      async function redirectAfterAuth() {
+        const userRole = getCurrentUserRole();
+
+        try {
+          // Check if timetable exists and has data
+          const data = await loadTimetable();
+
+          if (data && data.setupComplete && (data.peopleList?.length > 0 || data.classList?.length > 0)) {
+            // Timetable exists, go to main app
+            window.location.href = userRole === 'admin' ? 'admin.html' : 'view.html';
+          } else {
+            // No timetable or setup incomplete, go to setup (admins only)
+            if (userRole === 'admin') {
+              window.location.href = 'setup.html';
+            } else {
+              // Viewers can't do setup, show message
+              window.location.href = 'view.html';
+            }
+          }
+        } catch (error) {
+          console.log('No timetable found:', error.message);
+          // No timetable exists, redirect to setup for admins
+          if (userRole === 'admin') {
+            window.location.href = 'setup.html';
+          } else {
+            window.location.href = 'view.html';
+          }
+        }
       }
     </script>
   </body>

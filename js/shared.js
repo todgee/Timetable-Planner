@@ -8,23 +8,7 @@
 // Note: API calls are in aws-api.js
 // Note: S3 storage is in aws-storage.js
 
-// ============================================
-// Constants
-// ============================================
-
-/**
- * Days of the week for timetable
- */
-const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
-
-/**
- * Default colors for class assignments
- */
-const defaultColors = [
-  '#4CAF50', '#2196F3', '#FF9800', '#9C27B0', '#E91E63',
-  '#00BCD4', '#FF5722', '#795548', '#607D8B', '#3F51B5',
-  '#8BC34A', '#FFC107', '#673AB7', '#009688', '#F44336'
-];
+// Note: 'days' and 'defaultColors' constants are defined in aws-config.js
 
 // ============================================
 // Notification Utilities

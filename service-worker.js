@@ -1,9 +1,10 @@
-const CACHE_NAME = 'timetable-v4';
+const CACHE_NAME = 'timetable-v5';
 const urlsToCache = [
   '/index.html',
   '/admin.html',
   '/view.html',
   '/config.html',
+  '/setup.html',
   '/css/styles.css',
   '/js/aws-config.js',
   '/js/aws-auth.js',
@@ -13,6 +14,7 @@ const urlsToCache = [
   '/js/admin.js',
   '/js/view.js',
   '/js/config.js',
+  '/js/setup.js',
   '/manifest.json',
   '/icons/icon-192x192.png',
   '/icons/icon-512x512.png',

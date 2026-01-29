@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup - Timetable Planner</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Setup Wizard Specific Styles */
+        .setup-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .setup-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .setup-header h1 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .setup-header p {
+            color: #666;
+        }
+
+        /* Progress Steps */
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: #e0e0e0;
+            z-index: 0;
+        }
+
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+            flex: 1;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            color: #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active .step-circle {
+            background: var(--primary);
+            color: white;
+        }
+
+        .progress-step.completed .step-circle {
+            background: var(--success, #28a745);
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.75rem;
+            color: #999;
+            text-align: center;
+        }
+
+        .progress-step.active .step-label,
+        .progress-step.completed .step-label {
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        /* Wizard Card */
+        .wizard-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 2rem;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .wizard-step {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .wizard-step.active {
+            display: flex;
+        }
+
+        .wizard-step h2 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .wizard-step .step-description {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        .wizard-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* Item List Styles */
+        .item-input-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .item-input-row input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .item-input-row input[type="color"] {
+            width: 50px;
+            padding: 0.25rem;
+            cursor: pointer;
+        }
+
+        .item-input-row button {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .item-input-row button:hover {
+            background: var(--primary-light);
+        }
+
+        .items-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .item-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #f5f5f5;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .item-tag .color-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .item-tag .remove-item {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            padding: 0;
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+
+        .item-tag .remove-item:hover {
+            color: var(--error, #dc3545);
+        }
+
+        /* Time Slots */
+        .time-slots-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .time-slot-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .time-slot-row input[type="time"] {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .time-slot-row span {
+            color: #666;
+        }
+
+        .time-slot-row .remove-slot {
+            margin-left: auto;
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .time-slot-row .remove-slot:hover {
+            color: var(--error, #dc3545);
+        }
+
+        .add-slot-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: #f0f0f0;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            color: #666;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+
+        .add-slot-btn:hover {
+            background: #e8e8e8;
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Quick Templates */
+        .templates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .template-card {
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .template-card:hover {
+            border-color: var(--primary);
+            background: #f9f9f9;
+        }
+
+        .template-card.selected {
+            border-color: var(--primary);
+            background: rgba(44, 95, 79, 0.1);
+        }
+
+        .template-card h4 {
+            margin: 0 0 0.25rem;
+            color: var(--primary);
+        }
+
+        .template-card p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        /* Review Step */
+        .review-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .review-section h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .review-section .edit-btn {
+            font-size: 0.8rem;
+            color: var(--accent);
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .review-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .review-item {
+            padding: 0.4rem 0.8rem;
+            background: #f5f5f5;
+            border-radius: 15px;
+            font-size: 0.85rem;
+        }
+
+        /* Navigation Buttons */
+        .wizard-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #eee;
+        }
+
+        .wizard-nav button {
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-back {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            color: #666;
+        }
+
+        .btn-back:hover {
+            background: #e8e8e8;
+        }
+
+        .btn-next {
+            background: var(--primary);
+            border: none;
+            color: white;
+        }
+
+        .btn-next:hover {
+            background: var(--primary-light);
+        }
+
+        .btn-next:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-finish {
+            background: var(--success, #28a745);
+            border: none;
+            color: white;
+        }
+
+        .btn-finish:hover {
+            background: #218838;
+        }
+
+        /* Welcome Step */
+        .welcome-content {
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        .welcome-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .welcome-content h2 {
+            font-size: 1.75rem;
+        }
+
+        .welcome-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+            text-align: left;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .feature-icon {
+            font-size: 1.5rem;
+        }
+
+        .feature-item h4 {
+            margin: 0 0 0.25rem;
+            color: var(--primary);
+            font-size: 0.95rem;
+        }
+
+        .feature-item p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        /* Empty State */
+        .empty-hint {
+            text-align: center;
+            padding: 2rem;
+            color: #999;
+            font-style: italic;
+        }
+
+        /* Account Creation Styles */
+        .school-input-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .school-input-section label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .school-input-section input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .school-input-section .hint {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        .account-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .account-form .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .account-form .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .account-form label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+            color: #555;
+        }
+
+        .account-form input {
+            padding: 0.65rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        .account-form .add-account-btn {
+            grid-column: 1 / -1;
+            padding: 0.75rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .account-form .add-account-btn:hover {
+            background: var(--primary-light);
+        }
+
+        .accounts-list {
+            margin-top: 1rem;
+        }
+
+        .account-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .account-card .account-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .account-card .account-email {
+            font-weight: 500;
+        }
+
+        .account-card .account-role {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .account-card .remove-account {
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .account-card .remove-account:hover {
+            color: var(--error, #dc3545);
+        }
+
+        .account-status {
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .account-status.success {
+            display: block;
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .account-status.error {
+            display: block;
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        @media (max-width: 600px) {
+            .account-form {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Loading Overlay */
+        .setup-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        .setup-loading.active {
+            display: flex;
+        }
+
+        .setup-loading .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .setup-loading p {
+            margin-top: 1rem;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        @media (max-width: 600px) {
+            .wizard-card {
+                padding: 1.5rem;
+            }
+
+            .progress-steps {
+                overflow-x: auto;
+            }
+
+            .step-label {
+                display: none;
+            }
+
+            .wizard-nav {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .wizard-nav button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="setup-loading" id="setupLoading">
+        <div class="spinner"></div>
+        <p>Setting up your timetable...</p>
+    </div>
+
+    <div class="setup-container">
+        <div class="setup-header">
+            <h1>Timetable Setup</h1>
+            <p>Let's get your timetable configured in a few simple steps</p>
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="progress-steps">
+            <div class="progress-step active" data-step="1">
+                <div class="step-circle">1</div>
+                <span class="step-label">Welcome</span>
+            </div>
+            <div class="progress-step" data-step="2">
+                <div class="step-circle">2</div>
+                <span class="step-label">School</span>
+            </div>
+            <div class="progress-step" data-step="3">
+                <div class="step-circle">3</div>
+                <span class="step-label">Classes</span>
+            </div>
+            <div class="progress-step" data-step="4">
+                <div class="step-circle">4</div>
+                <span class="step-label">People</span>
+            </div>
+            <div class="progress-step" data-step="5">
+                <div class="step-circle">5</div>
+                <span class="step-label">Time Slots</span>
+            </div>
+            <div class="progress-step" data-step="6">
+                <div class="step-circle">6</div>
+                <span class="step-label">Review</span>
+            </div>
+        </div>
+
+        <!-- Wizard Card -->
+        <div class="wizard-card">
+            <!-- Step 1: Welcome -->
+            <div class="wizard-step active" data-step="1">
+                <div class="welcome-content">
+                    <div class="welcome-icon">📋</div>
+                    <h2>Welcome to Timetable Planner</h2>
+                    <p class="step-description">We'll help you set up your timetable in just a few minutes.</p>
+
+                    <div class="welcome-features">
+                        <div class="feature-item">
+                            <span class="feature-icon">📚</span>
+                            <div>
+                                <h4>Add Classes</h4>
+                                <p>Define the classes or activities for your schedule</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">👥</span>
+                            <div>
+                                <h4>Add People</h4>
+                                <p>List the staff members to assign to classes</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">🕐</span>
+                            <div>
+                                <h4>Set Time Slots</h4>
+                                <p>Configure your daily schedule periods</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="wizard-nav">
+                    <div></div>
+                    <button class="btn-next" onclick="nextStep()">Get Started</button>
+                </div>
+            </div>
+
+            <!-- Step 2: School & Accounts -->
+            <div class="wizard-step" data-step="2">
+                <h2>School Setup</h2>
+                <p class="step-description">Configure your school identifier and create user accounts.</p>
+
+                <div class="wizard-content">
+                    <div class="school-input-section">
+                        <label for="schoolIdInput">School ID</label>
+                        <input type="text" id="schoolIdInput" placeholder="e.g., greenwood-high, st-marys-2024">
+                        <p class="hint">This unique ID will identify your school's timetable. Use lowercase letters, numbers, and hyphens only.</p>
+                    </div>
+
+                    <h4 style="margin-bottom: 0.75rem;">Create Additional Accounts (Optional)</h4>
+                    <p style="color: #666; margin-bottom: 1rem; font-size: 0.9rem;">Add accounts for other staff members who need access to this timetable.</p>
+
+                    <div class="account-status" id="accountStatus"></div>
+
+                    <div class="account-form">
+                        <div class="form-group">
+                            <label for="accountEmail">Email</label>
+                            <input type="email" id="accountEmail" placeholder="user@school.edu">
+                        </div>
+                        <div class="form-group">
+                            <label for="accountPassword">Temporary Password</label>
+                            <input type="text" id="accountPassword" placeholder="Min 8 characters">
+                        </div>
+                        <div class="form-group">
+                            <label for="accountName">Full Name</label>
+                            <input type="text" id="accountName" placeholder="John Smith">
+                        </div>
+                        <div class="form-group">
+                            <label for="accountRole">Role</label>
+                            <select id="accountRole" style="padding: 0.65rem; border: 1px solid #ddd; border-radius: 6px;">
+                                <option value="admin">Admin (Full Access)</option>
+                                <option value="viewer">Viewer (Read Only)</option>
+                            </select>
+                        </div>
+                        <button type="button" class="add-account-btn" onclick="createAccount()">+ Create Account</button>
+                    </div>
+
+                    <div class="accounts-list" id="accountsList">
+                        <div class="empty-hint">No additional accounts created yet.</div>
+                    </div>
+                </div>
+
+                <div class="wizard-nav">
+                    <button class="btn-back" onclick="prevStep()">Back</button>
+                    <button class="btn-next" onclick="nextStep()" id="schoolNextBtn">Next</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Classes -->
+            <div class="wizard-step" data-step="3">
+                <h2>Add Your Classes</h2>
+                <p class="step-description">Enter the classes or activities that will appear in your timetable. Each class gets its own color.</p>
+
+                <div class="wizard-content">
+                    <div class="item-input-row">
+                        <input type="text" id="classNameInput" placeholder="Enter class name (e.g., Math, Science)" onkeypress="handleClassKeypress(event)">
+                        <input type="color" id="classColorInput" value="#4CAF50" title="Pick a color">
+                        <button onclick="addClass()">Add</button>
+                    </div>
+
+                    <div class="items-list" id="classesList">
+                        <div class="empty-hint">No classes added yet. Add your first class above.</div>
+                    </div>
+                </div>
+
+                <div class="wizard-nav">
+                    <button class="btn-back" onclick="prevStep()">Back</button>
+                    <button class="btn-next" onclick="nextStep()" id="classesNextBtn">Next</button>
+                </div>
+            </div>
+
+            <!-- Step 4: People -->
+            <div class="wizard-step" data-step="4">
+                <h2>Add Your People</h2>
+                <p class="step-description">Enter the names of staff members who will be assigned to classes.</p>
+
+                <div class="wizard-content">
+                    <div class="item-input-row">
+                        <input type="text" id="personNameInput" placeholder="Enter person's name" onkeypress="handlePersonKeypress(event)">
+                        <button onclick="addPerson()">Add</button>
+                    </div>
+
+                    <div class="items-list" id="peopleList">
+                        <div class="empty-hint">No people added yet. Add your first person above.</div>
+                    </div>
+                </div>
+
+                <div class="wizard-nav">
+                    <button class="btn-back" onclick="prevStep()">Back</button>
+                    <button class="btn-next" onclick="nextStep()" id="peopleNextBtn">Next</button>
+                </div>
+            </div>
+
+            <!-- Step 5: Time Slots -->
+            <div class="wizard-step" data-step="5">
+                <h2>Configure Time Slots</h2>
+                <p class="step-description">Set up the time periods for your timetable. Choose a template or create custom slots.</p>
+
+                <div class="wizard-content">
+                    <h4 style="margin-bottom: 0.75rem;">Quick Templates</h4>
+                    <div class="templates-grid">
+                        <div class="template-card" onclick="applyTemplate('school')">
+                            <h4>School Day</h4>
+                            <p>8:00 AM - 3:00 PM (6 periods)</p>
+                        </div>
+                        <div class="template-card" onclick="applyTemplate('halfday')">
+                            <h4>Half Day</h4>
+                            <p>9:00 AM - 12:00 PM (3 periods)</p>
+                        </div>
+                        <div class="template-card" onclick="applyTemplate('custom')">
+                            <h4>Custom</h4>
+                            <p>Create your own schedule</p>
+                        </div>
+                    </div>
+
+                    <h4 style="margin-bottom: 0.75rem;">Time Slots</h4>
+                    <div class="time-slots-container" id="timeSlotsContainer">
+                        <div class="empty-hint">Select a template or add custom time slots below.</div>
+                    </div>
+                    <button class="add-slot-btn" onclick="addTimeSlot()">+ Add Time Slot</button>
+                </div>
+
+                <div class="wizard-nav">
+                    <button class="btn-back" onclick="prevStep()">Back</button>
+                    <button class="btn-next" onclick="nextStep()" id="slotsNextBtn">Next</button>
+                </div>
+            </div>
+
+            <!-- Step 6: Review -->
+            <div class="wizard-step" data-step="6">
+                <h2>Review Your Setup</h2>
+                <p class="step-description">Check everything looks correct before we create your timetable.</p>
+
+                <div class="wizard-content">
+                    <div class="review-section">
+                        <h4>
+                            School ID
+                            <button class="edit-btn" onclick="goToStep(2)">Edit</button>
+                        </h4>
+                        <div class="review-list" id="reviewSchool"></div>
+                    </div>
+
+                    <div class="review-section">
+                        <h4>
+                            Classes (<span id="reviewClassCount">0</span>)
+                            <button class="edit-btn" onclick="goToStep(3)">Edit</button>
+                        </h4>
+                        <div class="review-list" id="reviewClasses"></div>
+                    </div>
+
+                    <div class="review-section">
+                        <h4>
+                            People (<span id="reviewPeopleCount">0</span>)
+                            <button class="edit-btn" onclick="goToStep(4)">Edit</button>
+                        </h4>
+                        <div class="review-list" id="reviewPeople"></div>
+                    </div>
+
+                    <div class="review-section">
+                        <h4>
+                            Time Slots (<span id="reviewSlotsCount">0</span>)
+                            <button class="edit-btn" onclick="goToStep(5)">Edit</button>
+                        </h4>
+                        <div class="review-list" id="reviewSlots"></div>
+                    </div>
+
+                    <div class="review-section">
+                        <h4>
+                            Accounts Created (<span id="reviewAccountCount">0</span>)
+                            <button class="edit-btn" onclick="goToStep(2)">Edit</button>
+                        </h4>
+                        <div class="review-list" id="reviewAccounts"></div>
+                    </div>
+                </div>
+
+                <div class="wizard-nav">
+                    <button class="btn-back" onclick="prevStep()">Back</button>
+                    <button class="btn-finish" onclick="finishSetup()">Create Timetable</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/aws-config.js"></script>
+    <script src="js/aws-auth.js"></script>
+    <script src="js/aws-api.js"></script>
+    <script src="js/shared.js"></script>
+    <script src="js/setup.js"></script>
+</body>
+</html>
