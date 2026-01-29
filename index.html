@@ -9,203 +9,36 @@
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#2c5f4f" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta
-      name="apple-mobile-web-app-status-bar-style"
-      content="black-translucent"
-    />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Timetable" />
+
+    <!-- Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Work+Sans:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="css/styles.css" />
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
-    <link
-      href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Work+Sans:wght@300;400;500;600&display=swap"
-      rel="stylesheet"
-    />
-
+    <!-- Login page specific styles -->
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      :root {
-        --primary: #2c5f4f;
-        --primary-light: #3d7861;
-        --primary-dark: #1e4438;
-        --accent: #d4a574;
-        --bg: #fdfbf7;
-        --surface: #ffffff;
-        --text: #2d2d2d;
-        --text-light: #6b6b6b;
-        --border: #e8e3db;
-        --shadow: rgba(44, 95, 79, 0.08);
-        --error: #c84848;
-      }
-
       body {
-        font-family: "Work Sans", sans-serif;
-        background: linear-gradient(135deg, var(--bg) 0%, #f5f1e8 100%);
-        color: var(--text);
-        min-height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 2rem;
       }
-
-      .login-container {
-        background: var(--surface);
-        border-radius: 16px;
-        padding: 3rem;
-        box-shadow: 0 10px 40px var(--shadow);
-        border: 1px solid var(--border);
-        max-width: 500px;
-        width: 100%;
-      }
-
-      .login-title {
-        font-family: "Crimson Pro", serif;
-        font-size: 2.5rem;
-        color: var(--primary);
-        margin-bottom: 0.5rem;
-        text-align: center;
-      }
-
-      .login-subtitle {
-        text-align: center;
-        color: var(--text-light);
-        margin-bottom: 3rem;
-        font-size: 1rem;
-      }
-
-      .role-options {
-        display: grid;
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-      }
-
-      .role-card {
-        padding: 2rem;
-        background: var(--bg);
-        border: 3px solid var(--border);
-        border-radius: 12px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        text-align: center;
-      }
-
-      .role-card:hover {
-        border-color: var(--primary);
-        transform: translateY(-4px);
-        box-shadow: 0 8px 24px var(--shadow);
-      }
-
-      .role-card.selected {
-        border-color: var(--primary);
-        background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);
-      }
-
-      .role-icon {
-        font-size: 4rem;
-        margin-bottom: 1rem;
-      }
-
-      .role-title {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: var(--primary);
-        margin-bottom: 0.5rem;
-      }
-
-      .role-description {
-        font-size: 0.9rem;
-        color: var(--text-light);
-      }
-
-      .login-form {
-        display: none;
-      }
-
-      .login-form.active {
-        display: block;
-      }
-
-      .login-input {
-        width: 100%;
-        padding: 1rem;
-        border: 2px solid var(--border);
-        border-radius: 8px;
-        font-size: 1rem;
-        margin-bottom: 1rem;
-        font-family: "Work Sans", sans-serif;
-      }
-
-      .login-input:focus {
-        outline: none;
-        border-color: var(--primary);
-      }
-
-      .login-button {
-        width: 100%;
-        padding: 1rem 2rem;
-        background: var(--primary);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-size: 1.1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        font-family: "Work Sans", sans-serif;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-      }
-
-      .login-button:hover {
-        background: var(--primary-dark);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(44, 95, 79, 0.3);
-      }
-
-      .login-button:disabled {
-        background: var(--text-light);
-        cursor: not-allowed;
-        transform: none;
-      }
-
-      .login-error {
-        background: #fee;
-        border: 1px solid #fcc;
-        color: #c00;
-        padding: 1rem;
-        border-radius: 8px;
-        margin-bottom: 1rem;
-        font-size: 0.9rem;
-        display: none;
-      }
-
-      .login-error.active {
-        display: block;
-      }
-
-      .back-button {
-        background: var(--text-light);
-        color: white;
-        margin-top: 1rem;
-      }
-
-      .back-button:hover {
-        background: var(--text);
-      }
     </style>
   </head>
   <body>
     <div class="login-container">
-      <h1 class="login-title">🗓️ Timetable Planner</h1>
+      <h1 class="login-title">Timetable Planner</h1>
       <p class="login-subtitle">Flexible Scheduling for Schools</p>
 
       <div class="login-error" id="loginError"></div>
@@ -225,16 +58,9 @@
         </div>
       </div>
 
-      <!-- Login Form (appears after role selection) -->
+      <!-- Login Form -->
       <div id="loginForm" class="login-form">
-        <h3
-          style="
-            margin-bottom: 1.5rem;
-            color: var(--primary);
-            text-align: center;
-          "
-          id="loginFormTitle"
-        >
+        <h3 style="margin-bottom: 1.5rem; color: var(--primary); text-align: center" id="loginFormTitle">
           Login
         </h3>
 
@@ -257,43 +83,23 @@
           Login
         </button>
 
-        <button
-          class="login-button back-button"
-          onclick="backToRoleSelection()"
-        >
-          ← Back
+        <button class="login-button back-button" onclick="backToRoleSelection()">
+          Back
         </button>
       </div>
     </div>
 
+    <!-- Shared utilities -->
+    <script src="js/shared.js"></script>
+
     <script>
-      // Firebase Configuration
-      const firebaseConfig = {
-        apiKey: "AIzaSyBfwploSOHtEYfLZAgoyQdguU0AOFQTLik",
-        authDomain: "timetable-planner-b709d.firebaseapp.com",
-        databaseURL:
-          "https://timetable-planner-b709d-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "timetable-planner-b709d",
-        storageBucket: "timetable-planner-b709d.firebasestorage.app",
-        messagingSenderId: "442836512942",
-        appId: "1:442836512942:web:c84e9338b05863f83a3d3f",
-      };
-
-      firebase.initializeApp(firebaseConfig);
-      const auth = firebase.auth();
-
       let selectedRole = null;
 
-      // ============================================
-      // ADMIN WHITELIST
-      // ============================================
-      // Add admin email addresses here
-      // Anyone on this list gets full admin access
-      // Everyone else gets viewer (ESO) access
+      // Admin whitelist
       const ADMIN_EMAILS = [
-        "cfrasca@whitefriars.catholic.edu.au", // Replace with actual admin email
-        "mfrasca@whitefriars.catholic.edu.au", // Replace with actual admin email
-        "leadership@yourschool.com", // Replace with actual admin email
+        "cfrasca@whitefriars.catholic.edu.au",
+        "mfrasca@whitefriars.catholic.edu.au",
+        "leadership@yourschool.com",
       ];
 
       function selectRole(role) {
@@ -301,21 +107,16 @@
         document.getElementById("roleSelection").style.display = "none";
         document.getElementById("loginForm").classList.add("active");
 
-        // Pre-fill credentials based on role
         if (role === "eso") {
-          document.getElementById("loginFormTitle").textContent =
-            "Login as ESO Staff";
+          document.getElementById("loginFormTitle").textContent = "Login as ESO Staff";
           document.getElementById("emailInput").value = "eso@yourschool.com";
           document.getElementById("passwordInput").value = "";
-          document.getElementById("passwordInput").placeholder =
-            "Enter ESO password";
+          document.getElementById("passwordInput").placeholder = "Enter ESO password";
         } else {
-          document.getElementById("loginFormTitle").textContent =
-            "Login as Leadership";
+          document.getElementById("loginFormTitle").textContent = "Login as Leadership";
           document.getElementById("emailInput").value = "admin@yourschool.com";
           document.getElementById("passwordInput").value = "";
-          document.getElementById("passwordInput").placeholder =
-            "Enter admin password";
+          document.getElementById("passwordInput").placeholder = "Enter admin password";
         }
 
         document.getElementById("passwordInput").focus();
@@ -346,29 +147,22 @@
           loginButton.textContent = "Logging in...";
           errorDiv.classList.remove("active");
 
-          // Sign in with Firebase
-          const userCredential = await auth.signInWithEmailAndPassword(
-            email,
-            password,
-          );
+          const userCredential = await auth.signInWithEmailAndPassword(email, password);
           const user = userCredential.user;
 
-          // Determine role based on admin whitelist
           let userRole;
           if (ADMIN_EMAILS.includes(email.toLowerCase())) {
             userRole = "admin";
-            console.log(`✅ Admin access granted to: ${email}`);
+            console.log("Admin access granted to:", email);
           } else {
             userRole = "viewer";
-            console.log(`👁️ Viewer access granted to: ${email}`);
+            console.log("Viewer access granted to:", email);
           }
 
-          // Save to session
           sessionStorage.setItem("userRole", userRole);
           sessionStorage.setItem("userEmail", email);
           sessionStorage.setItem("userId", user.uid);
 
-          // Redirect to appropriate page
           if (userRole === "admin") {
             window.location.href = "admin.html";
           } else {
@@ -398,7 +192,6 @@
         errorDiv.classList.add("active");
       }
 
-      // Handle Enter key
       document.addEventListener("DOMContentLoaded", function () {
         const passwordInput = document.getElementById("passwordInput");
         if (passwordInput) {
@@ -409,13 +202,10 @@
           });
         }
 
-        // Check if already logged in
         const userRole = sessionStorage.getItem("userRole");
         if (userRole) {
-          // Verify Firebase auth
           auth.onAuthStateChanged((user) => {
             if (user) {
-              // Already logged in, redirect
               if (userRole === "admin") {
                 window.location.href = "admin.html";
               } else {
