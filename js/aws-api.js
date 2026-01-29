@@ -248,41 +248,7 @@ async function deleteUser(email) {
 // Utility Functions
 // ============================================
 
-/**
- * Show notification message
- */
-function showNotification(message, isError = false) {
-  // Check if there's a notification element
-  let notification = document.getElementById('notification');
-
-  if (!notification) {
-    // Create notification element
-    notification = document.createElement('div');
-    notification.id = 'notification';
-    notification.style.cssText = `
-      position: fixed;
-      bottom: 2rem;
-      right: 2rem;
-      padding: 1rem 1.5rem;
-      border-radius: 8px;
-      color: white;
-      font-weight: 500;
-      z-index: 9999;
-      animation: slideInUp 0.3s ease;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    `;
-    document.body.appendChild(notification);
-  }
-
-  notification.textContent = message;
-  notification.style.background = isError ? '#c84848' : '#4a8b6f';
-  notification.style.display = 'block';
-
-  // Auto-hide after 3 seconds
-  setTimeout(() => {
-    notification.style.display = 'none';
-  }, 3000);
-}
+// Note: showNotification is defined in shared.js
 
 /**
  * Format error message for display
