@@ -21,10 +21,9 @@
     <!-- Stylesheet -->
     <link rel="stylesheet" href="css/styles.css" />
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <!-- AWS Configuration -->
+    <script src="js/aws-config.js"></script>
+    <script src="js/aws-auth.js"></script>
 
     <!-- Login page specific styles -->
     <style>
@@ -43,156 +42,57 @@
 
       <div class="login-error" id="loginError"></div>
 
-      <!-- Role Selection -->
-      <div id="roleSelection" class="role-options">
-        <div class="role-card" onclick="selectRole('eso')">
-          <div class="role-icon">👥</div>
-          <div class="role-title">ESO Staff</div>
-          <div class="role-description">View timetables and schedules</div>
+      <!-- Login Form (simplified - no role selection, role comes from Cognito) -->
+      <div id="loginForm" class="login-form active">
+        <div class="form-group">
+          <label for="emailInput">Email</label>
+          <input
+            type="email"
+            id="emailInput"
+            class="login-input"
+            placeholder="Enter your email"
+            autocomplete="email"
+          />
         </div>
 
-        <div class="role-card" onclick="selectRole('admin')">
-          <div class="role-icon">🔑</div>
-          <div class="role-title">Leadership</div>
-          <div class="role-description">Full access to edit and manage</div>
+        <div class="form-group">
+          <label for="passwordInput">Password</label>
+          <input
+            type="password"
+            id="passwordInput"
+            class="login-input"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+          />
         </div>
-      </div>
-
-      <!-- Login Form -->
-      <div id="loginForm" class="login-form">
-        <h3 style="margin-bottom: 1.5rem; color: var(--primary); text-align: center" id="loginFormTitle">
-          Login
-        </h3>
-
-        <input
-          type="email"
-          id="emailInput"
-          class="login-input"
-          placeholder="Email"
-          autocomplete="email"
-        />
-        <input
-          type="password"
-          id="passwordInput"
-          class="login-input"
-          placeholder="Password"
-          autocomplete="current-password"
-        />
 
         <button class="login-button" onclick="handleLogin()" id="loginButton">
           Login
         </button>
+      </div>
 
-        <button class="login-button back-button" onclick="backToRoleSelection()">
-          Back
-        </button>
+      <!-- Loading State -->
+      <div id="loadingState" style="display: none; text-align: center; padding: 2rem;">
+        <div class="spinner" style="margin: 0 auto 1rem;"></div>
+        <p>Signing in...</p>
       </div>
     </div>
 
-    <!-- Shared utilities -->
-    <script src="js/shared.js"></script>
-
     <script>
-      let selectedRole = null;
-
-      // Admin whitelist
-      const ADMIN_EMAILS = [
-        "cfrasca@whitefriars.catholic.edu.au",
-        "mfrasca@whitefriars.catholic.edu.au",
-        "leadership@yourschool.com",
-      ];
-
-      function selectRole(role) {
-        selectedRole = role;
-        document.getElementById("roleSelection").style.display = "none";
-        document.getElementById("loginForm").classList.add("active");
-
-        if (role === "eso") {
-          document.getElementById("loginFormTitle").textContent = "Login as ESO Staff";
-          document.getElementById("emailInput").value = "eso@yourschool.com";
-          document.getElementById("passwordInput").value = "";
-          document.getElementById("passwordInput").placeholder = "Enter ESO password";
-        } else {
-          document.getElementById("loginFormTitle").textContent = "Login as Leadership";
-          document.getElementById("emailInput").value = "admin@yourschool.com";
-          document.getElementById("passwordInput").value = "";
-          document.getElementById("passwordInput").placeholder = "Enter admin password";
-        }
-
-        document.getElementById("passwordInput").focus();
-      }
-
-      function backToRoleSelection() {
-        selectedRole = null;
-        document.getElementById("roleSelection").style.display = "grid";
-        document.getElementById("loginForm").classList.remove("active");
-        document.getElementById("loginError").classList.remove("active");
-        document.getElementById("emailInput").value = "";
-        document.getElementById("passwordInput").value = "";
-      }
-
-      async function handleLogin() {
-        const email = document.getElementById("emailInput").value.trim();
-        const password = document.getElementById("passwordInput").value;
-        const loginButton = document.getElementById("loginButton");
-        const errorDiv = document.getElementById("loginError");
-
-        if (!email || !password) {
-          showLoginError("Please enter both email and password");
+      // Check if already logged in on page load
+      document.addEventListener("DOMContentLoaded", function () {
+        // If user is already authenticated, redirect to appropriate page
+        if (isAuthenticated()) {
+          const userRole = getCurrentUserRole();
+          if (userRole === 'admin') {
+            window.location.href = 'admin.html';
+          } else {
+            window.location.href = 'view.html';
+          }
           return;
         }
 
-        try {
-          loginButton.disabled = true;
-          loginButton.textContent = "Logging in...";
-          errorDiv.classList.remove("active");
-
-          const userCredential = await auth.signInWithEmailAndPassword(email, password);
-          const user = userCredential.user;
-
-          let userRole;
-          if (ADMIN_EMAILS.includes(email.toLowerCase())) {
-            userRole = "admin";
-            console.log("Admin access granted to:", email);
-          } else {
-            userRole = "viewer";
-            console.log("Viewer access granted to:", email);
-          }
-
-          sessionStorage.setItem("userRole", userRole);
-          sessionStorage.setItem("userEmail", email);
-          sessionStorage.setItem("userId", user.uid);
-
-          if (userRole === "admin") {
-            window.location.href = "admin.html";
-          } else {
-            window.location.href = "view.html";
-          }
-        } catch (error) {
-          console.error("Login error:", error);
-          let errorMessage = "Login failed. Please check your credentials.";
-
-          if (error.code === "auth/wrong-password") {
-            errorMessage = "Incorrect password. Please try again.";
-          } else if (error.code === "auth/user-not-found") {
-            errorMessage = "User not found. Please contact your administrator.";
-          } else if (error.code === "auth/invalid-email") {
-            errorMessage = "Invalid email address.";
-          }
-
-          showLoginError(errorMessage);
-          loginButton.disabled = false;
-          loginButton.textContent = "Login";
-        }
-      }
-
-      function showLoginError(message) {
-        const errorDiv = document.getElementById("loginError");
-        errorDiv.textContent = message;
-        errorDiv.classList.add("active");
-      }
-
-      document.addEventListener("DOMContentLoaded", function () {
+        // Setup Enter key to submit
         const passwordInput = document.getElementById("passwordInput");
         if (passwordInput) {
           passwordInput.addEventListener("keypress", function (e) {
@@ -202,19 +102,70 @@
           });
         }
 
-        const userRole = sessionStorage.getItem("userRole");
-        if (userRole) {
-          auth.onAuthStateChanged((user) => {
-            if (user) {
-              if (userRole === "admin") {
-                window.location.href = "admin.html";
-              } else {
-                window.location.href = "view.html";
-              }
+        const emailInput = document.getElementById("emailInput");
+        if (emailInput) {
+          emailInput.addEventListener("keypress", function (e) {
+            if (e.key === "Enter") {
+              document.getElementById("passwordInput").focus();
             }
           });
         }
       });
+
+      /**
+       * Handle login form submission
+       */
+      async function handleLogin() {
+        const email = document.getElementById("emailInput").value.trim();
+        const password = document.getElementById("passwordInput").value;
+        const loginButton = document.getElementById("loginButton");
+        const errorDiv = document.getElementById("loginError");
+
+        // Validation
+        if (!email || !password) {
+          showLoginError("Please enter both email and password");
+          return;
+        }
+
+        if (!email.includes('@')) {
+          showLoginError("Please enter a valid email address");
+          return;
+        }
+
+        try {
+          // Show loading state
+          loginButton.disabled = true;
+          loginButton.textContent = "Signing in...";
+          errorDiv.classList.remove("active");
+
+          // Login with Cognito
+          const result = await cognitoLogin(email, password);
+
+          console.log("Login successful:", result.email, "Role:", result.role, "School:", result.schoolId);
+
+          // Redirect based on role (role comes from Cognito token)
+          if (result.role === 'admin') {
+            window.location.href = 'admin.html';
+          } else {
+            window.location.href = 'view.html';
+          }
+
+        } catch (error) {
+          console.error("Login error:", error);
+          showLoginError(error.message || "Login failed. Please try again.");
+          loginButton.disabled = false;
+          loginButton.textContent = "Login";
+        }
+      }
+
+      /**
+       * Show error message
+       */
+      function showLoginError(message) {
+        const errorDiv = document.getElementById("loginError");
+        errorDiv.textContent = message;
+        errorDiv.classList.add("active");
+      }
     </script>
   </body>
 </html>
