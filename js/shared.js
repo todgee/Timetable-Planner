@@ -9,6 +9,80 @@
 // Note: S3 storage is in aws-storage.js
 
 // ============================================
+// Constants
+// ============================================
+
+/**
+ * Days of the week for timetable
+ */
+const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+
+/**
+ * Default colors for class assignments
+ */
+const defaultColors = [
+  '#4CAF50', '#2196F3', '#FF9800', '#9C27B0', '#E91E63',
+  '#00BCD4', '#FF5722', '#795548', '#607D8B', '#3F51B5',
+  '#8BC34A', '#FFC107', '#673AB7', '#009688', '#F44336'
+];
+
+// ============================================
+// Notification Utilities
+// ============================================
+
+/**
+ * Show a notification message to the user
+ * @param {string} message - The message to display
+ * @param {boolean} isError - Whether this is an error message
+ */
+function showNotification(message, isError = false) {
+  // Remove existing notification if any
+  const existing = document.querySelector('.notification-toast');
+  if (existing) existing.remove();
+
+  const notification = document.createElement('div');
+  notification.className = 'notification-toast';
+  notification.style.cssText = `
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    z-index: 10000;
+    animation: slideUp 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    background: ${isError ? 'var(--error, #dc3545)' : 'var(--success, #28a745)'};
+  `;
+  notification.textContent = message;
+
+  // Add animation keyframes if not exists
+  if (!document.querySelector('#notification-styles')) {
+    const style = document.createElement('style');
+    style.id = 'notification-styles';
+    style.textContent = `
+      @keyframes slideUp {
+        from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+        to { opacity: 1; transform: translateX(-50%) translateY(0); }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  document.body.appendChild(notification);
+
+  // Remove after 3 seconds
+  setTimeout(() => {
+    notification.style.opacity = '0';
+    notification.style.transform = 'translateX(-50%) translateY(20px)';
+    notification.style.transition = 'all 0.3s ease';
+    setTimeout(() => notification.remove(), 300);
+  }, 3000);
+}
+
+// ============================================
 // Time Formatting Utilities
 // ============================================
 
