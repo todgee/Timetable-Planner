@@ -4,10 +4,12 @@
 
 // Wizard State
 let currentStep = 1;
-const totalSteps = 5;
+const totalSteps = 6;
 
 // Setup Data
 const setupData = {
+    schoolId: '',
+    accounts: [],     // { email: string, name: string, role: string }
     classes: [],      // { name: string, color: string }
     people: [],       // string[]
     timeSlots: []     // { start: string, end: string }
@@ -39,7 +41,7 @@ async function checkExistingTimetable() {
         const data = await loadTimetable();
 
         // If timetable has data, redirect to appropriate page
-        if (data && (data.peopleList?.length > 0 || data.classList?.length > 0)) {
+        if (data && data.setupComplete && (data.peopleList?.length > 0 || data.classList?.length > 0)) {
             const role = getCurrentUserRole();
             window.location.href = role === 'admin' ? 'admin.html' : 'view.html';
             return;
@@ -61,7 +63,7 @@ function nextStep() {
         }
 
         // If going to review step, populate review data
-        if (currentStep === 4) {
+        if (currentStep === 5) {
             populateReview();
         }
 
@@ -108,19 +110,34 @@ function setStep(step) {
 
 function validateStep(step) {
     switch (step) {
-        case 2: // Classes
+        case 2: // School
+            const schoolId = document.getElementById('schoolIdInput').value.trim();
+            if (!schoolId) {
+                alert('Please enter a School ID before continuing.');
+                document.getElementById('schoolIdInput').focus();
+                return false;
+            }
+            // Validate format (lowercase, numbers, hyphens only)
+            if (!/^[a-z0-9-]+$/.test(schoolId)) {
+                alert('School ID can only contain lowercase letters, numbers, and hyphens.');
+                document.getElementById('schoolIdInput').focus();
+                return false;
+            }
+            setupData.schoolId = schoolId;
+            return true;
+        case 3: // Classes
             if (setupData.classes.length === 0) {
                 alert('Please add at least one class before continuing.');
                 return false;
             }
             return true;
-        case 3: // People
+        case 4: // People
             if (setupData.people.length === 0) {
                 alert('Please add at least one person before continuing.');
                 return false;
             }
             return true;
-        case 4: // Time Slots
+        case 5: // Time Slots
             if (setupData.timeSlots.length === 0) {
                 alert('Please add at least one time slot before continuing.');
                 return false;
@@ -132,10 +149,15 @@ function validateStep(step) {
 }
 
 function updateButtonStates() {
+    const schoolBtn = document.getElementById('schoolNextBtn');
     const classesBtn = document.getElementById('classesNextBtn');
     const peopleBtn = document.getElementById('peopleNextBtn');
     const slotsBtn = document.getElementById('slotsNextBtn');
 
+    if (schoolBtn) {
+        const schoolId = document.getElementById('schoolIdInput')?.value.trim();
+        schoolBtn.disabled = !schoolId;
+    }
     if (classesBtn) {
         classesBtn.disabled = setupData.classes.length === 0;
     }
@@ -145,6 +167,121 @@ function updateButtonStates() {
     if (slotsBtn) {
         slotsBtn.disabled = setupData.timeSlots.length === 0;
     }
+}
+
+// ============================================
+// Account Management
+// ============================================
+async function createAccount() {
+    const email = document.getElementById('accountEmail').value.trim();
+    const password = document.getElementById('accountPassword').value;
+    const name = document.getElementById('accountName').value.trim();
+    const role = document.getElementById('accountRole').value;
+    const statusEl = document.getElementById('accountStatus');
+
+    // Validation
+    if (!email || !password || !name) {
+        showAccountStatus('Please fill in all fields.', 'error');
+        return;
+    }
+
+    if (!email.includes('@')) {
+        showAccountStatus('Please enter a valid email address.', 'error');
+        return;
+    }
+
+    if (password.length < 8) {
+        showAccountStatus('Password must be at least 8 characters.', 'error');
+        return;
+    }
+
+    // Check for duplicate
+    if (setupData.accounts.some(a => a.email.toLowerCase() === email.toLowerCase())) {
+        showAccountStatus('An account with this email already exists.', 'error');
+        return;
+    }
+
+    // Show loading
+    const addBtn = document.querySelector('.add-account-btn');
+    const originalText = addBtn.textContent;
+    addBtn.textContent = 'Creating...';
+    addBtn.disabled = true;
+
+    try {
+        // Call AWS API to create Cognito user
+        // For now, all accounts are created as admin (as per user request)
+        const schoolId = document.getElementById('schoolIdInput').value.trim() || 'default';
+
+        await createUser(email, password, 'admin'); // Always admin for now
+
+        // Add to local list
+        setupData.accounts.push({
+            email: email,
+            name: name,
+            role: 'admin' // Always admin for now
+        });
+
+        // Clear form
+        document.getElementById('accountEmail').value = '';
+        document.getElementById('accountPassword').value = '';
+        document.getElementById('accountName').value = '';
+
+        // Update UI
+        renderAccountsList();
+        showAccountStatus(`Account created for ${email}`, 'success');
+
+    } catch (error) {
+        console.error('Account creation error:', error);
+        let errorMsg = 'Failed to create account.';
+        if (error.message.includes('exists')) {
+            errorMsg = 'An account with this email already exists in the system.';
+        } else if (error.message.includes('password')) {
+            errorMsg = 'Password does not meet requirements (min 8 chars, uppercase, lowercase, number).';
+        } else if (error.message) {
+            errorMsg = error.message;
+        }
+        showAccountStatus(errorMsg, 'error');
+    } finally {
+        addBtn.textContent = originalText;
+        addBtn.disabled = false;
+    }
+}
+
+function showAccountStatus(message, type) {
+    const statusEl = document.getElementById('accountStatus');
+    statusEl.textContent = message;
+    statusEl.className = 'account-status ' + type;
+
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+        statusEl.className = 'account-status';
+    }, 5000);
+}
+
+function removeAccount(index) {
+    // Note: This only removes from local list, doesn't delete from Cognito
+    // In production, you might want to mark for deletion or actually delete
+    setupData.accounts.splice(index, 1);
+    renderAccountsList();
+}
+
+function renderAccountsList() {
+    const container = document.getElementById('accountsList');
+
+    if (setupData.accounts.length === 0) {
+        container.innerHTML = '<div class="empty-hint">No additional accounts created yet.</div>';
+        return;
+    }
+
+    container.innerHTML = setupData.accounts.map((account, index) => `
+        <div class="account-card">
+            <div class="account-info">
+                <span class="account-email">${account.email}</span>
+                <span class="account-role">${account.name} - Admin</span>
+            </div>
+            <button class="remove-account" onclick="removeAccount(${index})" title="Remove from list">&times;</button>
+        </div>
+    `).join('');
 }
 
 // ============================================
@@ -359,6 +496,11 @@ function renderTimeSlots() {
 // Review Step
 // ============================================
 function populateReview() {
+    // School ID
+    document.getElementById('reviewSchool').innerHTML = `
+        <span class="review-item" style="font-weight: 500;">${setupData.schoolId}</span>
+    `;
+
     // Classes
     document.getElementById('reviewClassCount').textContent = setupData.classes.length;
     document.getElementById('reviewClasses').innerHTML = setupData.classes.map(cls => `
@@ -380,6 +522,16 @@ function populateReview() {
             Period ${index + 1}: ${formatTime12Hour(slot.start)} - ${formatTime12Hour(slot.end)}
         </span>
     `).join('');
+
+    // Accounts
+    document.getElementById('reviewAccountCount').textContent = setupData.accounts.length;
+    if (setupData.accounts.length > 0) {
+        document.getElementById('reviewAccounts').innerHTML = setupData.accounts.map(acc => `
+            <span class="review-item">${acc.email}</span>
+        `).join('');
+    } else {
+        document.getElementById('reviewAccounts').innerHTML = '<span class="review-item" style="color: #999;">None (only you)</span>';
+    }
 }
 
 // ============================================
@@ -391,18 +543,19 @@ async function finishSetup() {
 
     try {
         // Build the timetable data structure
-        const classColors = {};
+        const classColorsMap = {};
         setupData.classes.forEach(cls => {
-            classColors[cls.name] = cls.color;
+            classColorsMap[cls.name] = cls.color;
         });
 
         const timetableData = {
             version: '1.0',
             setupComplete: true,
+            schoolId: setupData.schoolId,
             createdAt: new Date().toISOString(),
             peopleList: setupData.people,
             classList: setupData.classes.map(c => c.name),
-            classColors: classColors,
+            classColors: classColorsMap,
             assignments: {
                 monday: {},
                 tuesday: {},
@@ -413,16 +566,16 @@ async function finishSetup() {
             timeSlots: setupData.timeSlots
         };
 
-        // Save to AWS
+        // Save to AWS using the custom schoolId
+        // Note: You may need to update the API to accept custom schoolId
         await saveTimetable(timetableData);
 
         // Show success
         loadingEl.querySelector('p').textContent = 'Setup complete! Redirecting...';
 
-        // Redirect to appropriate page
+        // Redirect to admin page (all users are admin for now)
         setTimeout(() => {
-            const role = getCurrentUserRole();
-            window.location.href = role === 'admin' ? 'admin.html' : 'view.html';
+            window.location.href = 'admin.html';
         }, 1500);
 
     } catch (error) {
@@ -437,7 +590,16 @@ async function finishSetup() {
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
     // Set initial color for class input
-    document.getElementById('classColorInput').value = classColors[0];
+    const colorInput = document.getElementById('classColorInput');
+    if (colorInput) {
+        colorInput.value = classColors[0];
+    }
+
+    // Add input listener for school ID
+    const schoolIdInput = document.getElementById('schoolIdInput');
+    if (schoolIdInput) {
+        schoolIdInput.addEventListener('input', updateButtonStates);
+    }
 
     // Initialize button states
     updateButtonStates();
