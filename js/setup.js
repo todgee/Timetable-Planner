@@ -24,6 +24,33 @@ const classColors = [
 let colorIndex = 0;
 
 // ============================================
+// Time Formatting (local copy for setup.js)
+// ============================================
+/**
+ * Convert 24-hour time to 12-hour format
+ * Local definition to ensure availability during setup
+ */
+function formatTime12Hour(time24) {
+    if (!time24 || typeof time24 !== 'string') {
+        return 'Invalid Time';
+    }
+
+    const parts = time24.split(':');
+    if (parts.length !== 2) {
+        return time24;
+    }
+
+    const [hours, minutes] = parts.map(Number);
+    if (isNaN(hours) || isNaN(minutes)) {
+        return time24;
+    }
+
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const hours12 = hours % 12 || 12;
+    return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
+}
+
+// ============================================
 // Authentication Check
 // ============================================
 (function initAuth() {
@@ -212,7 +239,19 @@ async function createAccount() {
         // For now, all accounts are created as admin (as per user request)
         const schoolId = document.getElementById('schoolIdInput').value.trim() || 'default';
 
-        await createUser(email, password, 'admin'); // Always admin for now
+        // Temporarily set the school ID to match the setup school ID
+        // This allows creating users for the new school during setup
+        const originalSchoolId = sessionStorage.getItem('aws_school_id');
+        sessionStorage.setItem('aws_school_id', schoolId);
+
+        try {
+            await createUser(email, password, 'admin'); // Always admin for now
+        } finally {
+            // Restore original school ID
+            if (originalSchoolId) {
+                sessionStorage.setItem('aws_school_id', originalSchoolId);
+            }
+        }
 
         // Add to local list
         setupData.accounts.push({
@@ -237,6 +276,8 @@ async function createAccount() {
             errorMsg = 'An account with this email already exists in the system.';
         } else if (error.message.includes('password')) {
             errorMsg = 'Password does not meet requirements (min 8 chars, uppercase, lowercase, number).';
+        } else if (error.message.includes('permission')) {
+            errorMsg = 'Permission denied. You can skip this step and add accounts later from the Admin page after setup is complete.';
         } else if (error.message) {
             errorMsg = error.message;
         }
