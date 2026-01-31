@@ -607,8 +607,12 @@ async function finishSetup() {
             timeSlots: setupData.timeSlots
         };
 
+        // IMPORTANT: Set the user-entered schoolId in sessionStorage
+        // This ensures saveTimetable() and loadTimetable() use the correct schoolId
+        // The schoolId must be stored BEFORE calling saveTimetable so the API uses it
+        sessionStorage.setItem('aws_school_id', setupData.schoolId);
+
         // Save to AWS using the custom schoolId
-        // Note: You may need to update the API to accept custom schoolId
         await saveTimetable(timetableData);
 
         // Show success
