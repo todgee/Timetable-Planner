@@ -70,6 +70,14 @@
         <button class="login-button" onclick="handleLogin()" id="loginButton">
           Login
         </button>
+
+        <div class="login-divider">
+          <span>or</span>
+        </div>
+
+        <button class="login-button secondary" onclick="window.location.href='signup.html'">
+          Create Account
+        </button>
       </div>
 
       <!-- Loading State -->
@@ -164,26 +172,33 @@
        */
       async function redirectAfterAuth() {
         const userRole = getCurrentUserRole();
+        const schoolId = getCurrentSchoolId();
+
+        // If user has no schoolId, they need to complete setup
+        if (!schoolId) {
+          console.log('No schoolId set, redirecting to setup');
+          window.location.href = 'setup.html';
+          return;
+        }
 
         try {
-          // Check if timetable exists and has data
+          // User has schoolId, check if timetable exists
           const data = await loadTimetable();
 
-          if (data && data.setupComplete && (data.peopleList?.length > 0 || data.classList?.length > 0)) {
-            // Timetable exists, go to main app
+          if (data && (data.peopleList?.length > 0 || data.classList?.length > 0)) {
+            // Timetable exists with data, go to main app
             window.location.href = userRole === 'admin' ? 'admin.html' : 'view.html';
           } else {
-            // No timetable or setup incomplete, go to setup (admins only)
+            // SchoolId exists but no timetable data yet
             if (userRole === 'admin') {
               window.location.href = 'setup.html';
             } else {
-              // Viewers can't do setup, show message
               window.location.href = 'view.html';
             }
           }
         } catch (error) {
-          console.log('No timetable found:', error.message);
-          // No timetable exists, redirect to setup for admins
+          console.log('Error loading timetable:', error.message);
+          // Error loading - redirect based on role
           if (userRole === 'admin') {
             window.location.href = 'setup.html';
           } else {

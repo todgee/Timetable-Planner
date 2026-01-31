@@ -128,6 +128,133 @@ async function cognitoLogin(email, password) {
 }
 
 /**
+ * Sign up a new user with Cognito
+ * Uses USER_PASSWORD_AUTH flow
+ */
+async function cognitoSignUp(email, password) {
+  const secretHash = await computeSecretHash(email);
+
+  const response = await fetch(
+    `https://cognito-idp.${AWS_CONFIG.region}.amazonaws.com/`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-amz-json-1.1',
+        'X-Amz-Target': 'AWSCognitoIdentityProviderService.SignUp'
+      },
+      body: JSON.stringify({
+        ClientId: AWS_CONFIG.cognito.clientId,
+        SecretHash: secretHash,
+        Username: email,
+        Password: password,
+        UserAttributes: [
+          { Name: 'email', Value: email }
+        ]
+      })
+    }
+  );
+
+  const data = await response.json();
+
+  if (data.__type) {
+    const errorType = data.__type.split('#')[1] || data.__type;
+    const errorMessages = {
+      'UsernameExistsException': 'An account with this email already exists.',
+      'InvalidPasswordException': 'Password does not meet requirements.',
+      'InvalidParameterException': 'Invalid email or password format.',
+      'TooManyRequestsException': 'Too many attempts. Please wait and try again.',
+      'CodeDeliveryFailureException': 'Failed to send verification email. Please try again.'
+    };
+    throw new Error(errorMessages[errorType] || data.message || 'Signup failed.');
+  }
+
+  return {
+    success: true,
+    userConfirmed: data.UserConfirmed,
+    codeDeliveryDetails: data.CodeDeliveryDetails
+  };
+}
+
+/**
+ * Confirm signup with verification code
+ */
+async function cognitoConfirmSignUp(email, code) {
+  const secretHash = await computeSecretHash(email);
+
+  const response = await fetch(
+    `https://cognito-idp.${AWS_CONFIG.region}.amazonaws.com/`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-amz-json-1.1',
+        'X-Amz-Target': 'AWSCognitoIdentityProviderService.ConfirmSignUp'
+      },
+      body: JSON.stringify({
+        ClientId: AWS_CONFIG.cognito.clientId,
+        SecretHash: secretHash,
+        Username: email,
+        ConfirmationCode: code
+      })
+    }
+  );
+
+  const data = await response.json();
+
+  if (data.__type) {
+    const errorType = data.__type.split('#')[1] || data.__type;
+    const errorMessages = {
+      'CodeMismatchException': 'Invalid verification code.',
+      'ExpiredCodeException': 'Verification code has expired. Please request a new one.',
+      'NotAuthorizedException': 'Unable to verify. Please try again.',
+      'TooManyFailedAttemptsException': 'Too many failed attempts. Please wait and try again.',
+      'UserNotFoundException': 'User not found.',
+      'AliasExistsException': 'An account with this email already exists.'
+    };
+    throw new Error(errorMessages[errorType] || data.message || 'Verification failed.');
+  }
+
+  return { success: true };
+}
+
+/**
+ * Resend verification code
+ */
+async function cognitoResendCode(email) {
+  const secretHash = await computeSecretHash(email);
+
+  const response = await fetch(
+    `https://cognito-idp.${AWS_CONFIG.region}.amazonaws.com/`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-amz-json-1.1',
+        'X-Amz-Target': 'AWSCognitoIdentityProviderService.ResendConfirmationCode'
+      },
+      body: JSON.stringify({
+        ClientId: AWS_CONFIG.cognito.clientId,
+        SecretHash: secretHash,
+        Username: email
+      })
+    }
+  );
+
+  const data = await response.json();
+
+  if (data.__type) {
+    const errorType = data.__type.split('#')[1] || data.__type;
+    const errorMessages = {
+      'UserNotFoundException': 'User not found.',
+      'InvalidParameterException': 'Invalid email.',
+      'TooManyRequestsException': 'Too many attempts. Please wait and try again.',
+      'LimitExceededException': 'Attempt limit exceeded. Please wait before trying again.'
+    };
+    throw new Error(errorMessages[errorType] || data.message || 'Failed to resend code.');
+  }
+
+  return { success: true };
+}
+
+/**
  * Store tokens in sessionStorage
  */
 function storeTokens(authResult, email) {
@@ -141,11 +268,18 @@ function storeTokens(authResult, email) {
   // Extract user info from ID token
   const payload = decodeToken(authResult.IdToken);
   if (payload) {
-    const role = payload['custom:role'] || 'viewer';
-    const schoolId = payload['custom:schoolId'] || 'test-001';
+    // Default role to 'admin' for new users (they're creating a timetable)
+    const role = payload['custom:role'] || 'admin';
+    // Don't default schoolId - null means user needs to go through setup
+    const schoolId = payload['custom:schoolId'] || null;
 
     sessionStorage.setItem(TOKEN_KEYS.userRole, role);
-    sessionStorage.setItem(TOKEN_KEYS.schoolId, schoolId);
+    if (schoolId) {
+      sessionStorage.setItem(TOKEN_KEYS.schoolId, schoolId);
+    } else {
+      // Clear any existing schoolId so we know setup is needed
+      sessionStorage.removeItem(TOKEN_KEYS.schoolId);
+    }
   }
 }
 
@@ -194,11 +328,17 @@ async function refreshTokens() {
   sessionStorage.setItem(TOKEN_KEYS.idToken, result.IdToken);
   sessionStorage.setItem(TOKEN_KEYS.accessToken, result.AccessToken);
 
-  // Update role/schoolId in case they changed
+  // Update role from token, but preserve schoolId if already set (from setup)
   const payload = decodeToken(result.IdToken);
   if (payload) {
-    sessionStorage.setItem(TOKEN_KEYS.userRole, payload['custom:role'] || 'viewer');
-    sessionStorage.setItem(TOKEN_KEYS.schoolId, payload['custom:schoolId'] || 'test-001');
+    sessionStorage.setItem(TOKEN_KEYS.userRole, payload['custom:role'] || 'admin');
+
+    // Only update schoolId from token if it has one, otherwise keep existing
+    const tokenSchoolId = payload['custom:schoolId'];
+    if (tokenSchoolId) {
+      sessionStorage.setItem(TOKEN_KEYS.schoolId, tokenSchoolId);
+    }
+    // If token has no schoolId, keep whatever is in sessionStorage (may have been set during setup)
   }
 
   return result;
@@ -257,23 +397,31 @@ function isAuthenticated() {
 function getUserFromTokens() {
   return {
     email: sessionStorage.getItem(TOKEN_KEYS.userEmail),
-    role: sessionStorage.getItem(TOKEN_KEYS.userRole) || 'viewer',
-    schoolId: sessionStorage.getItem(TOKEN_KEYS.schoolId) || 'test-001'
+    role: sessionStorage.getItem(TOKEN_KEYS.userRole) || 'admin',
+    schoolId: sessionStorage.getItem(TOKEN_KEYS.schoolId) || null
   };
 }
 
 /**
  * Get current school ID
+ * Returns null if not set (user needs to complete setup)
  */
 function getCurrentSchoolId() {
-  return sessionStorage.getItem(TOKEN_KEYS.schoolId) || 'test-001';
+  return sessionStorage.getItem(TOKEN_KEYS.schoolId) || null;
 }
 
 /**
  * Get current user role
  */
 function getCurrentUserRole() {
-  return sessionStorage.getItem(TOKEN_KEYS.userRole) || 'viewer';
+  return sessionStorage.getItem(TOKEN_KEYS.userRole) || 'admin';
+}
+
+/**
+ * Check if user has completed setup (has a schoolId)
+ */
+function hasCompletedSetup() {
+  return !!sessionStorage.getItem(TOKEN_KEYS.schoolId);
 }
 
 /**

@@ -972,6 +972,37 @@ input[type="file"]:hover {
   transform: none;
 }
 
+.login-button.secondary {
+  background: transparent;
+  color: var(--primary);
+  border: 2px solid var(--primary);
+}
+
+.login-button.secondary:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.login-divider {
+  display: flex;
+  align-items: center;
+  margin: 1.5rem 0;
+  color: var(--text-light);
+  font-size: 0.85rem;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.login-divider span {
+  padding: 0 1rem;
+}
+
 .login-error {
   background: #fee;
   border: 1px solid #fcc;
