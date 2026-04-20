@@ -18,25 +18,18 @@
     <!-- Stylesheet -->
     <link rel="stylesheet" href="css/styles.css" />
 
-    <!-- AWS Services -->
-    <script src="js/aws-config.js"></script>
-    <script src="js/aws-auth.js"></script>
-    <script src="js/aws-api.js"></script>
-
     <!-- Shared utilities -->
     <script src="js/shared.js"></script>
+    <script src="theme-loader.js"></script>
   </head>
   <body>
-    <!-- User Info Bar -->
-    <div class="user-info">
-      <span class="user-role">ESO Staff (View Only)</span>
-      <button class="logout-btn" onclick="handleLogout()">Logout</button>
-    </div>
-
     <div class="container">
       <header>
         <h1>Timetable Planner</h1>
-        <p class="subtitle">ESO View - Read Only</p>
+        <p class="subtitle">Read-only view</p>
+        <div style="margin-top: 0.75rem;">
+          <a href="admin.html" class="btn btn-secondary btn-icon" style="text-decoration:none;">Back to Editor</a>
+        </div>
       </header>
 
       <!-- Timetable Section -->

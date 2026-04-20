@@ -12,29 +12,11 @@ let currentDay = "monday";
 let currentCounterTab = "day";
 
 // ============================================
-// Authentication Check (AWS Cognito)
+// Load Timetable Data from localStorage
 // ============================================
-(function initAuth() {
-  // Check if user is authenticated with AWS Cognito
-  if (!isAuthenticated()) {
-    window.location.href = "index.html";
-    return;
-  }
-
-  // Viewer role check
-  const userRole = getCurrentUserRole();
-  if (userRole !== "viewer" && userRole !== "admin") {
-    window.location.href = "index.html";
-    return;
-  }
-})();
-
-// ============================================
-// Load Timetable Data from AWS
-// ============================================
-async function loadTimetableData() {
+function loadTimetableData() {
   try {
-    const data = await loadTimetable();
+    const data = loadTimetable();
 
     if (data) {
       peopleList = data.peopleList || [];
@@ -227,4 +209,4 @@ window.addEventListener("DOMContentLoaded", function () {
   updateDayLabel();
 });
 
-console.log("view.js loaded (AWS version)");
+console.log("view.js loaded");

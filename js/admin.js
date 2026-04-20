@@ -18,37 +18,19 @@ let currentDay = "monday";
 let currentCounterTab = "day";
 let colorIndex = 0;
 let currentEditCell = null;
-let currentUser = null;
-let currentUserRole = null;
 
-// Use days from shared.js
 const daysArray = days;
 
 // ============================================
-// Authentication Check (AWS Cognito)
+// Bootstrap: load from localStorage, or send user to setup
 // ============================================
-(async function initAuth() {
-  // Check if user is authenticated with AWS Cognito
-  if (!isAuthenticated()) {
-    window.location.href = "index.html";
+(function init() {
+  const data = loadTimetable();
+  if (!data || !data.setupComplete) {
+    window.location.replace("setup.html");
     return;
   }
-
-  // Get user info from Cognito tokens
-  currentUserRole = getCurrentUserRole();
-  const userEmail = sessionStorage.getItem("userEmail");
-
-  // Show user info
-  const userInfo = document.getElementById("userInfo");
-  const userRoleEl = document.getElementById("userRole");
-  if (userInfo) userInfo.style.display = "flex";
-  if (userRoleEl) userRoleEl.textContent = `${currentUserRole === "admin" ? "Leadership (Admin)" : "Viewer"}`;
-
-  // Set current user object for compatibility
-  currentUser = { email: userEmail };
-
-  // Load timetable from AWS
-  await autoLoadFromAWS();
+  loadFromStorage();
 })();
 
 // ============================================
@@ -92,7 +74,7 @@ function addPeople() {
 
   input.value = "";
   updatePeopleList();
-  autoSaveToFirebase();
+  autoSave();
 
   if (added > 0) {
     alert(
@@ -124,7 +106,7 @@ function removePerson(name) {
     updatePeopleList();
     renderCurrentTimetable();
     updateCounters();
-    autoSaveToFirebase();
+    autoSave();
   }
 }
 
@@ -215,7 +197,7 @@ function addClasses() {
   input.value = "";
   updateClassList();
   updateModalSelects();
-  autoSaveToFirebase();
+  autoSave();
 
   if (added > 0) {
     alert(
@@ -249,14 +231,14 @@ function removeClass(name) {
     updateModalSelects();
     renderCurrentTimetable();
     updateCounters();
-    autoSaveToFirebase();
+    autoSave();
   }
 }
 
 function updateClassColor(name, color) {
   classColors[name] = color;
   renderCurrentTimetable();
-  autoSaveToFirebase();
+  autoSave();
 }
 
 function updateClassList() {
@@ -434,7 +416,7 @@ function saveTimeSlots() {
   closeEditTimeSlotsModal();
   renderTimetable();
   updateCounters();
-  autoSaveToFirebase();
+  autoSave();
 }
 
 // ============================================
@@ -481,17 +463,12 @@ function renderTimetable() {
       const bgColor = hasContent ? classColors[cellData.class] : "";
       const style = hasContent ? `style="background: ${bgColor};"` : "";
 
-      const clickHandler =
-        currentUserRole === "admin"
-          ? `onclick="editCell('${slot.start}', '${person.replace(/'/g, "\\'")}')"`
-          : "";
+      const clickHandler = `onclick="editCell('${slot.start}', '${person.replace(/'/g, "\\'")}')"`;
 
       html += `<div class="roster-cell ${hasContent ? "has-content" : ""}" ${style} ${clickHandler}>`;
 
       if (hasContent) {
-        if (currentUserRole === "admin") {
-          html += `<button class="remove-btn-cell" onclick="event.stopPropagation(); removeCell('${slot.start}', '${person.replace(/'/g, "\\'")}')">×</button>`;
-        }
+        html += `<button class="remove-btn-cell" onclick="event.stopPropagation(); removeCell('${slot.start}', '${person.replace(/'/g, "\\'")}')">×</button>`;
         html += `<div class="cell-content">`;
         html += `<div class="assignment-class">${cellData.class}</div>`;
         html += `<div class="assignment-duration">${cellData.duration} min</div>`;
@@ -576,7 +553,7 @@ function confirmAssignment() {
   closeModal();
   renderTimetable();
   updateCounters();
-  autoSaveToFirebase();
+  autoSave();
 }
 
 function removeCell(time, person) {
@@ -584,7 +561,7 @@ function removeCell(time, person) {
   delete assignments[currentDay][cellKey];
   renderTimetable();
   updateCounters();
-  autoSaveToFirebase();
+  autoSave();
 }
 
 // ============================================
@@ -740,7 +717,7 @@ function loadProject(event) {
       }
 
       alert("Project loaded successfully!");
-      autoSaveToFirebase();
+      autoSave();
     } catch (error) {
       alert("Error loading project file: " + error.message);
     }
@@ -750,57 +727,48 @@ function loadProject(event) {
   event.target.value = "";
 }
 
-function autoSaveToFirebase() {
-  const projectData = {
-    version: "1.0",
-    savedDate: new Date().toISOString(),
-    peopleList: peopleList,
-    classList: classList,
-    classColors: classColors,
-    assignments: assignments,
-    timeSlots: timeSlots,
-  };
-
+function autoSave() {
   try {
-    localStorage.setItem("timetableProject", JSON.stringify(projectData));
+    saveTimetable({
+      setupComplete: true,
+      peopleList: peopleList,
+      classList: classList,
+      classColors: classColors,
+      assignments: assignments,
+      timeSlots: timeSlots,
+    });
     showAutoSaveIndicator();
-
-    if (currentUserRole === "admin") {
-      saveToAWS();
-    }
   } catch (error) {
     console.error("Auto-save failed:", error);
+    showNotification("Auto-save failed. Please export a backup.", true);
   }
 }
 
-function loadFromLocalStorage() {
-  try {
-    const saved = localStorage.getItem("timetableProject");
-    if (!saved) return;
+function loadFromStorage() {
+  const data = loadTimetable();
+  if (!data) return;
 
-    const projectData = JSON.parse(saved);
+  peopleList = data.peopleList || [];
+  classList = data.classList || [];
+  classColors = data.classColors || {};
+  assignments = {
+    monday: data.assignments?.monday || {},
+    tuesday: data.assignments?.tuesday || {},
+    wednesday: data.assignments?.wednesday || {},
+    thursday: data.assignments?.thursday || {},
+    friday: data.assignments?.friday || {},
+  };
+  timeSlots = data.timeSlots || [];
+  colorIndex = classList.length;
 
-    peopleList = projectData.peopleList || [];
-    classList = projectData.classList || [];
-    classColors = projectData.classColors || {};
-    assignments = projectData.assignments || {};
-    timeSlots = projectData.timeSlots || [];
-    colorIndex = classList.length;
+  updatePeopleList();
+  updateClassList();
+  updateModalSelects();
 
-    updatePeopleList();
-    updateClassList();
-    updateModalSelects();
-
-    if (timeSlots.length > 0) {
-      document.getElementById("daySelector").style.display = "flex";
-      document.getElementById("timetableWrapper").style.display = "block";
-      document.getElementById("editTimeSlotsBtn").style.display = "inline-block";
-      document.getElementById("countersSection").style.display = "block";
-      renderTimetable();
-      updateCounters();
-    }
-  } catch (error) {
-    console.error("Error loading from localStorage:", error);
+  if (timeSlots.length > 0) {
+    document.getElementById("editTimeSlotsBtn").style.display = "inline-block";
+    renderTimetable();
+    updateCounters();
   }
 }
 
@@ -1026,138 +994,6 @@ async function exportAll() {
 }
 
 // ============================================
-// AWS Integration
-// ============================================
-async function saveToAWS() {
-  if (currentUserRole !== "admin") {
-    console.log("Only admins can save changes");
-    return;
-  }
-
-  const timetableData = {
-    version: "1.0",
-    lastUpdated: new Date().toISOString(),
-    updatedBy: currentUser.email,
-    peopleList: peopleList,
-    classList: classList,
-    classColors: classColors,
-    assignments: assignments,
-    timeSlots: timeSlots,
-  };
-
-  try {
-    await saveTimetable(timetableData);
-    showNotification("Saved to server");
-  } catch (error) {
-    console.error("AWS save error:", error);
-    showNotification("Save failed. Please try again.", true);
-  }
-}
-
-async function loadFromDatabase() {
-  if (
-    !confirm(
-      "Load timetable from database? This will replace your current work."
-    )
-  ) {
-    return;
-  }
-
-  showNotification("Loading from database...", false);
-
-  try {
-    const data = await loadTimetable();
-
-    if (data) {
-      peopleList = data.peopleList || [];
-      classList = data.classList || [];
-      classColors = data.classColors || {};
-
-      assignments = {
-        monday: data.assignments?.monday || {},
-        tuesday: data.assignments?.tuesday || {},
-        wednesday: data.assignments?.wednesday || {},
-        thursday: data.assignments?.thursday || {},
-        friday: data.assignments?.friday || {},
-      };
-
-      timeSlots = data.timeSlots || [];
-      colorIndex = classList.length;
-
-      updatePeopleList();
-      updateClassList();
-      updateModalSelects();
-
-      if (currentUserRole === "admin") {
-        document.getElementById("editTimeSlotsBtn").style.display =
-          "inline-block";
-      }
-
-      renderTimetable();
-      updateCounters();
-
-      showNotification("Loaded from database");
-    } else {
-      showNotification("No data in database", true);
-    }
-  } catch (error) {
-    console.error("AWS load error:", error);
-    showNotification("Load failed. Please try again.", true);
-  }
-}
-
-async function autoLoadFromAWS() {
-  console.log("Auto-loading timetable from AWS...");
-
-  try {
-    const data = await loadTimetable();
-
-    if (data) {
-      peopleList = data.peopleList || [];
-      classList = data.classList || [];
-      classColors = data.classColors || {};
-
-      assignments = {
-        monday: data.assignments?.monday || {},
-        tuesday: data.assignments?.tuesday || {},
-        wednesday: data.assignments?.wednesday || {},
-        thursday: data.assignments?.thursday || {},
-        friday: data.assignments?.friday || {},
-      };
-
-      timeSlots = data.timeSlots || [];
-      colorIndex = classList.length;
-
-      updatePeopleList();
-      updateClassList();
-      updateModalSelects();
-
-      if (currentUserRole === "admin") {
-        document.getElementById("editTimeSlotsBtn").style.display =
-          "inline-block";
-      }
-
-      renderTimetable();
-      updateCounters();
-
-      console.log("Timetable loaded from AWS successfully");
-    } else {
-      console.log("No timetable data in database yet");
-      document.getElementById("timetableContainer").innerHTML = `
-        <div class="empty-state" style="padding: 4rem 2rem;">
-          <div class="empty-state-icon">📋</div>
-          <p>No timetable data yet. Add people and classes to get started!</p>
-        </div>
-      `;
-    }
-  } catch (error) {
-    console.error("AWS auto-load error:", error);
-    // Fall back to localStorage if AWS fails
-    loadFromLocalStorage();
-  }
-}
-
-// ============================================
 // Event Listeners
 // ============================================
 document.addEventListener("DOMContentLoaded", function () {
@@ -1325,4 +1161,4 @@ function showUpdateNotification() {
   }, 10000);
 }
 
-console.log("admin.js loaded (AWS version)");
+console.log("admin.js loaded");

@@ -2,55 +2,15 @@
 // Config Page JavaScript
 // ============================================
 
-let currentUser = null;
-let currentUserRole = null;
-let currentLogoFile = null;
+let currentLogoDataUrl = null;
 
-// Color input references
-const colorInputs = {
-  primary: null,
-  primaryLight: null,
-  accent: null,
-};
-
-const hexDisplays = {
-  primary: null,
-  primaryLight: null,
-  accent: null,
-};
+const colorInputs = { primary: null, primaryLight: null, accent: null };
+const hexDisplays = { primary: null, primaryLight: null, accent: null };
 
 // ============================================
-// Authentication Check (AWS Cognito)
+// Init
 // ============================================
 window.addEventListener("load", () => {
-  // Check if user is authenticated with AWS Cognito
-  if (!isAuthenticated()) {
-    alert("Please log in first.");
-    window.location.href = "index.html";
-    return;
-  }
-
-  // Get user info from AWS Cognito
-  currentUserRole = getCurrentUserRole();
-  const storedEmail = sessionStorage.getItem("userEmail");
-
-  if (currentUserRole !== "admin") {
-    alert("Access denied. Only administrators can access configuration settings.");
-    window.location.href = currentUserRole === "viewer" ? "view.html" : "admin.html";
-    return;
-  }
-
-  console.log("Admin access granted to:", storedEmail);
-
-  // Set current user object for compatibility
-  currentUser = { email: storedEmail };
-
-  // Initialize the page
-  initializePage();
-});
-
-function initializePage() {
-  // Initialize color input references
   colorInputs.primary = document.getElementById("color-primary");
   colorInputs.primaryLight = document.getElementById("color-primary-light");
   colorInputs.accent = document.getElementById("color-accent");
@@ -59,172 +19,24 @@ function initializePage() {
   hexDisplays.primaryLight = document.getElementById("primary-light-hex");
   hexDisplays.accent = document.getElementById("accent-hex");
 
-  // Setup event listeners
   setupEventListeners();
-
-  // Load data
-  loadAccounts();
-  loadTheme();
-  loadLogo();
-
-  // Initial theme preview
+  loadThemeIntoForm();
+  loadLogoIntoForm();
   updateThemePreview();
-}
-
-// ============================================
-// Account Management
-// ============================================
-function loadAccounts() {
-  loadAllUsers()
-    .then((snapshot) => {
-      const users = snapshot.val();
-      renderAccountList(users);
-    })
-    .catch((error) => {
-      console.error("Error loading accounts:", error);
-      showNotification("Error loading accounts", true);
-    });
-}
-
-function renderAccountList(users) {
-  const container = document.getElementById("accountListContainer");
-
-  if (!users) {
-    container.innerHTML =
-      '<div class="account-item"><div class="account-info">No accounts found</div></div>';
-    return;
-  }
-
-  const fragment = document.createDocumentFragment();
-
-  Object.keys(users).forEach((uid) => {
-    const user = users[uid];
-
-    const itemDiv = document.createElement("div");
-    itemDiv.className = "account-item";
-    itemDiv.dataset.uid = uid;
-
-    const infoDiv = document.createElement("div");
-    infoDiv.className = "account-info";
-
-    const emailSpan = document.createElement("span");
-    emailSpan.className = "account-email";
-    emailSpan.textContent = user.email || "Unknown email";
-
-    const roleSpan = document.createElement("span");
-    roleSpan.className = `account-role ${user.role === "admin" ? "admin" : ""}`;
-    roleSpan.textContent =
-      user.role === "admin" ? "Administrator" : "ESO Staff (Viewer)";
-
-    infoDiv.appendChild(emailSpan);
-    infoDiv.appendChild(roleSpan);
-
-    const deleteBtn = document.createElement("button");
-    deleteBtn.className = "delete-btn";
-    deleteBtn.textContent = "Remove";
-    deleteBtn.title = "Remove account";
-    deleteBtn.onclick = () => handleRemoveAccount(uid, user.email);
-
-    itemDiv.appendChild(infoDiv);
-    itemDiv.appendChild(deleteBtn);
-    fragment.appendChild(itemDiv);
-  });
-
-  container.innerHTML = "";
-  container.appendChild(fragment);
-}
-
-function handleRemoveAccount(uid, email) {
-  if (
-    !confirm(
-      `Remove ${email}?\n\nThis will permanently delete the user account.`
-    )
-  ) {
-    return;
-  }
-
-  showLoading(true);
-  removeUserFromDatabase(uid)
-    .then(() => {
-      showLoading(false);
-      showNotification(`Account ${email} removed successfully.`);
-      loadAccounts();
-    })
-    .catch((error) => {
-      showLoading(false);
-      console.error("Error removing account:", error);
-      showNotification("Error removing account. Please try again.", true);
-    });
-}
-
-function handleCreateAccount() {
-  const email = document.getElementById("new-email").value.trim();
-  const password = document.getElementById("new-password").value;
-  const role = document.getElementById("new-role").value;
-
-  if (!email || !password) {
-    showStatus("account-status", "Please fill in all fields.", "error");
-    return;
-  }
-
-  if (password.length < 6) {
-    showStatus("account-status", "Password must be at least 6 characters.", "error");
-    return;
-  }
-
-  showLoading(true);
-
-  createUserAccount(email, password, role, currentUser.email)
-    .then(() => {
-      showLoading(false);
-      showNotification("Account created successfully!");
-      document.getElementById("new-email").value = "";
-      document.getElementById("new-password").value = "";
-      loadAccounts();
-      document.querySelector('.tab-btn[data-tab="existing-accounts"]').click();
-    })
-    .catch((error) => {
-      showLoading(false);
-      let errorMessage = "Error creating account";
-      // Handle AWS Cognito error messages
-      if (error.message) {
-        if (error.message.includes("already exists") || error.message.includes("UsernameExistsException")) {
-          errorMessage = "Email already in use";
-        } else if (error.message.includes("invalid") || error.message.includes("InvalidParameterException")) {
-          errorMessage = "Invalid email address";
-        } else if (error.message.includes("password") || error.message.includes("InvalidPasswordException")) {
-          errorMessage = "Password does not meet requirements";
-        } else {
-          errorMessage = error.message;
-        }
-      }
-      showStatus("account-status", errorMessage, "error");
-    });
-}
+});
 
 // ============================================
 // Theme Management
 // ============================================
-function loadTheme() {
-  loadThemeColors()
-    .then((snapshot) => {
-      const theme = snapshot.val();
+function loadThemeIntoForm() {
+  const theme = loadTheme();
+  colorInputs.primary.value = theme.primary;
+  colorInputs.primaryLight.value = theme.primaryLight;
+  colorInputs.accent.value = theme.accent;
 
-      if (theme) {
-        colorInputs.primary.value = theme.primary || "#2c5f4f";
-        colorInputs.primaryLight.value = theme.primaryLight || "#3d7861";
-        colorInputs.accent.value = theme.accent || "#d4a574";
-
-        hexDisplays.primary.textContent = theme.primary || "#2c5f4f";
-        hexDisplays.primaryLight.textContent = theme.primaryLight || "#3d7861";
-        hexDisplays.accent.textContent = theme.accent || "#d4a574";
-
-        updateThemePreview();
-      }
-    })
-    .catch((error) => {
-      console.error("Error loading theme:", error);
-    });
+  hexDisplays.primary.textContent = theme.primary;
+  hexDisplays.primaryLight.textContent = theme.primaryLight;
+  hexDisplays.accent.textContent = theme.accent;
 }
 
 function updateThemePreview() {
@@ -243,42 +55,23 @@ function updateThemePreview() {
 }
 
 function handleSaveColors() {
-  const colors = {
+  saveTheme({
     primary: colorInputs.primary.value,
     primaryLight: colorInputs.primaryLight.value,
-    accent: colorInputs.accent.value,
-  };
-
-  showLoading(true);
-  saveThemeColors(colors, currentUser.email)
-    .then(() => {
-      showLoading(false);
-      showNotification("Color theme saved! Refresh pages to see changes.");
-    })
-    .catch((error) => {
-      showLoading(false);
-      console.error("Error saving colors:", error);
-      showNotification("Error saving color theme", true);
-    });
+    accent: colorInputs.accent.value
+  });
+  showNotification("Color theme saved! Refresh pages to see changes.");
 }
 
 function handleResetColors() {
   if (!confirm("Reset colors to default theme?")) return;
 
-  colorInputs.primary.value = "#2c5f4f";
-  colorInputs.primaryLight.value = "#3d7861";
-  colorInputs.accent.value = "#d4a574";
+  resetTheme();
+  loadThemeIntoForm();
 
-  hexDisplays.primary.textContent = "#2c5f4f";
-  hexDisplays.primaryLight.textContent = "#3d7861";
-  hexDisplays.accent.textContent = "#d4a574";
-
-  document
-    .querySelectorAll(".preset-color")
-    .forEach((p) => p.classList.remove("selected"));
-  document
-    .querySelector('.preset-color[data-color="#2c5f4f"]')
-    .classList.add("selected");
+  document.querySelectorAll(".preset-color").forEach((p) => p.classList.remove("selected"));
+  const defaultPreset = document.querySelector('.preset-color[data-color="#2c5f4f"]');
+  if (defaultPreset) defaultPreset.classList.add("selected");
 
   updateThemePreview();
   showNotification("Colors reset to default.");
@@ -287,121 +80,89 @@ function handleResetColors() {
 // ============================================
 // Logo Management
 // ============================================
-function loadLogo() {
-  loadLogoSettings()
-    .then((snapshot) => {
-      const logoSettings = snapshot.val();
+function loadLogoIntoForm() {
+  const logoSettings = loadLogo();
+  if (!logoSettings) return;
 
-      if (logoSettings) {
-        document.getElementById("logo-position").value =
-          logoSettings.position || "header-left";
-        document.getElementById("logo-size").value =
-          logoSettings.size || "medium";
+  document.getElementById("logo-position").value = logoSettings.position || "header-left";
+  document.getElementById("logo-size").value = logoSettings.size || "medium";
 
-        if (logoSettings.url) {
-          const preview = document.getElementById("logo-preview");
-          preview.src = logoSettings.url;
-          preview.style.display = "block";
-          document.getElementById("logo-placeholder").style.display = "none";
-        }
-      }
-    })
-    .catch((error) => {
-      console.error("Error loading logo settings:", error);
-    });
+  if (logoSettings.url) {
+    const preview = document.getElementById("logo-preview");
+    preview.src = logoSettings.url;
+    preview.style.display = "block";
+    document.getElementById("logo-placeholder").style.display = "none";
+    currentLogoDataUrl = logoSettings.url;
+  }
 }
 
-function handleLogoUpload(e) {
+async function handleLogoUpload(e) {
   const file = e.target.files[0];
   if (!file) return;
 
-  if (file.size > 500 * 1024) {
-    showStatus("logo-status", "File size exceeds 500KB limit.", "error");
+  const validation = validateImageFile(file, 0.5);
+  if (!validation.valid) {
+    showStatus("logo-status", validation.error, "error");
     e.target.value = "";
     return;
   }
 
-  if (!file.type.match("image.*")) {
-    showStatus("logo-status", "Please upload an image file.", "error");
-    e.target.value = "";
-    return;
-  }
+  try {
+    const dataUrl = await readFileAsDataUrl(file);
+    currentLogoDataUrl = dataUrl;
 
-  currentLogoFile = file;
-
-  const reader = new FileReader();
-  reader.onload = (event) => {
     document.getElementById("logo-placeholder").style.display = "none";
     const preview = document.getElementById("logo-preview");
-    preview.src = event.target.result;
+    preview.src = dataUrl;
     preview.style.display = "block";
-  };
-  reader.readAsDataURL(file);
+  } catch (err) {
+    showStatus("logo-status", "Failed to read image: " + err.message, "error");
+  }
 }
 
 function handleSaveLogo() {
   const position = document.getElementById("logo-position").value;
   const size = document.getElementById("logo-size").value;
 
-  showLoading(true);
-
-  if (currentLogoFile) {
-    uploadLogoToStorage(currentLogoFile)
-      .then((downloadURL) => {
-        return saveLogoSettings(downloadURL, position, size, currentUser.email);
-      })
-      .then(() => {
-        showLoading(false);
-        showNotification("Logo uploaded and settings saved!");
-        currentLogoFile = null;
-      })
-      .catch((error) => {
-        showLoading(false);
-        console.error("Error uploading logo:", error);
-        showNotification("Error uploading logo", true);
-      });
-  } else {
-    updateLogoPosition(position, size, currentUser.email)
-      .then(() => {
-        showLoading(false);
-        showNotification("Logo settings saved!");
-      })
-      .catch((error) => {
-        showLoading(false);
-        console.error("Error saving logo settings:", error);
-        showNotification("Error saving settings", true);
-      });
+  try {
+    saveLogo({ url: currentLogoDataUrl || "", position, size });
+    showNotification("Logo settings saved!");
+  } catch (err) {
+    console.error("Error saving logo:", err);
+    if (err.name === "QuotaExceededError") {
+      showNotification("Image too large for browser storage. Try a smaller file.", true);
+    } else {
+      showNotification("Error saving logo settings", true);
+    }
   }
 }
 
 function handleRemoveLogo() {
   if (!confirm("Remove the organization logo?")) return;
 
-  showLoading(true);
-  removeLogo()
-    .then(() => {
-      showLoading(false);
-      document.getElementById("logo-upload").value = "";
-      document.getElementById("logo-preview").style.display = "none";
-      document.getElementById("logo-placeholder").style.display = "block";
-      currentLogoFile = null;
-      showNotification("Logo removed successfully!");
-    })
-    .catch((error) => {
-      showLoading(false);
-      console.error("Error removing logo:", error);
-      showNotification("Error removing logo", true);
-    });
+  deleteLogo();
+  currentLogoDataUrl = null;
+  document.getElementById("logo-upload").value = "";
+  document.getElementById("logo-preview").style.display = "none";
+  document.getElementById("logo-placeholder").style.display = "block";
+  showNotification("Logo removed successfully!");
 }
 
 // ============================================
-// Event Listeners Setup
+// Danger Zone
+// ============================================
+function handleClearTimetable() {
+  if (!confirm("Are you sure you want to clear all timetable data? This cannot be undone.")) return;
+
+  localStorage.removeItem("timetable.data");
+  showNotification("Timetable data cleared");
+  setTimeout(() => { window.location.href = "index.html"; }, 1000);
+}
+
+// ============================================
+// Event Listeners
 // ============================================
 function setupEventListeners() {
-  // Create Account Button
-  document.getElementById("create-account-btn").addEventListener("click", handleCreateAccount);
-
-  // Color inputs
   Object.keys(colorInputs).forEach((key) => {
     colorInputs[key].addEventListener("input", (e) => {
       hexDisplays[key].textContent = e.target.value;
@@ -409,13 +170,10 @@ function setupEventListeners() {
     });
   });
 
-  // Preset colors
   document.querySelectorAll(".preset-color").forEach((preset) => {
     preset.addEventListener("click", () => {
       const color = preset.dataset.color;
-      document
-        .querySelectorAll(".preset-color")
-        .forEach((p) => p.classList.remove("selected"));
+      document.querySelectorAll(".preset-color").forEach((p) => p.classList.remove("selected"));
       preset.classList.add("selected");
 
       colorInputs.primary.value = color;
@@ -429,52 +187,24 @@ function setupEventListeners() {
     });
   });
 
-  // Save/Reset colors
   document.getElementById("save-colors-btn").addEventListener("click", handleSaveColors);
   document.getElementById("reset-colors-btn").addEventListener("click", handleResetColors);
 
-  // Logo
   document.getElementById("logo-upload").addEventListener("change", handleLogoUpload);
   document.getElementById("save-logo-btn").addEventListener("click", handleSaveLogo);
   document.getElementById("remove-logo-btn").addEventListener("click", handleRemoveLogo);
 
-  // Tab Navigation
-  document.querySelectorAll(".tab-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const tabId = btn.dataset.tab;
-      btn
-        .closest(".tab-nav")
-        .querySelectorAll(".tab-btn")
-        .forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-      btn
-        .closest(".panel")
-        .querySelectorAll(".tab-content")
-        .forEach((c) => c.classList.remove("active"));
-      document.getElementById(tabId).classList.add("active");
-    });
-  });
+  document.getElementById("clear-timetable-btn").addEventListener("click", handleClearTimetable);
 }
 
 // ============================================
-// Utility Functions
+// Utility
 // ============================================
 function showStatus(elementId, message, type) {
   const statusEl = document.getElementById(elementId);
   statusEl.textContent = message;
   statusEl.className = "status-message " + type;
-  setTimeout(() => {
-    statusEl.className = "status-message";
-  }, 5000);
+  setTimeout(() => { statusEl.className = "status-message"; }, 5000);
 }
 
-function showLoading(show) {
-  const overlay = document.getElementById("loadingOverlay");
-  if (show) {
-    overlay.classList.add("active");
-  } else {
-    overlay.classList.remove("active");
-  }
-}
-
-console.log("config.js loaded (AWS version)");
+console.log("config.js loaded");

@@ -2,21 +2,16 @@
 // Setup Wizard JavaScript
 // ============================================
 
-// Wizard State
 let currentStep = 1;
-const totalSteps = 6;
+const totalSteps = 5;
 
-// Setup Data
 const setupData = {
-    schoolId: '',
-    accounts: [],     // { email: string, name: string, role: string }
-    classes: [],      // { name: string, color: string }
-    people: [],       // string[]
-    timeSlots: []     // { start: string, end: string }
+    classes: [],     // { name, color }
+    people: [],      // string[]
+    timeSlots: []    // { start, end }
 };
 
-// Default colors for classes
-const classColors = [
+const classColorPalette = [
     '#4CAF50', '#2196F3', '#FF9800', '#9C27B0', '#E91E63',
     '#00BCD4', '#FF5722', '#795548', '#607D8B', '#3F51B5',
     '#8BC34A', '#FFC107', '#673AB7', '#009688', '#F44336'
@@ -24,147 +19,64 @@ const classColors = [
 let colorIndex = 0;
 
 // ============================================
-// Time Formatting (local copy for setup.js)
+// Redirect if setup already complete
 // ============================================
-/**
- * Convert 24-hour time to 12-hour format
- * Local definition to ensure availability during setup
- */
-function formatTime12Hour(time24) {
-    if (!time24 || typeof time24 !== 'string') {
-        return 'Invalid Time';
+(function init() {
+    if (hasTimetable()) {
+        window.location.replace('admin.html');
     }
-
-    const parts = time24.split(':');
-    if (parts.length !== 2) {
-        return time24;
-    }
-
-    const [hours, minutes] = parts.map(Number);
-    if (isNaN(hours) || isNaN(minutes)) {
-        return time24;
-    }
-
-    const period = hours >= 12 ? 'PM' : 'AM';
-    const hours12 = hours % 12 || 12;
-    return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
-}
-
-// ============================================
-// Authentication Check
-// ============================================
-(function initAuth() {
-    if (!isAuthenticated()) {
-        window.location.href = 'index.html';
-        return;
-    }
-
-    // Check if setup already complete
-    checkExistingTimetable();
 })();
-
-async function checkExistingTimetable() {
-    try {
-        const data = await loadTimetable();
-
-        // If timetable has data, redirect to appropriate page
-        if (data && data.setupComplete && (data.peopleList?.length > 0 || data.classList?.length > 0)) {
-            const role = getCurrentUserRole();
-            window.location.href = role === 'admin' ? 'admin.html' : 'view.html';
-            return;
-        }
-    } catch (error) {
-        // 404 or other error means no timetable exists, continue with setup
-        console.log('No existing timetable found, continuing with setup');
-    }
-}
 
 // ============================================
 // Step Navigation
 // ============================================
 function nextStep() {
     if (currentStep < totalSteps) {
-        // Validate current step before proceeding
-        if (!validateStep(currentStep)) {
-            return;
-        }
-
-        // If going to review step, populate review data
-        if (currentStep === 5) {
-            populateReview();
-        }
-
+        if (!validateStep(currentStep)) return;
+        if (currentStep === totalSteps - 1) populateReview();
         setStep(currentStep + 1);
     }
 }
 
 function prevStep() {
-    if (currentStep > 1) {
-        setStep(currentStep - 1);
-    }
+    if (currentStep > 1) setStep(currentStep - 1);
 }
 
 function goToStep(step) {
-    if (step >= 1 && step <= totalSteps) {
-        setStep(step);
-    }
+    if (step >= 1 && step <= totalSteps) setStep(step);
 }
 
 function setStep(step) {
     currentStep = step;
 
-    // Update progress indicators
     document.querySelectorAll('.progress-step').forEach((el, index) => {
         const stepNum = index + 1;
         el.classList.remove('active', 'completed');
-
-        if (stepNum === currentStep) {
-            el.classList.add('active');
-        } else if (stepNum < currentStep) {
-            el.classList.add('completed');
-        }
+        if (stepNum === currentStep) el.classList.add('active');
+        else if (stepNum < currentStep) el.classList.add('completed');
     });
 
-    // Show current step content
-    document.querySelectorAll('.wizard-step').forEach(el => {
-        el.classList.remove('active');
-    });
+    document.querySelectorAll('.wizard-step').forEach(el => el.classList.remove('active'));
     document.querySelector(`.wizard-step[data-step="${step}"]`).classList.add('active');
 
-    // Update button states
     updateButtonStates();
 }
 
 function validateStep(step) {
     switch (step) {
-        case 2: // School
-            const schoolId = document.getElementById('schoolIdInput').value.trim();
-            if (!schoolId) {
-                alert('Please enter a School ID before continuing.');
-                document.getElementById('schoolIdInput').focus();
-                return false;
-            }
-            // Validate format (lowercase, numbers, hyphens only)
-            if (!/^[a-z0-9-]+$/.test(schoolId)) {
-                alert('School ID can only contain lowercase letters, numbers, and hyphens.');
-                document.getElementById('schoolIdInput').focus();
-                return false;
-            }
-            setupData.schoolId = schoolId;
-            return true;
-        case 3: // Classes
+        case 2:
             if (setupData.classes.length === 0) {
                 alert('Please add at least one class before continuing.');
                 return false;
             }
             return true;
-        case 4: // People
+        case 3:
             if (setupData.people.length === 0) {
                 alert('Please add at least one person before continuing.');
                 return false;
             }
             return true;
-        case 5: // Time Slots
+        case 4:
             if (setupData.timeSlots.length === 0) {
                 alert('Please add at least one time slot before continuing.');
                 return false;
@@ -176,153 +88,13 @@ function validateStep(step) {
 }
 
 function updateButtonStates() {
-    const schoolBtn = document.getElementById('schoolNextBtn');
     const classesBtn = document.getElementById('classesNextBtn');
     const peopleBtn = document.getElementById('peopleNextBtn');
     const slotsBtn = document.getElementById('slotsNextBtn');
 
-    if (schoolBtn) {
-        const schoolId = document.getElementById('schoolIdInput')?.value.trim();
-        schoolBtn.disabled = !schoolId;
-    }
-    if (classesBtn) {
-        classesBtn.disabled = setupData.classes.length === 0;
-    }
-    if (peopleBtn) {
-        peopleBtn.disabled = setupData.people.length === 0;
-    }
-    if (slotsBtn) {
-        slotsBtn.disabled = setupData.timeSlots.length === 0;
-    }
-}
-
-// ============================================
-// Account Management
-// ============================================
-async function createAccount() {
-    const email = document.getElementById('accountEmail').value.trim();
-    const password = document.getElementById('accountPassword').value;
-    const name = document.getElementById('accountName').value.trim();
-    const role = document.getElementById('accountRole').value;
-    const statusEl = document.getElementById('accountStatus');
-
-    // Validation
-    if (!email || !password || !name) {
-        showAccountStatus('Please fill in all fields.', 'error');
-        return;
-    }
-
-    if (!email.includes('@')) {
-        showAccountStatus('Please enter a valid email address.', 'error');
-        return;
-    }
-
-    if (password.length < 8) {
-        showAccountStatus('Password must be at least 8 characters.', 'error');
-        return;
-    }
-
-    // Check for duplicate
-    if (setupData.accounts.some(a => a.email.toLowerCase() === email.toLowerCase())) {
-        showAccountStatus('An account with this email already exists.', 'error');
-        return;
-    }
-
-    // Show loading
-    const addBtn = document.querySelector('.add-account-btn');
-    const originalText = addBtn.textContent;
-    addBtn.textContent = 'Creating...';
-    addBtn.disabled = true;
-
-    try {
-        // Call AWS API to create Cognito user
-        // For now, all accounts are created as admin (as per user request)
-        const schoolId = document.getElementById('schoolIdInput').value.trim() || 'default';
-
-        // Temporarily set the school ID to match the setup school ID
-        // This allows creating users for the new school during setup
-        const originalSchoolId = sessionStorage.getItem('aws_school_id');
-        sessionStorage.setItem('aws_school_id', schoolId);
-
-        try {
-            await createUser(email, password, 'admin'); // Always admin for now
-        } finally {
-            // Restore original school ID
-            if (originalSchoolId) {
-                sessionStorage.setItem('aws_school_id', originalSchoolId);
-            }
-        }
-
-        // Add to local list
-        setupData.accounts.push({
-            email: email,
-            name: name,
-            role: 'admin' // Always admin for now
-        });
-
-        // Clear form
-        document.getElementById('accountEmail').value = '';
-        document.getElementById('accountPassword').value = '';
-        document.getElementById('accountName').value = '';
-
-        // Update UI
-        renderAccountsList();
-        showAccountStatus(`Account created for ${email}`, 'success');
-
-    } catch (error) {
-        console.error('Account creation error:', error);
-        let errorMsg = 'Failed to create account.';
-        if (error.message.includes('exists')) {
-            errorMsg = 'An account with this email already exists in the system.';
-        } else if (error.message.includes('password')) {
-            errorMsg = 'Password does not meet requirements (min 8 chars, uppercase, lowercase, number).';
-        } else if (error.message.includes('permission')) {
-            errorMsg = 'Permission denied. You can skip this step and add accounts later from the Admin page after setup is complete.';
-        } else if (error.message) {
-            errorMsg = error.message;
-        }
-        showAccountStatus(errorMsg, 'error');
-    } finally {
-        addBtn.textContent = originalText;
-        addBtn.disabled = false;
-    }
-}
-
-function showAccountStatus(message, type) {
-    const statusEl = document.getElementById('accountStatus');
-    statusEl.textContent = message;
-    statusEl.className = 'account-status ' + type;
-
-    // Auto-hide after 5 seconds
-    setTimeout(() => {
-        statusEl.className = 'account-status';
-    }, 5000);
-}
-
-function removeAccount(index) {
-    // Note: This only removes from local list, doesn't delete from Cognito
-    // In production, you might want to mark for deletion or actually delete
-    setupData.accounts.splice(index, 1);
-    renderAccountsList();
-}
-
-function renderAccountsList() {
-    const container = document.getElementById('accountsList');
-
-    if (setupData.accounts.length === 0) {
-        container.innerHTML = '<div class="empty-hint">No additional accounts created yet.</div>';
-        return;
-    }
-
-    container.innerHTML = setupData.accounts.map((account, index) => `
-        <div class="account-card">
-            <div class="account-info">
-                <span class="account-email">${account.email}</span>
-                <span class="account-role">${account.name} - Admin</span>
-            </div>
-            <button class="remove-account" onclick="removeAccount(${index})" title="Remove from list">&times;</button>
-        </div>
-    `).join('');
+    if (classesBtn) classesBtn.disabled = setupData.classes.length === 0;
+    if (peopleBtn) peopleBtn.disabled = setupData.people.length === 0;
+    if (slotsBtn) slotsBtn.disabled = setupData.timeSlots.length === 0;
 }
 
 // ============================================
@@ -338,21 +110,16 @@ function addClass() {
         return;
     }
 
-    // Check for duplicate
     if (setupData.classes.some(c => c.name.toLowerCase() === name.toLowerCase())) {
         alert('This class already exists.');
         return;
     }
 
-    setupData.classes.push({
-        name: name,
-        color: colorInput.value
-    });
+    setupData.classes.push({ name, color: colorInput.value });
 
-    // Clear input and set next color
     nameInput.value = '';
-    colorIndex = (colorIndex + 1) % classColors.length;
-    colorInput.value = classColors[colorIndex];
+    colorIndex = (colorIndex + 1) % classColorPalette.length;
+    colorInput.value = classColorPalette[colorIndex];
     nameInput.focus();
 
     renderClassesList();
@@ -383,9 +150,7 @@ function renderClassesList() {
 }
 
 function handleClassKeypress(event) {
-    if (event.key === 'Enter') {
-        addClass();
-    }
+    if (event.key === 'Enter') addClass();
 }
 
 // ============================================
@@ -400,14 +165,12 @@ function addPerson() {
         return;
     }
 
-    // Check for duplicate
     if (setupData.people.some(p => p.toLowerCase() === name.toLowerCase())) {
         alert('This person already exists.');
         return;
     }
 
     setupData.people.push(name);
-
     nameInput.value = '';
     nameInput.focus();
 
@@ -438,18 +201,15 @@ function renderPeopleList() {
 }
 
 function handlePersonKeypress(event) {
-    if (event.key === 'Enter') {
-        addPerson();
-    }
+    if (event.key === 'Enter') addPerson();
 }
 
 // ============================================
 // Time Slots Management
 // ============================================
-function applyTemplate(template) {
-    // Clear selection
+function applyTemplate(template, event) {
     document.querySelectorAll('.template-card').forEach(el => el.classList.remove('selected'));
-    event.target.closest('.template-card').classList.add('selected');
+    if (event) event.target.closest('.template-card').classList.add('selected');
 
     setupData.timeSlots = [];
 
@@ -473,10 +233,7 @@ function applyTemplate(template) {
             ];
             break;
         case 'custom':
-            // Start with one empty slot
-            setupData.timeSlots = [
-                { start: '09:00', end: '10:00' }
-            ];
+            setupData.timeSlots = [{ start: '09:00', end: '10:00' }];
             break;
     }
 
@@ -485,15 +242,12 @@ function applyTemplate(template) {
 }
 
 function addTimeSlot() {
-    // Calculate next slot time based on last slot
     let startTime = '09:00';
     let endTime = '10:00';
 
     if (setupData.timeSlots.length > 0) {
         const lastSlot = setupData.timeSlots[setupData.timeSlots.length - 1];
         startTime = lastSlot.end;
-
-        // Add 1 hour for end time
         const [hours, mins] = startTime.split(':').map(Number);
         const endHours = (hours + 1) % 24;
         endTime = `${endHours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
@@ -537,12 +291,6 @@ function renderTimeSlots() {
 // Review Step
 // ============================================
 function populateReview() {
-    // School ID
-    document.getElementById('reviewSchool').innerHTML = `
-        <span class="review-item" style="font-weight: 500;">${setupData.schoolId}</span>
-    `;
-
-    // Classes
     document.getElementById('reviewClassCount').textContent = setupData.classes.length;
     document.getElementById('reviewClasses').innerHTML = setupData.classes.map(cls => `
         <span class="review-item" style="border-left: 3px solid ${cls.color}; padding-left: 0.6rem;">
@@ -550,83 +298,52 @@ function populateReview() {
         </span>
     `).join('');
 
-    // People
     document.getElementById('reviewPeopleCount').textContent = setupData.people.length;
     document.getElementById('reviewPeople').innerHTML = setupData.people.map(person => `
         <span class="review-item">${person}</span>
     `).join('');
 
-    // Time Slots
     document.getElementById('reviewSlotsCount').textContent = setupData.timeSlots.length;
     document.getElementById('reviewSlots').innerHTML = setupData.timeSlots.map((slot, index) => `
         <span class="review-item">
             Period ${index + 1}: ${formatTime12Hour(slot.start)} - ${formatTime12Hour(slot.end)}
         </span>
     `).join('');
-
-    // Accounts
-    document.getElementById('reviewAccountCount').textContent = setupData.accounts.length;
-    if (setupData.accounts.length > 0) {
-        document.getElementById('reviewAccounts').innerHTML = setupData.accounts.map(acc => `
-            <span class="review-item">${acc.email}</span>
-        `).join('');
-    } else {
-        document.getElementById('reviewAccounts').innerHTML = '<span class="review-item" style="color: #999;">None (only you)</span>';
-    }
 }
 
 // ============================================
 // Finish Setup
 // ============================================
-async function finishSetup() {
+function finishSetup() {
     const loadingEl = document.getElementById('setupLoading');
     loadingEl.classList.add('active');
 
     try {
-        // Build the timetable data structure
         const classColorsMap = {};
         setupData.classes.forEach(cls => {
             classColorsMap[cls.name] = cls.color;
         });
 
-        const timetableData = {
-            version: '1.0',
+        saveTimetable({
             setupComplete: true,
-            schoolId: setupData.schoolId,
-            createdAt: new Date().toISOString(),
             peopleList: setupData.people,
             classList: setupData.classes.map(c => c.name),
             classColors: classColorsMap,
             assignments: {
-                monday: {},
-                tuesday: {},
-                wednesday: {},
-                thursday: {},
-                friday: {}
+                monday: {}, tuesday: {}, wednesday: {}, thursday: {}, friday: {}
             },
             timeSlots: setupData.timeSlots
-        };
+        });
 
-        // IMPORTANT: Set the user-entered schoolId in sessionStorage
-        // This ensures saveTimetable() and loadTimetable() use the correct schoolId
-        // The schoolId must be stored BEFORE calling saveTimetable so the API uses it
-        sessionStorage.setItem('aws_school_id', setupData.schoolId);
-
-        // Save to AWS using the custom schoolId
-        await saveTimetable(timetableData);
-
-        // Show success
         loadingEl.querySelector('p').textContent = 'Setup complete! Redirecting...';
-
-        // Redirect to admin page (all users are admin for now)
         setTimeout(() => {
             window.location.href = 'admin.html';
-        }, 1500);
+        }, 800);
 
     } catch (error) {
         loadingEl.classList.remove('active');
         console.error('Setup error:', error);
-        alert('Failed to save timetable. Please try again.\n\n' + error.message);
+        alert('Failed to save timetable: ' + error.message);
     }
 }
 
@@ -634,19 +351,8 @@ async function finishSetup() {
 // Initialize
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
-    // Set initial color for class input
     const colorInput = document.getElementById('classColorInput');
-    if (colorInput) {
-        colorInput.value = classColors[0];
-    }
-
-    // Add input listener for school ID
-    const schoolIdInput = document.getElementById('schoolIdInput');
-    if (schoolIdInput) {
-        schoolIdInput.addEventListener('input', updateButtonStates);
-    }
-
-    // Initialize button states
+    if (colorInput) colorInput.value = classColorPalette[0];
     updateButtonStates();
 });
 
