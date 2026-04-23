@@ -511,10 +511,12 @@ function renderTimetable() {
       html += `<td class="roster-cell ${hasContent ? "has-content" : ""}" ${style} ${clickHandler}>`;
 
       if (hasContent) {
+        const slotMinutes = Math.max(1, timeToMinutes(slot.end) - timeToMinutes(slot.start));
+        const displayDuration = Math.min(cellData.duration, slotMinutes);
         html += `<button class="remove-btn-cell" onclick="event.stopPropagation(); removeCell('${slot.start}', '${safePerson}')">×</button>`;
         html += `<div class="cell-content">`;
         html += `<div class="assignment-class">${escapeHtml(cellData.class)}</div>`;
-        html += `<div class="assignment-duration">${cellData.duration} min</div>`;
+        html += `<div class="assignment-duration">${displayDuration} min</div>`;
         if (cellData.notes) {
           html += `<div class="assignment-notes">${escapeHtml(cellData.notes)}</div>`;
         }
@@ -567,7 +569,10 @@ function editCell(time, person) {
     ? Math.max(1, timeToMinutes(slot.end) - timeToMinutes(slot.start))
     : 60;
 
-  populateDurationOptions(periodMinutes);
+  const capped = currentData
+    ? Math.min(currentData.duration, periodMinutes)
+    : periodMinutes;
+  populateDurationOptions(periodMinutes, capped);
 
   document.getElementById("modalInfo").textContent =
     `${currentDay.charAt(0).toUpperCase() + currentDay.slice(1)} - ${formatTime12Hour(time)} - ${person} (period: ${periodMinutes} min)`;
@@ -576,7 +581,6 @@ function editCell(time, person) {
 
   if (currentData) {
     document.getElementById("modalClass").value = currentData.class;
-    const capped = Math.min(currentData.duration, periodMinutes);
     durationSelect.value = String(capped);
     document.getElementById("modalNotes").value = currentData.notes || "";
   } else {
@@ -588,11 +592,26 @@ function editCell(time, person) {
   document.getElementById("assignmentModal").classList.add("active");
 }
 
-function populateDurationOptions(periodMinutes) {
-  const candidates = [5, 10, 15, 20, 30, 45, 60, 90, 120];
-  const allowed = candidates.filter((m) => m <= periodMinutes);
-  if (!allowed.includes(periodMinutes)) allowed.push(periodMinutes);
-  allowed.sort((a, b) => a - b);
+function durationOptionsFor(periodMinutes) {
+  const options = new Set([periodMinutes]);
+  [2, 3, 4].forEach((denom) => {
+    const value = periodMinutes / denom;
+    if (Number.isInteger(value) && value >= 5) options.add(value);
+  });
+  return Array.from(options).sort((a, b) => a - b);
+}
+
+function populateDurationOptions(periodMinutes, selectedValue) {
+  const allowed = durationOptionsFor(periodMinutes);
+  if (
+    selectedValue != null &&
+    selectedValue > 0 &&
+    selectedValue <= periodMinutes &&
+    !allowed.includes(selectedValue)
+  ) {
+    allowed.push(selectedValue);
+    allowed.sort((a, b) => a - b);
+  }
 
   const select = document.getElementById("modalDuration");
   select.innerHTML = allowed
@@ -866,6 +885,10 @@ function loadFromStorage() {
   }));
   colorIndex = classList.length;
 
+  if (clampAssignmentDurations()) {
+    autoSave();
+  }
+
   updatePeopleList();
   updateClassList();
   updateModalSelects();
@@ -875,6 +898,31 @@ function loadFromStorage() {
     renderTimetable();
     updateCounters();
   }
+}
+
+function clampAssignmentDurations() {
+  const slotMinutesByStart = {};
+  timeSlots.forEach((slot) => {
+    slotMinutesByStart[slot.start] = Math.max(
+      1,
+      timeToMinutes(slot.end) - timeToMinutes(slot.start),
+    );
+  });
+
+  let changed = false;
+  daysArray.forEach((day) => {
+    const dayAssignments = assignments[day];
+    if (!dayAssignments) return;
+    Object.entries(dayAssignments).forEach(([cellKey, cellData]) => {
+      const start = cellKey.split("-")[0];
+      const max = slotMinutesByStart[start];
+      if (max && cellData && cellData.duration > max) {
+        cellData.duration = max;
+        changed = true;
+      }
+    });
+  });
+  return changed;
 }
 
 function showAutoSaveIndicator(message = "✓ Auto-saved") {
