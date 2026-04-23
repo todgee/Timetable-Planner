@@ -18,37 +18,34 @@ let currentDay = "monday";
 let currentCounterTab = "day";
 let colorIndex = 0;
 let currentEditCell = null;
-let currentUser = null;
-let currentUserRole = null;
 
-// Use days from shared.js
 const daysArray = days;
 
+const SLOT_TYPE_LABELS = {
+  class: "Class",
+  recess: "Recess",
+  lunch: "Lunch",
+  break: "Break",
+};
+
+function slotType(slot) {
+  return (slot && slot.type) || "class";
+}
+
+function isBreakSlot(slot) {
+  return slotType(slot) !== "class";
+}
+
 // ============================================
-// Authentication Check (AWS Cognito)
+// Bootstrap: load from localStorage, or send user to setup
 // ============================================
-(async function initAuth() {
-  // Check if user is authenticated with AWS Cognito
-  if (!isAuthenticated()) {
-    window.location.href = "index.html";
+(function init() {
+  const data = loadTimetable();
+  if (!data || !data.setupComplete) {
+    window.location.replace("setup.html");
     return;
   }
-
-  // Get user info from Cognito tokens
-  currentUserRole = getCurrentUserRole();
-  const userEmail = sessionStorage.getItem("userEmail");
-
-  // Show user info
-  const userInfo = document.getElementById("userInfo");
-  const userRoleEl = document.getElementById("userRole");
-  if (userInfo) userInfo.style.display = "flex";
-  if (userRoleEl) userRoleEl.textContent = `${currentUserRole === "admin" ? "Leadership (Admin)" : "Viewer"}`;
-
-  // Set current user object for compatibility
-  currentUser = { email: userEmail };
-
-  // Load timetable from AWS
-  await autoLoadFromAWS();
+  loadFromStorage();
 })();
 
 // ============================================
@@ -92,7 +89,7 @@ function addPeople() {
 
   input.value = "";
   updatePeopleList();
-  autoSaveToFirebase();
+  autoSave();
 
   if (added > 0) {
     alert(
@@ -124,7 +121,7 @@ function removePerson(name) {
     updatePeopleList();
     renderCurrentTimetable();
     updateCounters();
-    autoSaveToFirebase();
+    autoSave();
   }
 }
 
@@ -215,7 +212,7 @@ function addClasses() {
   input.value = "";
   updateClassList();
   updateModalSelects();
-  autoSaveToFirebase();
+  autoSave();
 
   if (added > 0) {
     alert(
@@ -249,14 +246,14 @@ function removeClass(name) {
     updateModalSelects();
     renderCurrentTimetable();
     updateCounters();
-    autoSaveToFirebase();
+    autoSave();
   }
 }
 
 function updateClassColor(name, color) {
   classColors[name] = color;
   renderCurrentTimetable();
-  autoSaveToFirebase();
+  autoSave();
 }
 
 function updateClassList() {
@@ -369,6 +366,19 @@ function openEditTimeSlots() {
       updateTimeSlot(index, "end", this.value);
     };
 
+    const typeSelect = document.createElement("select");
+    typeSelect.className = "slot-type-select";
+    ["class", "recess", "lunch", "break"].forEach((t) => {
+      const opt = document.createElement("option");
+      opt.value = t;
+      opt.textContent = SLOT_TYPE_LABELS[t];
+      if (slotType(slot) === t) opt.selected = true;
+      typeSelect.appendChild(opt);
+    });
+    typeSelect.onchange = function () {
+      updateTimeSlot(index, "type", this.value);
+    };
+
     const removeBtn = document.createElement("button");
     removeBtn.className = "btn btn-secondary btn-small delete-btn";
     removeBtn.textContent = "Remove";
@@ -378,6 +388,7 @@ function openEditTimeSlots() {
 
     itemDiv.appendChild(startInput);
     itemDiv.appendChild(endInput);
+    itemDiv.appendChild(typeSelect);
     itemDiv.appendChild(removeBtn);
     fragment.appendChild(itemDiv);
   });
@@ -397,7 +408,7 @@ function addNewTimeSlot() {
   const newStart = lastSlot ? lastSlot.end : "08:00";
   const newEnd = minutesToTime(timeToMinutes(newStart) + 60);
 
-  timeSlots.push({ start: newStart, end: newEnd });
+  timeSlots.push({ start: newStart, end: newEnd, type: "class" });
   openEditTimeSlots();
 }
 
@@ -434,7 +445,7 @@ function saveTimeSlots() {
   closeEditTimeSlotsModal();
   renderTimetable();
   updateCounters();
-  autoSaveToFirebase();
+  autoSave();
 }
 
 // ============================================
@@ -451,14 +462,14 @@ function renderTimetable() {
 
   let html = '<div style="display: inline-block; min-width: 100%;">';
   html += `<div class="day-title ${currentDay}">${currentDay.charAt(0).toUpperCase() + currentDay.slice(1)}</div>`;
-  html += '<div class="timetable">';
+  html += '<table class="timetable"><tbody>';
 
-  html += '<div class="timetable-header-row">';
-  html += "<div>Time</div>";
+  html += '<tr class="timetable-header-row">';
+  html += "<th>Time</th>";
   peopleList.forEach((name) => {
-    html += `<div>${name}</div>`;
+    html += `<th>${escapeHtml(name)}</th>`;
   });
-  html += "</div>";
+  html += "</tr>";
 
   const validTimeSlots = timeSlots.filter(
     (slot) =>
@@ -469,9 +480,22 @@ function renderTimetable() {
       typeof slot.end === "string"
   );
 
+  const personCount = peopleList.length || 1;
+
   validTimeSlots.forEach((slot) => {
-    html += '<div class="timetable-row">';
-    html += `<div class="time-cell"><div class="time-range">${formatTime12Hour(slot.start)}<br>${formatTime12Hour(slot.end)}</div></div>`;
+    const type = slotType(slot);
+
+    if (type !== "class") {
+      const label = SLOT_TYPE_LABELS[type] || "Break";
+      html += `<tr class="timetable-row break-row break-row--${type}">`;
+      html += `<td class="time-cell"><div class="time-range">${formatTime12Hour(slot.start)}<br>${formatTime12Hour(slot.end)}</div></td>`;
+      html += `<td class="break-cell" colspan="${personCount}">${label}</td>`;
+      html += "</tr>";
+      return;
+    }
+
+    html += '<tr class="timetable-row">';
+    html += `<td class="time-cell"><div class="time-range">${formatTime12Hour(slot.start)}<br>${formatTime12Hour(slot.end)}</div></td>`;
 
     peopleList.forEach((person) => {
       const cellKey = `${slot.start}-${person}`;
@@ -481,35 +505,41 @@ function renderTimetable() {
       const bgColor = hasContent ? classColors[cellData.class] : "";
       const style = hasContent ? `style="background: ${bgColor};"` : "";
 
-      const clickHandler =
-        currentUserRole === "admin"
-          ? `onclick="editCell('${slot.start}', '${person.replace(/'/g, "\\'")}')"`
-          : "";
+      const safePerson = person.replace(/'/g, "\\'");
+      const clickHandler = `onclick="editCell('${slot.start}', '${safePerson}')"`;
 
-      html += `<div class="roster-cell ${hasContent ? "has-content" : ""}" ${style} ${clickHandler}>`;
+      html += `<td class="roster-cell ${hasContent ? "has-content" : ""}" ${style} ${clickHandler}>`;
 
       if (hasContent) {
-        if (currentUserRole === "admin") {
-          html += `<button class="remove-btn-cell" onclick="event.stopPropagation(); removeCell('${slot.start}', '${person.replace(/'/g, "\\'")}')">×</button>`;
-        }
+        html += `<button class="remove-btn-cell" onclick="event.stopPropagation(); removeCell('${slot.start}', '${safePerson}')">×</button>`;
         html += `<div class="cell-content">`;
-        html += `<div class="assignment-class">${cellData.class}</div>`;
+        html += `<div class="assignment-class">${escapeHtml(cellData.class)}</div>`;
         html += `<div class="assignment-duration">${cellData.duration} min</div>`;
         if (cellData.notes) {
-          html += `<div class="assignment-notes">${cellData.notes}</div>`;
+          html += `<div class="assignment-notes">${escapeHtml(cellData.notes)}</div>`;
         }
         html += `</div>`;
       }
 
-      html += "</div>";
+      html += "</td>";
     });
 
-    html += "</div>";
+    html += "</tr>";
   });
 
-  html += "</div>";
+  html += "</tbody></table>";
   html += "</div>";
   container.innerHTML = html;
+}
+
+function escapeHtml(str) {
+  if (str == null) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 function switchDay(day) {
@@ -532,20 +562,50 @@ function editCell(time, person) {
   const cellKey = `${time}-${person}`;
   const currentData = assignments[currentDay][cellKey];
 
+  const slot = timeSlots.find((s) => s.start === time);
+  const periodMinutes = slot
+    ? Math.max(1, timeToMinutes(slot.end) - timeToMinutes(slot.start))
+    : 60;
+
+  populateDurationOptions(periodMinutes);
+
   document.getElementById("modalInfo").textContent =
-    `${currentDay.charAt(0).toUpperCase() + currentDay.slice(1)} - ${formatTime12Hour(time)} - ${person}`;
+    `${currentDay.charAt(0).toUpperCase() + currentDay.slice(1)} - ${formatTime12Hour(time)} - ${person} (period: ${periodMinutes} min)`;
+
+  const durationSelect = document.getElementById("modalDuration");
 
   if (currentData) {
     document.getElementById("modalClass").value = currentData.class;
-    document.getElementById("modalDuration").value = currentData.duration;
+    const capped = Math.min(currentData.duration, periodMinutes);
+    durationSelect.value = String(capped);
     document.getElementById("modalNotes").value = currentData.notes || "";
   } else {
     document.getElementById("modalClass").value = "";
-    document.getElementById("modalDuration").value = 60;
+    durationSelect.value = String(periodMinutes);
     document.getElementById("modalNotes").value = "";
   }
 
   document.getElementById("assignmentModal").classList.add("active");
+}
+
+function populateDurationOptions(periodMinutes) {
+  const candidates = [5, 10, 15, 20, 30, 45, 60, 90, 120];
+  const allowed = candidates.filter((m) => m <= periodMinutes);
+  if (!allowed.includes(periodMinutes)) allowed.push(periodMinutes);
+  allowed.sort((a, b) => a - b);
+
+  const select = document.getElementById("modalDuration");
+  select.innerHTML = allowed
+    .map((m) => {
+      const label =
+        m === periodMinutes
+          ? `${m} minutes (full period)`
+          : m >= 60 && m % 60 === 0
+            ? `${m} minutes (${m / 60} hour${m === 60 ? "" : "s"})`
+            : `${m} minutes`;
+      return `<option value="${m}">${label}</option>`;
+    })
+    .join("");
 }
 
 function closeModal() {
@@ -557,12 +617,20 @@ function confirmAssignment() {
   if (!currentEditCell) return;
 
   const className = document.getElementById("modalClass").value;
-  const duration = parseInt(document.getElementById("modalDuration").value);
+  let duration = parseInt(document.getElementById("modalDuration").value);
   const notes = document.getElementById("modalNotes").value.trim();
 
   if (!className) {
     alert("Please select a class");
     return;
+  }
+
+  const slot = timeSlots.find((s) => s.start === currentEditCell.time);
+  if (slot) {
+    const periodMinutes = Math.max(1, timeToMinutes(slot.end) - timeToMinutes(slot.start));
+    if (!isFinite(duration) || duration <= 0 || duration > periodMinutes) {
+      duration = periodMinutes;
+    }
   }
 
   const cellKey = `${currentEditCell.time}-${currentEditCell.person}`;
@@ -576,7 +644,7 @@ function confirmAssignment() {
   closeModal();
   renderTimetable();
   updateCounters();
-  autoSaveToFirebase();
+  autoSave();
 }
 
 function removeCell(time, person) {
@@ -584,7 +652,7 @@ function removeCell(time, person) {
   delete assignments[currentDay][cellKey];
   renderTimetable();
   updateCounters();
-  autoSaveToFirebase();
+  autoSave();
 }
 
 // ============================================
@@ -722,7 +790,11 @@ function loadProject(event) {
       classList = projectData.classList || [];
       classColors = projectData.classColors || {};
       assignments = projectData.assignments || {};
-      timeSlots = projectData.timeSlots || [];
+      timeSlots = (projectData.timeSlots || []).map((s) => ({
+        start: s.start,
+        end: s.end,
+        type: s.type || "class",
+      }));
       colorIndex = classList.length;
 
       updatePeopleList();
@@ -740,7 +812,7 @@ function loadProject(event) {
       }
 
       alert("Project loaded successfully!");
-      autoSaveToFirebase();
+      autoSave();
     } catch (error) {
       alert("Error loading project file: " + error.message);
     }
@@ -750,57 +822,58 @@ function loadProject(event) {
   event.target.value = "";
 }
 
-function autoSaveToFirebase() {
-  const projectData = {
-    version: "1.0",
-    savedDate: new Date().toISOString(),
-    peopleList: peopleList,
-    classList: classList,
-    classColors: classColors,
-    assignments: assignments,
-    timeSlots: timeSlots,
-  };
-
+function autoSave() {
   try {
-    localStorage.setItem("timetableProject", JSON.stringify(projectData));
+    saveTimetable({
+      setupComplete: true,
+      peopleList: peopleList,
+      classList: classList,
+      classColors: classColors,
+      assignments: assignments,
+      timeSlots: timeSlots,
+    });
     showAutoSaveIndicator();
-
-    if (currentUserRole === "admin") {
-      saveToAWS();
-    }
   } catch (error) {
     console.error("Auto-save failed:", error);
+    showNotification("Auto-save failed. Please export a backup.", true);
   }
 }
 
-function loadFromLocalStorage() {
-  try {
-    const saved = localStorage.getItem("timetableProject");
-    if (!saved) return;
+function resetAndSetup() {
+  if (!confirm("Reset and go back to setup? All timetable data will be deleted.")) return;
+  localStorage.removeItem(STORAGE_KEYS.timetable);
+  window.location.href = "setup.html";
+}
 
-    const projectData = JSON.parse(saved);
+function loadFromStorage() {
+  const data = loadTimetable();
+  if (!data) return;
 
-    peopleList = projectData.peopleList || [];
-    classList = projectData.classList || [];
-    classColors = projectData.classColors || {};
-    assignments = projectData.assignments || {};
-    timeSlots = projectData.timeSlots || [];
-    colorIndex = classList.length;
+  peopleList = data.peopleList || [];
+  classList = data.classList || [];
+  classColors = data.classColors || {};
+  assignments = {
+    monday: data.assignments?.monday || {},
+    tuesday: data.assignments?.tuesday || {},
+    wednesday: data.assignments?.wednesday || {},
+    thursday: data.assignments?.thursday || {},
+    friday: data.assignments?.friday || {},
+  };
+  timeSlots = (data.timeSlots || []).map((s) => ({
+    start: s.start,
+    end: s.end,
+    type: s.type || "class",
+  }));
+  colorIndex = classList.length;
 
-    updatePeopleList();
-    updateClassList();
-    updateModalSelects();
+  updatePeopleList();
+  updateClassList();
+  updateModalSelects();
 
-    if (timeSlots.length > 0) {
-      document.getElementById("daySelector").style.display = "flex";
-      document.getElementById("timetableWrapper").style.display = "block";
-      document.getElementById("editTimeSlotsBtn").style.display = "inline-block";
-      document.getElementById("countersSection").style.display = "block";
-      renderTimetable();
-      updateCounters();
-    }
-  } catch (error) {
-    console.error("Error loading from localStorage:", error);
+  if (timeSlots.length > 0) {
+    document.getElementById("editTimeSlotsBtn").style.display = "inline-block";
+    renderTimetable();
+    updateCounters();
   }
 }
 
@@ -853,6 +926,16 @@ function exportToExcel() {
       const row = [
         `${formatTime12Hour(slot.start)} - ${formatTime12Hour(slot.end)}`,
       ];
+
+      const type = slotType(slot);
+      if (type !== "class") {
+        const label = SLOT_TYPE_LABELS[type] || "Break";
+        for (let i = 0; i < peopleList.length; i++) {
+          row.push(i === 0 ? label : "");
+        }
+        sheetData.push(row);
+        return;
+      }
 
       peopleList.forEach((person) => {
         const cellKey = `${slot.start}-${person}`;
@@ -924,10 +1007,19 @@ async function exportToPDF() {
 
     const tableData = [];
     timeSlots.forEach((slot) => {
-      const row = [
-        `${formatTime12Hour(slot.start)}-${formatTime12Hour(slot.end)}`,
-      ];
+      const timeLabel = `${formatTime12Hour(slot.start)}-${formatTime12Hour(slot.end)}`;
+      const type = slotType(slot);
 
+      if (type !== "class") {
+        const label = SLOT_TYPE_LABELS[type] || "Break";
+        tableData.push([
+          timeLabel,
+          { content: label, colSpan: peopleList.length, styles: { halign: "center", fontStyle: "italic", fillColor: [240, 230, 215] } },
+        ]);
+        return;
+      }
+
+      const row = [timeLabel];
       peopleList.forEach((person) => {
         const cellKey = `${slot.start}-${person}`;
         const data = assignments[day]?.[cellKey];
@@ -1023,138 +1115,6 @@ async function exportAll() {
   await exportToPNG();
 
   showAutoSaveIndicator("All formats exported!");
-}
-
-// ============================================
-// AWS Integration
-// ============================================
-async function saveToAWS() {
-  if (currentUserRole !== "admin") {
-    console.log("Only admins can save changes");
-    return;
-  }
-
-  const timetableData = {
-    version: "1.0",
-    lastUpdated: new Date().toISOString(),
-    updatedBy: currentUser.email,
-    peopleList: peopleList,
-    classList: classList,
-    classColors: classColors,
-    assignments: assignments,
-    timeSlots: timeSlots,
-  };
-
-  try {
-    await saveTimetable(timetableData);
-    showNotification("Saved to server");
-  } catch (error) {
-    console.error("AWS save error:", error);
-    showNotification("Save failed. Please try again.", true);
-  }
-}
-
-async function loadFromDatabase() {
-  if (
-    !confirm(
-      "Load timetable from database? This will replace your current work."
-    )
-  ) {
-    return;
-  }
-
-  showNotification("Loading from database...", false);
-
-  try {
-    const data = await loadTimetable();
-
-    if (data) {
-      peopleList = data.peopleList || [];
-      classList = data.classList || [];
-      classColors = data.classColors || {};
-
-      assignments = {
-        monday: data.assignments?.monday || {},
-        tuesday: data.assignments?.tuesday || {},
-        wednesday: data.assignments?.wednesday || {},
-        thursday: data.assignments?.thursday || {},
-        friday: data.assignments?.friday || {},
-      };
-
-      timeSlots = data.timeSlots || [];
-      colorIndex = classList.length;
-
-      updatePeopleList();
-      updateClassList();
-      updateModalSelects();
-
-      if (currentUserRole === "admin") {
-        document.getElementById("editTimeSlotsBtn").style.display =
-          "inline-block";
-      }
-
-      renderTimetable();
-      updateCounters();
-
-      showNotification("Loaded from database");
-    } else {
-      showNotification("No data in database", true);
-    }
-  } catch (error) {
-    console.error("AWS load error:", error);
-    showNotification("Load failed. Please try again.", true);
-  }
-}
-
-async function autoLoadFromAWS() {
-  console.log("Auto-loading timetable from AWS...");
-
-  try {
-    const data = await loadTimetable();
-
-    if (data) {
-      peopleList = data.peopleList || [];
-      classList = data.classList || [];
-      classColors = data.classColors || {};
-
-      assignments = {
-        monday: data.assignments?.monday || {},
-        tuesday: data.assignments?.tuesday || {},
-        wednesday: data.assignments?.wednesday || {},
-        thursday: data.assignments?.thursday || {},
-        friday: data.assignments?.friday || {},
-      };
-
-      timeSlots = data.timeSlots || [];
-      colorIndex = classList.length;
-
-      updatePeopleList();
-      updateClassList();
-      updateModalSelects();
-
-      if (currentUserRole === "admin") {
-        document.getElementById("editTimeSlotsBtn").style.display =
-          "inline-block";
-      }
-
-      renderTimetable();
-      updateCounters();
-
-      console.log("Timetable loaded from AWS successfully");
-    } else {
-      console.log("No timetable data in database yet");
-      document.getElementById("timetableContainer").innerHTML = `
-        <div class="empty-state" style="padding: 4rem 2rem;">
-          <div class="empty-state-icon">📋</div>
-          <p>No timetable data yet. Add people and classes to get started!</p>
-        </div>
-      `;
-    }
-  } catch (error) {
-    console.error("AWS auto-load error:", error);
-    // Fall back to localStorage if AWS fails
-    loadFromLocalStorage();
-  }
 }
 
 // ============================================
@@ -1325,4 +1285,4 @@ function showUpdateNotification() {
   }, 10000);
 }
 
-console.log("admin.js loaded (AWS version)");
+console.log("admin.js loaded");

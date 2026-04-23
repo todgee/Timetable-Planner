@@ -1,26 +1,31 @@
 // ============================================
-// Shared Utilities
-// Used by admin.html, view.html, and config.html
+// Shared Utilities (localStorage-backed)
+// Used by admin.html, view.html, config.html, setup.html
 // ============================================
 
-// Note: AWS configuration is in aws-config.js
-// Note: Authentication is in aws-auth.js
-// Note: API calls are in aws-api.js
-// Note: S3 storage is in aws-storage.js
+const STORAGE_KEYS = {
+  timetable: 'timetable.data',
+  theme: 'timetable.theme',
+  logo: 'timetable.logo'
+};
 
-// Note: 'days' and 'defaultColors' constants are defined in aws-config.js
+const defaultColors = [
+  '#4ade80', '#60d5f5', '#f59e0b', '#a78bfa', '#fb923c',
+  '#f472b6', '#34d399', '#fbbf24', '#818cf8', '#fb7185'
+];
+
+const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+
+const DEFAULT_THEME = {
+  primary: '#2c5f4f',
+  primaryLight: '#3d7861',
+  accent: '#d4a574'
+};
 
 // ============================================
 // Notification Utilities
 // ============================================
-
-/**
- * Show a notification message to the user
- * @param {string} message - The message to display
- * @param {boolean} isError - Whether this is an error message
- */
 function showNotification(message, isError = false) {
-  // Remove existing notification if any
   const existing = document.querySelector('.notification-toast');
   if (existing) existing.remove();
 
@@ -42,7 +47,6 @@ function showNotification(message, isError = false) {
   `;
   notification.textContent = message;
 
-  // Add animation keyframes if not exists
   if (!document.querySelector('#notification-styles')) {
     const style = document.createElement('style');
     style.id = 'notification-styles';
@@ -57,7 +61,6 @@ function showNotification(message, isError = false) {
 
   document.body.appendChild(notification);
 
-  // Remove after 3 seconds
   setTimeout(() => {
     notification.style.opacity = '0';
     notification.style.transform = 'translateX(-50%) translateY(20px)';
@@ -69,46 +72,27 @@ function showNotification(message, isError = false) {
 // ============================================
 // Time Formatting Utilities
 // ============================================
-
-/**
- * Convert 24-hour time to 12-hour format
- */
 function formatTime12Hour(time24) {
   if (!time24 || typeof time24 !== 'string') {
-    console.error('Invalid time passed to formatTime12Hour:', time24);
     return 'Invalid Time';
   }
 
   const parts = time24.split(':');
-  if (parts.length !== 2) {
-    console.error('Invalid time format:', time24);
-    return time24;
-  }
+  if (parts.length !== 2) return time24;
 
   const [hours, minutes] = parts.map(Number);
-  if (isNaN(hours) || isNaN(minutes)) {
-    console.error('Non-numeric time values:', time24);
-    return time24;
-  }
+  if (isNaN(hours) || isNaN(minutes)) return time24;
 
   const period = hours >= 12 ? 'PM' : 'AM';
   const hours12 = hours % 12 || 12;
   return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
 }
 
-/**
- * Convert 24-hour time string to minutes
- */
 function timeToMinutes(time24) {
-  const parts = time24.split(':');
-  const hours = parseInt(parts[0]);
-  const minutes = parseInt(parts[1]);
+  const [hours, minutes] = time24.split(':').map(Number);
   return hours * 60 + minutes;
 }
 
-/**
- * Convert minutes to 24-hour time string
- */
 function minutesToTime(minutes) {
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
@@ -118,10 +102,6 @@ function minutesToTime(minutes) {
 // ============================================
 // Color Utilities
 // ============================================
-
-/**
- * Lighten a hex color by a percentage
- */
 function lightenColor(hex, percent) {
   const num = parseInt(hex.replace('#', ''), 16);
   const amt = Math.round(2.55 * percent);
@@ -131,9 +111,6 @@ function lightenColor(hex, percent) {
   return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
 }
 
-/**
- * Darken a hex color by a percentage
- */
 function darkenColor(hex, percent) {
   const num = parseInt(hex.replace('#', ''), 16);
   const amt = Math.round(2.55 * percent);
@@ -144,208 +121,133 @@ function darkenColor(hex, percent) {
 }
 
 // ============================================
-// Backward Compatibility Wrappers
-// These wrap the new AWS functions for existing code
+// Storage helpers
 // ============================================
-
-/**
- * Check authentication (wraps checkAuthAndRedirect)
- * @deprecated Use checkAuthAndRedirect from aws-auth.js
- */
-function checkAuth(requiredRole) {
-  return checkAuthAndRedirect(requiredRole);
-}
-
-/**
- * Get current user info
- * @deprecated Use getUserFromTokens from aws-auth.js
- */
-function getCurrentUser() {
-  return getUserFromTokens();
-}
-
-// ============================================
-// Legacy Firebase Function Wrappers
-// These maintain backward compatibility with existing code
-// ============================================
-
-/**
- * Load timetable from Firebase (now uses AWS)
- * @deprecated Use loadTimetable from aws-api.js
- */
-async function loadFromFirebase() {
-  const data = await loadTimetable();
-  // Wrap in Firebase-like response
-  return {
-    val: () => data,
-    exists: () => data !== null
-  };
-}
-
-/**
- * Save timetable to Firebase (now uses AWS)
- * @deprecated Use saveTimetable from aws-api.js
- */
-async function saveToFirebase(timetableData) {
-  return saveTimetable(timetableData);
-}
-
-/**
- * Load theme colors (now uses AWS)
- * @deprecated Use loadTheme from aws-api.js
- */
-async function loadThemeColors() {
-  const data = await loadTheme();
-  return {
-    val: () => data,
-    exists: () => data !== null
-  };
-}
-
-/**
- * Save theme colors (now uses AWS)
- * @deprecated Use saveTheme from aws-api.js
- */
-async function saveThemeColors(colors, updatedBy) {
-  return saveTheme(colors);
-}
-
-/**
- * Reset theme to default (now uses AWS)
- */
-async function resetThemeToDefault(updatedBy) {
-  return saveTheme({
-    primary: '#2c5f4f',
-    primaryLight: '#3d7861',
-    accent: '#d4a574'
-  });
-}
-
-/**
- * Load logo settings (now uses AWS)
- * @deprecated Use loadLogo from aws-api.js
- */
-async function loadLogoSettings() {
-  const data = await loadLogo();
-  return {
-    val: () => data,
-    exists: () => data !== null
-  };
-}
-
-/**
- * Upload logo to storage (now uses AWS S3)
- * @deprecated Use uploadFileToS3 from aws-storage.js
- */
-async function uploadLogoToStorage(file) {
-  return uploadFileToS3(file);
-}
-
-/**
- * Save logo settings (now uses AWS)
- * @deprecated Use saveLogo from aws-api.js
- */
-async function saveLogoSettings(logoUrl, position, size, uploadedBy) {
-  return saveLogo({
-    url: logoUrl,
-    position: position,
-    size: size
-  });
-}
-
-/**
- * Update logo position (now uses AWS)
- */
-async function updateLogoPosition(position, size, updatedBy) {
-  const current = await loadLogo();
-  return saveLogo({
-    url: current?.url || '',
-    position: position,
-    size: size
-  });
-}
-
-/**
- * Load all users (now uses AWS)
- * @deprecated Use listUsers from aws-api.js
- */
-async function loadAllUsers() {
-  const users = await listUsers();
-  // Convert array to Firebase-like object format
-  const usersObj = {};
-  users.forEach((user, index) => {
-    usersObj[user.email || index] = user;
-  });
-  return {
-    val: () => usersObj,
-    exists: () => users.length > 0
-  };
-}
-
-/**
- * Create user account (now uses AWS Cognito)
- * @deprecated Use createUser from aws-api.js
- */
-async function createUserAccount(email, password, role, createdBy) {
-  return createUser(email, password, role);
-}
-
-/**
- * Remove user from database (now uses AWS)
- * @deprecated Use deleteUser from aws-api.js
- */
-async function removeUserFromDatabase(uid) {
-  // In AWS, we use email instead of UID
-  // The uid parameter might be an email in the new system
-  return deleteUser(uid);
-}
-
-// ============================================
-// Initialize empty timetable if needed
-// ============================================
-
-/**
- * Initialize empty timetable structure
- */
-async function initializeEmptyTimetable() {
+function readJSON(key) {
   try {
-    const existing = await loadTimetable();
-    if (!existing || !existing.peopleList) {
-      await saveTimetable({
-        peopleList: [],
-        classList: [],
-        classColors: {},
-        assignments: {
-          monday: {},
-          tuesday: {},
-          wednesday: {},
-          thursday: {},
-          friday: {}
-        },
-        timeSlots: []
-      });
-    }
-  } catch (error) {
-    // If 404, create new timetable
-    if (error.message.includes('not found')) {
-      await saveTimetable({
-        peopleList: [],
-        classList: [],
-        classColors: {},
-        assignments: {
-          monday: {},
-          tuesday: {},
-          wednesday: {},
-          thursday: {},
-          friday: {}
-        },
-        timeSlots: []
-      });
-    }
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    console.error(`Failed to parse ${key}:`, e);
+    return null;
   }
 }
 
-// Legacy alias
-const initializeEmptyFirebase = initializeEmptyTimetable;
+function writeJSON(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
 
-console.log('shared.js loaded (AWS version)');
+// ============================================
+// Timetable data layer
+// ============================================
+function loadTimetable() {
+  return readJSON(STORAGE_KEYS.timetable);
+}
+
+function saveTimetable(timetableData) {
+  const payload = {
+    version: '1.0',
+    setupComplete: timetableData.setupComplete !== false,
+    peopleList: timetableData.peopleList || [],
+    classList: timetableData.classList || [],
+    classColors: timetableData.classColors || {},
+    assignments: timetableData.assignments || {
+      monday: {}, tuesday: {}, wednesday: {}, thursday: {}, friday: {}
+    },
+    timeSlots: timetableData.timeSlots || [],
+    updatedAt: new Date().toISOString()
+  };
+  writeJSON(STORAGE_KEYS.timetable, payload);
+  return payload;
+}
+
+function hasTimetable() {
+  const data = loadTimetable();
+  return !!(data && data.setupComplete &&
+    ((data.peopleList && data.peopleList.length > 0) ||
+     (data.classList && data.classList.length > 0)));
+}
+
+function initializeEmptyTimetable() {
+  if (!loadTimetable()) {
+    saveTimetable({
+      setupComplete: false,
+      peopleList: [],
+      classList: [],
+      classColors: {},
+      assignments: {
+        monday: {}, tuesday: {}, wednesday: {}, thursday: {}, friday: {}
+      },
+      timeSlots: []
+    });
+  }
+}
+
+// ============================================
+// Theme data layer
+// ============================================
+function loadTheme() {
+  return readJSON(STORAGE_KEYS.theme) || { ...DEFAULT_THEME };
+}
+
+function saveTheme(themeData) {
+  const payload = {
+    primary: themeData.primary || DEFAULT_THEME.primary,
+    primaryLight: themeData.primaryLight || DEFAULT_THEME.primaryLight,
+    accent: themeData.accent || DEFAULT_THEME.accent
+  };
+  writeJSON(STORAGE_KEYS.theme, payload);
+  return payload;
+}
+
+function resetTheme() {
+  return saveTheme(DEFAULT_THEME);
+}
+
+// ============================================
+// Logo data layer (stores image as data URL)
+// ============================================
+function loadLogo() {
+  return readJSON(STORAGE_KEYS.logo);
+}
+
+function saveLogo(logoData) {
+  const payload = {
+    url: logoData.url || '',
+    position: logoData.position || 'header-left',
+    size: logoData.size || 'medium'
+  };
+  writeJSON(STORAGE_KEYS.logo, payload);
+  return payload;
+}
+
+function deleteLogo() {
+  localStorage.removeItem(STORAGE_KEYS.logo);
+}
+
+function readFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error('Failed to read file'));
+    reader.readAsDataURL(file);
+  });
+}
+
+function validateImageFile(file, maxSizeMB = 5) {
+  if (!file) return { valid: false, error: 'No file selected' };
+
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml', 'image/webp'];
+  if (!allowedTypes.includes(file.type)) {
+    return { valid: false, error: 'Please select an image file (JPEG, PNG, GIF, SVG, or WebP)' };
+  }
+
+  const maxSize = maxSizeMB * 1024 * 1024;
+  if (file.size > maxSize) {
+    return { valid: false, error: `File size exceeds ${maxSizeMB}MB limit` };
+  }
+
+  return { valid: true, error: null };
+}
+
+console.log('shared.js loaded');

@@ -1,37 +1,18 @@
-// theme-loader.js - Load and apply theme settings across all pages
-// Include this script on every page that needs theming
+// theme-loader.js - Apply saved theme/logo from localStorage.
+// Include after js/shared.js on any page that should be themed.
 
 (function() {
     'use strict';
 
-    // Load theme colors from Firebase
-    function loadAndApplyTheme() {
-        if (typeof database === 'undefined') {
-            console.log('Firebase not loaded yet, waiting...');
-            setTimeout(loadAndApplyTheme, 100);
-            return;
-        }
+    function applyTheme() {
+        if (typeof loadTheme !== 'function') return;
 
-        database.ref('config/theme').once('value').then((snapshot) => {
-            const theme = snapshot.val();
-            
-            if (theme) {
-                console.log('Applying theme:', theme);
-                applyThemeColors(theme);
-            } else {
-                console.log('No custom theme found, using defaults');
-            }
-        }).catch((error) => {
-            console.error('Error loading theme:', error);
-        });
-    }
-
-    // Apply theme colors to CSS variables
-    function applyThemeColors(theme) {
+        const theme = loadTheme();
         const root = document.documentElement;
-        
+
         if (theme.primary) {
             root.style.setProperty('--primary', theme.primary);
+            root.style.setProperty('--primary-dark', darkenHex(theme.primary, 15));
         }
         if (theme.primaryLight) {
             root.style.setProperty('--primary-light', theme.primaryLight);
@@ -39,18 +20,9 @@
         if (theme.accent) {
             root.style.setProperty('--accent', theme.accent);
         }
-
-        // Calculate dark variant if not provided
-        if (theme.primary) {
-            const primaryDark = darkenColor(theme.primary, 15);
-            root.style.setProperty('--primary-dark', primaryDark);
-        }
-
-        console.log('✅ Theme applied successfully');
     }
 
-    // Darken a hex color by a percentage
-    function darkenColor(hex, percent) {
+    function darkenHex(hex, percent) {
         const num = parseInt(hex.replace('#', ''), 16);
         const amt = Math.round(2.55 * percent);
         const R = Math.max(0, (num >> 16) - amt);
@@ -59,93 +31,59 @@
         return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
     }
 
-    // Load and apply logo
-    function loadAndApplyLogo() {
-        if (typeof database === 'undefined') {
-            setTimeout(loadAndApplyLogo, 100);
-            return;
-        }
+    function applyLogo() {
+        if (typeof loadLogo !== 'function') return;
 
-        database.ref('config/logo').once('value').then((snapshot) => {
-            const logoSettings = snapshot.val();
-            
-            if (logoSettings && logoSettings.data) {
-                console.log('Applying logo:', logoSettings);
-                applyLogo(logoSettings);
-            } else {
-                console.log('No logo configured');
-            }
-        }).catch((error) => {
-            console.error('Error loading logo:', error);
-        });
-    }
+        const logoSettings = loadLogo();
+        if (!logoSettings || !logoSettings.url) return;
 
-    // Apply logo to page header
-    function applyLogo(logoSettings) {
-        // Find or create logo container
-        let logoContainer = document.getElementById('app-logo-container');
-        
-        if (!logoContainer) {
-            // Create logo container in header
-            const header = document.querySelector('header');
-            if (!header) return;
+        const header = document.querySelector('header');
+        if (!header) return;
 
-            logoContainer = document.createElement('div');
-            logoContainer.id = 'app-logo-container';
-            logoContainer.style.cssText = `
+        let container = document.getElementById('app-logo-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'app-logo-container';
+            container.style.cssText = `
                 margin-bottom: 1rem;
                 display: flex;
-                justify-content: ${getLogoJustification(logoSettings.position)};
+                justify-content: ${justify(logoSettings.position)};
             `;
-
-            // Insert at the beginning of header
-            header.insertBefore(logoContainer, header.firstChild);
+            header.insertBefore(container, header.firstChild);
         }
 
-        // Create or update logo image
-        let logoImg = logoContainer.querySelector('img');
-        if (!logoImg) {
-            logoImg = document.createElement('img');
-            logoImg.id = 'app-logo';
-            logoImg.alt = 'Organization Logo';
-            logoContainer.appendChild(logoImg);
+        let img = container.querySelector('img');
+        if (!img) {
+            img = document.createElement('img');
+            img.id = 'app-logo';
+            img.alt = 'Organization Logo';
+            container.appendChild(img);
         }
 
-        // Apply logo data and settings
-        logoImg.src = logoSettings.data || logoSettings.url || 'logo.jpeg';
-        
-        // Apply size
-        const sizeMap = {
-            small: '80px',
-            medium: '100px',
-            large: '120px'
-        };
-        logoImg.style.maxHeight = sizeMap[logoSettings.size] || '100px';
-        logoImg.style.maxWidth = '300px';
-        logoImg.style.objectFit = 'contain';
-
-        console.log('✅ Logo applied successfully');
+        const sizeMap = { small: '80px', medium: '100px', large: '120px' };
+        img.src = logoSettings.url;
+        img.style.maxHeight = sizeMap[logoSettings.size] || '100px';
+        img.style.maxWidth = '300px';
+        img.style.objectFit = 'contain';
     }
 
-    function getLogoJustification(position) {
-        switch(position) {
-            case 'header-left': return 'flex-start';
+    function justify(position) {
+        switch (position) {
             case 'header-center': return 'center';
             case 'header-right': return 'flex-end';
+            case 'header-left':
             default: return 'flex-start';
         }
     }
 
-    // Initialize when DOM is ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            loadAndApplyTheme();
-            loadAndApplyLogo();
-        });
-    } else {
-        loadAndApplyTheme();
-        loadAndApplyLogo();
+    function run() {
+        applyTheme();
+        applyLogo();
     }
 
-    console.log('✅ Theme loader initialized');
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', run);
+    } else {
+        run();
+    }
 })();

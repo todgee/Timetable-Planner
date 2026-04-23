@@ -11,30 +11,33 @@ let timeSlots = [];
 let currentDay = "monday";
 let currentCounterTab = "day";
 
-// ============================================
-// Authentication Check (AWS Cognito)
-// ============================================
-(function initAuth() {
-  // Check if user is authenticated with AWS Cognito
-  if (!isAuthenticated()) {
-    window.location.href = "index.html";
-    return;
-  }
+const SLOT_TYPE_LABELS = {
+  class: "Class",
+  recess: "Recess",
+  lunch: "Lunch",
+  break: "Break",
+};
 
-  // Viewer role check
-  const userRole = getCurrentUserRole();
-  if (userRole !== "viewer" && userRole !== "admin") {
-    window.location.href = "index.html";
-    return;
-  }
-})();
+function slotType(slot) {
+  return (slot && slot.type) || "class";
+}
+
+function escapeHtml(str) {
+  if (str == null) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
 
 // ============================================
-// Load Timetable Data from AWS
+// Load Timetable Data from localStorage
 // ============================================
-async function loadTimetableData() {
+function loadTimetableData() {
   try {
-    const data = await loadTimetable();
+    const data = loadTimetable();
 
     if (data) {
       peopleList = data.peopleList || [];
@@ -47,7 +50,11 @@ async function loadTimetableData() {
         thursday: data.assignments?.thursday || {},
         friday: data.assignments?.friday || {},
       };
-      timeSlots = data.timeSlots || [];
+      timeSlots = (data.timeSlots || []).map((s) => ({
+        start: s.start,
+        end: s.end,
+        type: s.type || "class",
+      }));
 
       renderTimetable();
       updateCounters();
@@ -73,16 +80,15 @@ function renderTimetable() {
 
   let html = '<div style="display: inline-block; min-width: 100%;">';
   html += `<div class="day-title ${currentDay}">${currentDay.charAt(0).toUpperCase() + currentDay.slice(1)}</div>`;
-  html += '<div class="timetable">';
+  html += '<table class="timetable"><tbody>';
 
-  html += '<div class="timetable-header-row">';
-  html += "<div>Time</div>";
+  html += '<tr class="timetable-header-row">';
+  html += "<th>Time</th>";
   peopleList.forEach((name) => {
-    html += `<div>${name}</div>`;
+    html += `<th>${escapeHtml(name)}</th>`;
   });
-  html += "</div>";
+  html += "</tr>";
 
-  // Filter valid time slots
   const validTimeSlots = timeSlots.filter(
     (slot) =>
       slot &&
@@ -92,9 +98,22 @@ function renderTimetable() {
       typeof slot.end === "string"
   );
 
+  const personCount = peopleList.length || 1;
+
   validTimeSlots.forEach((slot) => {
-    html += '<div class="timetable-row">';
-    html += `<div class="time-cell"><div class="time-range">${formatTime12Hour(slot.start)}<br>${formatTime12Hour(slot.end)}</div></div>`;
+    const type = slotType(slot);
+
+    if (type !== "class") {
+      const label = SLOT_TYPE_LABELS[type] || "Break";
+      html += `<tr class="timetable-row break-row break-row--${type}">`;
+      html += `<td class="time-cell"><div class="time-range">${formatTime12Hour(slot.start)}<br>${formatTime12Hour(slot.end)}</div></td>`;
+      html += `<td class="break-cell" colspan="${personCount}">${label}</td>`;
+      html += "</tr>";
+      return;
+    }
+
+    html += '<tr class="timetable-row">';
+    html += `<td class="time-cell"><div class="time-range">${formatTime12Hour(slot.start)}<br>${formatTime12Hour(slot.end)}</div></td>`;
 
     peopleList.forEach((person) => {
       const cellKey = `${slot.start}-${person}`;
@@ -104,26 +123,25 @@ function renderTimetable() {
       const bgColor = hasContent ? classColors[cellData.class] : "";
       const style = hasContent ? `style="background: ${bgColor};"` : "";
 
-      // No click handler for ESO - read only
-      html += `<div class="roster-cell ${hasContent ? "has-content" : ""}" ${style}>`;
+      html += `<td class="roster-cell ${hasContent ? "has-content" : ""}" ${style}>`;
 
       if (hasContent) {
         html += `<div class="cell-content">`;
-        html += `<div class="assignment-class">${cellData.class}</div>`;
+        html += `<div class="assignment-class">${escapeHtml(cellData.class)}</div>`;
         html += `<div class="assignment-duration">${cellData.duration} min</div>`;
         if (cellData.notes) {
-          html += `<div class="assignment-notes">${cellData.notes}</div>`;
+          html += `<div class="assignment-notes">${escapeHtml(cellData.notes)}</div>`;
         }
         html += `</div>`;
       }
 
-      html += "</div>";
+      html += "</td>";
     });
 
-    html += "</div>";
+    html += "</tr>";
   });
 
-  html += "</div>";
+  html += "</tbody></table>";
   html += "</div>";
   container.innerHTML = html;
 }
@@ -227,4 +245,4 @@ window.addEventListener("DOMContentLoaded", function () {
   updateDayLabel();
 });
 
-console.log("view.js loaded (AWS version)");
+console.log("view.js loaded");

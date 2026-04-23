@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Timetable Planner - Login</title>
+    <title>Timetable Planner</title>
 
     <!-- PWA Configuration -->
     <link rel="manifest" href="manifest.json" />
@@ -21,12 +21,8 @@
     <!-- Stylesheet -->
     <link rel="stylesheet" href="css/styles.css" />
 
-    <!-- AWS Configuration -->
-    <script src="js/aws-config.js"></script>
-    <script src="js/aws-auth.js"></script>
-    <script src="js/aws-api.js"></script>
+    <script src="js/shared.js"></script>
 
-    <!-- Login page specific styles -->
     <style>
       body {
         display: flex;
@@ -34,163 +30,53 @@
         justify-content: center;
         padding: 2rem;
       }
+
+      .landing {
+        max-width: 520px;
+        text-align: center;
+      }
+
+      .landing h1 {
+        color: var(--primary, #2c5f4f);
+        margin-bottom: 0.5rem;
+      }
+
+      .landing p {
+        color: #555;
+        margin-bottom: 2rem;
+      }
+
+      .landing-actions {
+        display: grid;
+        gap: 0.75rem;
+      }
     </style>
   </head>
   <body>
-    <div class="login-container">
-      <h1 class="login-title">Timetable Planner</h1>
-      <p class="login-subtitle">Flexible Scheduling for Schools</p>
+    <div class="landing">
+      <h1>Timetable Planner</h1>
+      <p>Flexible scheduling for schools &amp; teams — runs entirely in your browser.</p>
 
-      <div class="login-error" id="loginError"></div>
-
-      <!-- Login Form (simplified - no role selection, role comes from Cognito) -->
-      <div id="loginForm" class="login-form active">
-        <div class="form-group">
-          <label for="emailInput">Email</label>
-          <input
-            type="email"
-            id="emailInput"
-            class="login-input"
-            placeholder="Enter your email"
-            autocomplete="email"
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="passwordInput">Password</label>
-          <input
-            type="password"
-            id="passwordInput"
-            class="login-input"
-            placeholder="Enter your password"
-            autocomplete="current-password"
-          />
-        </div>
-
-        <button class="login-button" onclick="handleLogin()" id="loginButton">
-          Login
-        </button>
-      </div>
-
-      <!-- Loading State -->
-      <div id="loadingState" style="display: none; text-align: center; padding: 2rem;">
-        <div class="spinner" style="margin: 0 auto 1rem;"></div>
-        <p>Signing in...</p>
+      <div class="landing-actions">
+        <a id="primaryAction" class="btn btn-primary" href="setup.html">Get Started</a>
+        <a id="secondaryAction" class="btn btn-secondary" href="view.html" style="display:none">View Timetable</a>
       </div>
     </div>
 
     <script>
-      // Check if already logged in on page load
-      document.addEventListener("DOMContentLoaded", async function () {
-        // If user is already authenticated, check for timetable and redirect
-        if (isAuthenticated()) {
-          await redirectAfterAuth();
+      document.addEventListener('DOMContentLoaded', () => {
+        if (hasTimetable()) {
+          window.location.replace('admin.html');
           return;
         }
 
-        // Setup Enter key to submit
-        const passwordInput = document.getElementById("passwordInput");
-        if (passwordInput) {
-          passwordInput.addEventListener("keypress", function (e) {
-            if (e.key === "Enter") {
-              handleLogin();
-            }
-          });
-        }
-
-        const emailInput = document.getElementById("emailInput");
-        if (emailInput) {
-          emailInput.addEventListener("keypress", function (e) {
-            if (e.key === "Enter") {
-              document.getElementById("passwordInput").focus();
-            }
-          });
+        const data = loadTimetable();
+        if (data && (data.peopleList?.length || data.classList?.length)) {
+          document.getElementById('primaryAction').href = 'admin.html';
+          document.getElementById('primaryAction').textContent = 'Open Timetable';
+          document.getElementById('secondaryAction').style.display = 'inline-flex';
         }
       });
-
-      /**
-       * Handle login form submission
-       */
-      async function handleLogin() {
-        const email = document.getElementById("emailInput").value.trim();
-        const password = document.getElementById("passwordInput").value;
-        const loginButton = document.getElementById("loginButton");
-        const errorDiv = document.getElementById("loginError");
-
-        // Validation
-        if (!email || !password) {
-          showLoginError("Please enter both email and password");
-          return;
-        }
-
-        if (!email.includes('@')) {
-          showLoginError("Please enter a valid email address");
-          return;
-        }
-
-        try {
-          // Show loading state
-          loginButton.disabled = true;
-          loginButton.textContent = "Signing in...";
-          errorDiv.classList.remove("active");
-
-          // Login with Cognito
-          const result = await cognitoLogin(email, password);
-
-          console.log("Login successful:", result.email, "Role:", result.role, "School:", result.schoolId);
-
-          // Check for existing timetable and redirect appropriately
-          await redirectAfterAuth();
-
-        } catch (error) {
-          console.error("Login error:", error);
-          showLoginError(error.message || "Login failed. Please try again.");
-          loginButton.disabled = false;
-          loginButton.textContent = "Login";
-        }
-      }
-
-      /**
-       * Show error message
-       */
-      function showLoginError(message) {
-        const errorDiv = document.getElementById("loginError");
-        errorDiv.textContent = message;
-        errorDiv.classList.add("active");
-      }
-
-      /**
-       * Check for existing timetable and redirect to appropriate page
-       */
-      async function redirectAfterAuth() {
-        const userRole = getCurrentUserRole();
-
-        try {
-          // Check if timetable exists and has data
-          const data = await loadTimetable();
-
-          if (data && data.setupComplete && (data.peopleList?.length > 0 || data.classList?.length > 0)) {
-            // Timetable exists, go to main app
-            window.location.href = userRole === 'admin' ? 'admin.html' : 'view.html';
-          } else {
-            // No timetable or setup incomplete, go to setup (admins only)
-            if (userRole === 'admin') {
-              window.location.href = 'setup.html';
-            } else {
-              // Viewers can't do setup, show message
-              window.location.href = 'view.html';
-            }
-          }
-        } catch (error) {
-          console.log('No timetable found:', error.message);
-          // No timetable exists, redirect to setup for admins
-          if (userRole === 'admin') {
-            window.location.href = 'setup.html';
-          } else {
-            window.location.href = 'view.html';
-          }
-        }
-      }
     </script>
   </body>
 </html>

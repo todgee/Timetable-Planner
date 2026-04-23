@@ -38,22 +38,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    <!-- AWS Services -->
-    <script src="js/aws-config.js"></script>
-    <script src="js/aws-auth.js"></script>
-    <script src="js/aws-api.js"></script>
-    <script src="js/aws-storage.js"></script>
-
     <!-- Shared utilities -->
     <script src="js/shared.js"></script>
+    <script src="theme-loader.js"></script>
   </head>
   <body>
-    <!-- User Info Bar -->
-    <div class="user-info" style="display: none" id="userInfo">
-      <span class="user-role" id="userRole">Leadership (Admin)</span>
-      <button class="logout-btn" onclick="handleLogout()">Logout</button>
-    </div>
-
     <div class="container">
       <header>
         <h1>Universal Timetable Maker</h1>
@@ -176,6 +165,9 @@
               <a href="config.html" class="btn btn-primary btn-icon" style="text-decoration: none; text-align: center">
                 Configuration
               </a>
+              <button class="btn btn-danger btn-icon" onclick="resetAndSetup()" title="[DEV] Clear all data and restart setup">
+                Reset Setup
+              </button>
             </div>
           </div>
         </div>
@@ -232,15 +224,8 @@
         </div>
 
         <div class="form-group">
-          <label for="modalDuration">Duration (minutes)</label>
-          <select id="modalDuration">
-            <option value="15">15 minutes</option>
-            <option value="30">30 minutes</option>
-            <option value="45">45 minutes</option>
-            <option value="60" selected>60 minutes (1 hour)</option>
-            <option value="90">90 minutes</option>
-            <option value="120">120 minutes (2 hours)</option>
-          </select>
+          <label for="modalDuration">Duration (capped to period length)</label>
+          <select id="modalDuration"></select>
         </div>
 
         <div class="form-group">

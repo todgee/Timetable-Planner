@@ -14,22 +14,11 @@
     <!-- Stylesheet -->
     <link rel="stylesheet" href="css/styles.css" />
 
-    <!-- AWS Services -->
-    <script src="js/aws-config.js"></script>
-    <script src="js/aws-auth.js"></script>
-    <script src="js/aws-api.js"></script>
-    <script src="js/aws-storage.js"></script>
-
     <!-- Shared utilities -->
     <script src="js/shared.js"></script>
+    <script src="theme-loader.js"></script>
   </head>
   <body>
-    <!-- User Info Bar -->
-    <div class="user-info">
-      <span class="user-role">Administrator</span>
-      <button class="logout-btn" onclick="handleLogout()">Logout</button>
-    </div>
-
     <div class="container container--narrow">
       <!-- Back Link -->
       <a href="admin.html" class="back-link">
@@ -39,64 +28,11 @@
       <!-- Page Header -->
       <div class="page-header">
         <h1>Configuration</h1>
-        <p>Manage accounts, themes, and organization branding</p>
+        <p>Customize theme colors and organization branding</p>
       </div>
 
       <!-- Configuration Grid -->
       <div class="config-grid">
-        <!-- Account Management Panel -->
-        <div class="panel">
-          <h2 class="panel-title">
-            <span class="panel-icon">👤</span>
-            Account Management
-          </h2>
-          <p class="panel-description">
-            Create and manage user accounts for your organization.
-          </p>
-
-          <!-- Tab Navigation -->
-          <div class="tab-nav">
-            <button class="tab-btn active" data-tab="existing-accounts">Existing Accounts</button>
-            <button class="tab-btn" data-tab="create-account">Create Account</button>
-          </div>
-
-          <!-- Existing Accounts Tab -->
-          <div class="tab-content active" id="existing-accounts">
-            <div class="account-list" id="accountListContainer">
-              <div class="account-item">
-                <div class="account-info">Loading accounts...</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Create Account Tab -->
-          <div class="tab-content" id="create-account">
-            <div class="form-group">
-              <label for="new-email">Email Address</label>
-              <input type="email" id="new-email" placeholder="user@yourschool.com" />
-            </div>
-
-            <div class="form-group">
-              <label for="new-password">Password</label>
-              <input type="password" id="new-password" placeholder="Minimum 6 characters" />
-            </div>
-
-            <div class="form-group">
-              <label for="new-role">Role</label>
-              <select id="new-role">
-                <option value="viewer">ESO Staff (Viewer)</option>
-                <option value="admin">Leadership (Administrator)</option>
-              </select>
-            </div>
-
-            <button class="btn btn-primary btn-full" id="create-account-btn">
-              Create Account
-            </button>
-
-            <div class="status-message" id="account-status"></div>
-          </div>
-        </div>
-
         <!-- Theme Customization Panel -->
         <div class="panel">
           <h2 class="panel-title">
@@ -170,7 +106,7 @@
             Organization Logo
           </h2>
           <p class="panel-description">
-            Upload your organization logo to display on timetables and exports.
+            Upload your organization logo to display on timetables and exports. Stored locally in this browser.
           </p>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem">
@@ -237,7 +173,7 @@
           </div>
 
           <div class="btn-group">
-            <button class="btn btn-danger" onclick="if(confirm('Are you sure you want to clear all timetable data? This cannot be undone.')) { database.ref('timetable/current').remove().then(() => showNotification('Timetable data cleared')).catch(e => showNotification('Error: ' + e.message, true)); }">
+            <button class="btn btn-danger" id="clear-timetable-btn">
               Clear All Timetable Data
             </button>
           </div>

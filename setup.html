@@ -6,7 +6,6 @@
     <title>Setup - Timetable Planner</title>
     <link rel="stylesheet" href="css/styles.css">
     <style>
-        /* Setup Wizard Specific Styles */
         .setup-container {
             max-width: 800px;
             margin: 2rem auto;
@@ -27,7 +26,6 @@
             color: #666;
         }
 
-        /* Progress Steps */
         .progress-steps {
             display: flex;
             justify-content: space-between;
@@ -91,7 +89,6 @@
             font-weight: 500;
         }
 
-        /* Wizard Card */
         .wizard-card {
             background: white;
             border-radius: 12px;
@@ -127,7 +124,6 @@
             overflow-y: auto;
         }
 
-        /* Item List Styles */
         .item-input-row {
             display: flex;
             gap: 0.5rem;
@@ -199,7 +195,6 @@
             color: var(--error, #dc3545);
         }
 
-        /* Time Slots */
         .time-slots-container {
             display: flex;
             flex-direction: column;
@@ -258,7 +253,6 @@
             color: var(--primary);
         }
 
-        /* Quick Templates */
         .templates-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -296,7 +290,6 @@
             color: #666;
         }
 
-        /* Review Step */
         .review-section {
             margin-bottom: 1.5rem;
         }
@@ -330,7 +323,87 @@
             font-size: 0.85rem;
         }
 
-        /* Navigation Buttons */
+        #reviewSlots {
+            display: flex;
+            flex-direction: column;
+            flex-wrap: nowrap;
+            gap: 0.35rem;
+            max-height: 260px;
+            overflow-y: auto;
+            padding: 0.25rem 0.5rem 0.25rem 0;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+
+        #reviewSlots::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #reviewSlots::-webkit-scrollbar-thumb {
+            background: #d0d0d0;
+            border-radius: 4px;
+        }
+
+        #reviewSlots::-webkit-scrollbar-thumb:hover {
+            background: #b0b0b0;
+        }
+
+        .review-slot {
+            display: grid;
+            grid-template-columns: 110px 1fr auto;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.55rem 0.85rem;
+            background: white;
+            border-radius: 6px;
+            border-left: 3px solid #ccc;
+            font-size: 0.9rem;
+        }
+
+        .review-slot-label {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .review-slot-time {
+            color: #555;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .review-slot-duration {
+            font-size: 0.8rem;
+            color: #888;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .review-slot.slot-type-recess {
+            background: rgba(96, 213, 245, 0.15);
+            border-left-color: #0b6e85;
+        }
+
+        .review-slot.slot-type-recess .review-slot-label {
+            color: #0b6e85;
+        }
+
+        .review-slot.slot-type-lunch {
+            background: rgba(212, 165, 116, 0.2);
+            border-left-color: #8a5a20;
+        }
+
+        .review-slot.slot-type-lunch .review-slot-label {
+            color: #8a5a20;
+        }
+
+        .review-slot.slot-type-break {
+            background: rgba(232, 227, 219, 0.5);
+            border-left-color: #888;
+        }
+
+        .review-slot.slot-type-break .review-slot-label {
+            color: #666;
+        }
+
         .wizard-nav {
             display: flex;
             justify-content: space-between;
@@ -383,7 +456,6 @@
             background: #218838;
         }
 
-        /* Welcome Step */
         .welcome-content {
             text-align: center;
             padding: 2rem 0;
@@ -431,7 +503,6 @@
             color: #666;
         }
 
-        /* Empty State */
         .empty-hint {
             text-align: center;
             padding: 2rem;
@@ -439,147 +510,6 @@
             font-style: italic;
         }
 
-        /* Account Creation Styles */
-        .school-input-section {
-            margin-bottom: 2rem;
-            padding: 1.5rem;
-            background: #f9f9f9;
-            border-radius: 8px;
-        }
-
-        .school-input-section label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-            color: var(--primary);
-        }
-
-        .school-input-section input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-        }
-
-        .school-input-section .hint {
-            font-size: 0.8rem;
-            color: #666;
-            margin-top: 0.5rem;
-        }
-
-        .account-form {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .account-form .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .account-form .form-group.full-width {
-            grid-column: 1 / -1;
-        }
-
-        .account-form label {
-            font-size: 0.85rem;
-            font-weight: 500;
-            margin-bottom: 0.25rem;
-            color: #555;
-        }
-
-        .account-form input {
-            padding: 0.65rem;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 0.95rem;
-        }
-
-        .account-form .add-account-btn {
-            grid-column: 1 / -1;
-            padding: 0.75rem;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-        }
-
-        .account-form .add-account-btn:hover {
-            background: var(--primary-light);
-        }
-
-        .accounts-list {
-            margin-top: 1rem;
-        }
-
-        .account-card {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.75rem 1rem;
-            background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            margin-bottom: 0.5rem;
-        }
-
-        .account-card .account-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .account-card .account-email {
-            font-weight: 500;
-        }
-
-        .account-card .account-role {
-            font-size: 0.8rem;
-            color: #666;
-        }
-
-        .account-card .remove-account {
-            background: none;
-            border: none;
-            color: #999;
-            cursor: pointer;
-            font-size: 1.2rem;
-        }
-
-        .account-card .remove-account:hover {
-            color: var(--error, #dc3545);
-        }
-
-        .account-status {
-            padding: 0.75rem;
-            border-radius: 6px;
-            margin-bottom: 1rem;
-            display: none;
-        }
-
-        .account-status.success {
-            display: block;
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .account-status.error {
-            display: block;
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        @media (max-width: 600px) {
-            .account-form {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Loading Overlay */
         .setup-loading {
             position: fixed;
             top: 0;
@@ -643,7 +573,6 @@
     </style>
 </head>
 <body>
-    <!-- Loading Overlay -->
     <div class="setup-loading" id="setupLoading">
         <div class="spinner"></div>
         <p>Setting up your timetable...</p>
@@ -655,7 +584,6 @@
             <p>Let's get your timetable configured in a few simple steps</p>
         </div>
 
-        <!-- Progress Steps -->
         <div class="progress-steps">
             <div class="progress-step active" data-step="1">
                 <div class="step-circle">1</div>
@@ -663,27 +591,22 @@
             </div>
             <div class="progress-step" data-step="2">
                 <div class="step-circle">2</div>
-                <span class="step-label">School</span>
+                <span class="step-label">Classes</span>
             </div>
             <div class="progress-step" data-step="3">
                 <div class="step-circle">3</div>
-                <span class="step-label">Classes</span>
+                <span class="step-label">People</span>
             </div>
             <div class="progress-step" data-step="4">
                 <div class="step-circle">4</div>
-                <span class="step-label">People</span>
+                <span class="step-label">Time Slots</span>
             </div>
             <div class="progress-step" data-step="5">
                 <div class="step-circle">5</div>
-                <span class="step-label">Time Slots</span>
-            </div>
-            <div class="progress-step" data-step="6">
-                <div class="step-circle">6</div>
                 <span class="step-label">Review</span>
             </div>
         </div>
 
-        <!-- Wizard Card -->
         <div class="wizard-card">
             <!-- Step 1: Welcome -->
             <div class="wizard-step active" data-step="1">
@@ -723,59 +646,8 @@
                 </div>
             </div>
 
-            <!-- Step 2: School & Accounts -->
+            <!-- Step 2: Classes -->
             <div class="wizard-step" data-step="2">
-                <h2>School Setup</h2>
-                <p class="step-description">Configure your school identifier and create user accounts.</p>
-
-                <div class="wizard-content">
-                    <div class="school-input-section">
-                        <label for="schoolIdInput">School ID</label>
-                        <input type="text" id="schoolIdInput" placeholder="e.g., greenwood-high, st-marys-2024">
-                        <p class="hint">This unique ID will identify your school's timetable. Use lowercase letters, numbers, and hyphens only.</p>
-                    </div>
-
-                    <h4 style="margin-bottom: 0.75rem;">Create Additional Accounts (Optional)</h4>
-                    <p style="color: #666; margin-bottom: 1rem; font-size: 0.9rem;">Add accounts for other staff members who need access to this timetable.</p>
-
-                    <div class="account-status" id="accountStatus"></div>
-
-                    <div class="account-form">
-                        <div class="form-group">
-                            <label for="accountEmail">Email</label>
-                            <input type="email" id="accountEmail" placeholder="user@school.edu">
-                        </div>
-                        <div class="form-group">
-                            <label for="accountPassword">Temporary Password</label>
-                            <input type="text" id="accountPassword" placeholder="Min 8 characters">
-                        </div>
-                        <div class="form-group">
-                            <label for="accountName">Full Name</label>
-                            <input type="text" id="accountName" placeholder="John Smith">
-                        </div>
-                        <div class="form-group">
-                            <label for="accountRole">Role</label>
-                            <select id="accountRole" style="padding: 0.65rem; border: 1px solid #ddd; border-radius: 6px;">
-                                <option value="admin">Admin (Full Access)</option>
-                                <option value="viewer">Viewer (Read Only)</option>
-                            </select>
-                        </div>
-                        <button type="button" class="add-account-btn" onclick="createAccount()">+ Create Account</button>
-                    </div>
-
-                    <div class="accounts-list" id="accountsList">
-                        <div class="empty-hint">No additional accounts created yet.</div>
-                    </div>
-                </div>
-
-                <div class="wizard-nav">
-                    <button class="btn-back" onclick="prevStep()">Back</button>
-                    <button class="btn-next" onclick="nextStep()" id="schoolNextBtn">Next</button>
-                </div>
-            </div>
-
-            <!-- Step 3: Classes -->
-            <div class="wizard-step" data-step="3">
                 <h2>Add Your Classes</h2>
                 <p class="step-description">Enter the classes or activities that will appear in your timetable. Each class gets its own color.</p>
 
@@ -797,8 +669,8 @@
                 </div>
             </div>
 
-            <!-- Step 4: People -->
-            <div class="wizard-step" data-step="4">
+            <!-- Step 3: People -->
+            <div class="wizard-step" data-step="3">
                 <h2>Add Your People</h2>
                 <p class="step-description">Enter the names of staff members who will be assigned to classes.</p>
 
@@ -819,23 +691,23 @@
                 </div>
             </div>
 
-            <!-- Step 5: Time Slots -->
-            <div class="wizard-step" data-step="5">
+            <!-- Step 4: Time Slots -->
+            <div class="wizard-step" data-step="4">
                 <h2>Configure Time Slots</h2>
                 <p class="step-description">Set up the time periods for your timetable. Choose a template or create custom slots.</p>
 
                 <div class="wizard-content">
                     <h4 style="margin-bottom: 0.75rem;">Quick Templates</h4>
                     <div class="templates-grid">
-                        <div class="template-card" onclick="applyTemplate('school')">
+                        <div class="template-card" onclick="applyTemplate('school', event)">
                             <h4>School Day</h4>
-                            <p>8:00 AM - 3:00 PM (6 periods)</p>
+                            <p>8:00 AM - 3:30 PM (with recess &amp; lunch)</p>
                         </div>
-                        <div class="template-card" onclick="applyTemplate('halfday')">
+                        <div class="template-card" onclick="applyTemplate('halfday', event)">
                             <h4>Half Day</h4>
                             <p>9:00 AM - 12:00 PM (3 periods)</p>
                         </div>
-                        <div class="template-card" onclick="applyTemplate('custom')">
+                        <div class="template-card" onclick="applyTemplate('custom', event)">
                             <h4>Custom</h4>
                             <p>Create your own schedule</p>
                         </div>
@@ -854,24 +726,16 @@
                 </div>
             </div>
 
-            <!-- Step 6: Review -->
-            <div class="wizard-step" data-step="6">
+            <!-- Step 5: Review -->
+            <div class="wizard-step" data-step="5">
                 <h2>Review Your Setup</h2>
                 <p class="step-description">Check everything looks correct before we create your timetable.</p>
 
                 <div class="wizard-content">
                     <div class="review-section">
                         <h4>
-                            School ID
-                            <button class="edit-btn" onclick="goToStep(2)">Edit</button>
-                        </h4>
-                        <div class="review-list" id="reviewSchool"></div>
-                    </div>
-
-                    <div class="review-section">
-                        <h4>
                             Classes (<span id="reviewClassCount">0</span>)
-                            <button class="edit-btn" onclick="goToStep(3)">Edit</button>
+                            <button class="edit-btn" onclick="goToStep(2)">Edit</button>
                         </h4>
                         <div class="review-list" id="reviewClasses"></div>
                     </div>
@@ -879,7 +743,7 @@
                     <div class="review-section">
                         <h4>
                             People (<span id="reviewPeopleCount">0</span>)
-                            <button class="edit-btn" onclick="goToStep(4)">Edit</button>
+                            <button class="edit-btn" onclick="goToStep(3)">Edit</button>
                         </h4>
                         <div class="review-list" id="reviewPeople"></div>
                     </div>
@@ -887,17 +751,9 @@
                     <div class="review-section">
                         <h4>
                             Time Slots (<span id="reviewSlotsCount">0</span>)
-                            <button class="edit-btn" onclick="goToStep(5)">Edit</button>
+                            <button class="edit-btn" onclick="goToStep(4)">Edit</button>
                         </h4>
                         <div class="review-list" id="reviewSlots"></div>
-                    </div>
-
-                    <div class="review-section">
-                        <h4>
-                            Accounts Created (<span id="reviewAccountCount">0</span>)
-                            <button class="edit-btn" onclick="goToStep(2)">Edit</button>
-                        </h4>
-                        <div class="review-list" id="reviewAccounts"></div>
                     </div>
                 </div>
 
@@ -909,10 +765,6 @@
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="js/aws-config.js"></script>
-    <script src="js/aws-auth.js"></script>
-    <script src="js/aws-api.js"></script>
     <script src="js/shared.js"></script>
     <script src="js/setup.js"></script>
 </body>
