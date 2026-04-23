@@ -801,6 +801,12 @@ function autoSave() {
   }
 }
 
+function resetAndSetup() {
+  if (!confirm("Reset and go back to setup? All timetable data will be deleted.")) return;
+  localStorage.removeItem(STORAGE_KEYS.timetable);
+  window.location.href = "setup.html";
+}
+
 function loadFromStorage() {
   const data = loadTimetable();
   if (!data) return;
