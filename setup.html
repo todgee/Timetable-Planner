@@ -503,6 +503,63 @@
             color: #666;
         }
 
+        .welcome-import {
+            margin-top: 2.5rem;
+            text-align: center;
+        }
+
+        .welcome-import-divider {
+            position: relative;
+            margin: 0 0 1.25rem;
+            color: #999;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .welcome-import-divider::before,
+        .welcome-import-divider::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: calc(50% - 2rem);
+            height: 1px;
+            background: #e0e0e0;
+        }
+
+        .welcome-import-divider::before { left: 0; }
+        .welcome-import-divider::after { right: 0; }
+
+        .welcome-import-text {
+            margin: 0 0 0.75rem;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        .btn-import-backup {
+            display: inline-block;
+            padding: 0.65rem 1.5rem;
+            border: 1px solid var(--primary);
+            border-radius: 6px;
+            color: var(--primary);
+            background: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-import-backup:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .setup-import-error {
+            margin-top: 0.75rem;
+            min-height: 1.25rem;
+            color: var(--error, #dc3545);
+            font-size: 0.85rem;
+        }
+
         .empty-hint {
             text-align: center;
             padding: 2rem;
@@ -637,6 +694,16 @@
                                 <p>Configure your daily schedule periods</p>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="welcome-import">
+                        <div class="welcome-import-divider"><span>or</span></div>
+                        <p class="welcome-import-text">Already have a backup? Skip setup by importing it.</p>
+                        <label class="btn-import-backup">
+                            Import Backup File
+                            <input type="file" accept=".json" onchange="importBackupFromSetup(event)" style="display: none">
+                        </label>
+                        <div id="setupImportError" class="setup-import-error" role="alert"></div>
                     </div>
                 </div>
 

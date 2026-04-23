@@ -387,6 +387,57 @@ function finishSetup() {
 }
 
 // ============================================
+// Import backup during setup (skip the wizard)
+// ============================================
+function importBackupFromSetup(event) {
+    const input = event.target;
+    const file = input.files[0];
+    const errorEl = document.getElementById('setupImportError');
+    if (errorEl) errorEl.textContent = '';
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        let parsed;
+        try {
+            parsed = parseTimetableBackup(e.target.result);
+        } catch (err) {
+            if (errorEl) errorEl.textContent = `Import failed: ${err.message}`;
+            input.value = '';
+            return;
+        }
+
+        const loadingEl = document.getElementById('setupLoading');
+        if (loadingEl) {
+            loadingEl.querySelector('p').textContent = 'Importing backup…';
+            loadingEl.classList.add('active');
+        }
+
+        try {
+            saveTimetable({
+                setupComplete: true,
+                peopleList: parsed.peopleList,
+                classList: parsed.classList,
+                classColors: parsed.classColors,
+                assignments: parsed.assignments,
+                timeSlots: parsed.timeSlots,
+            });
+            if (loadingEl) loadingEl.querySelector('p').textContent = 'Backup imported! Redirecting…';
+            setTimeout(() => { window.location.href = 'admin.html'; }, 600);
+        } catch (err) {
+            if (loadingEl) loadingEl.classList.remove('active');
+            if (errorEl) errorEl.textContent = `Import failed: ${err.message}`;
+            input.value = '';
+        }
+    };
+    reader.onerror = () => {
+        if (errorEl) errorEl.textContent = 'Could not read the selected file.';
+        input.value = '';
+    };
+    reader.readAsText(file);
+}
+
+// ============================================
 // Initialize
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {

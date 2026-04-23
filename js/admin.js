@@ -758,83 +758,69 @@ function updateCounters() {
 }
 
 // ============================================
-// Save & Load Project
+// Backup Export / Import
 // ============================================
-function saveProject() {
-  const projectData = {
-    version: "1.0",
-    savedDate: new Date().toISOString(),
-    peopleList: peopleList,
-    classList: classList,
-    classColors: classColors,
-    assignments: assignments,
-    timeSlots: timeSlots,
-  };
-
-  const jsonString = JSON.stringify(projectData, null, 2);
-  const blob = new Blob([jsonString], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `Timetable_Project_${new Date().toISOString().split("T")[0]}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-
-  showAutoSaveIndicator("Project saved!");
+function exportTimetableBackup() {
+  downloadTimetableBackup({
+    peopleList,
+    classList,
+    classColors,
+    assignments,
+    timeSlots,
+  });
+  showAutoSaveIndicator("Backup downloaded");
 }
 
-function loadProject(event) {
+function importTimetableBackup(event) {
   const file = event.target.files[0];
   if (!file) return;
 
   const reader = new FileReader();
   reader.onload = function (e) {
+    let parsed;
     try {
-      const projectData = JSON.parse(e.target.result);
-
-      if (!projectData.version) {
-        alert("Invalid project file");
-        return;
-      }
-
-      if (
-        !confirm(
-          "Loading this project will replace your current work. Continue?"
-        )
-      ) {
-        return;
-      }
-
-      peopleList = projectData.peopleList || [];
-      classList = projectData.classList || [];
-      classColors = projectData.classColors || {};
-      assignments = projectData.assignments || {};
-      timeSlots = (projectData.timeSlots || []).map((s) => ({
-        start: s.start,
-        end: s.end,
-        type: s.type || "class",
-      }));
-      colorIndex = classList.length;
-
-      updatePeopleList();
-      updateClassList();
-      updateModalSelects();
-
-      if (timeSlots.length > 0) {
-        document.getElementById("daySelector").style.display = "flex";
-        document.getElementById("timetableWrapper").style.display = "block";
-        document.getElementById("editTimeSlotsBtn").style.display =
-          "inline-block";
-        document.getElementById("countersSection").style.display = "block";
-        renderTimetable();
-        updateCounters();
-      }
-
-      alert("Project loaded successfully!");
-      autoSave();
+      parsed = parseTimetableBackup(e.target.result);
     } catch (error) {
-      alert("Error loading project file: " + error.message);
+      showNotification(`Import failed: ${error.message}`, true);
+      return;
     }
+
+    if (
+      !confirm(
+        "Importing this backup will replace your current timetable. Continue?"
+      )
+    ) {
+      return;
+    }
+
+    peopleList = parsed.peopleList;
+    classList = parsed.classList;
+    classColors = parsed.classColors;
+    assignments = parsed.assignments;
+    timeSlots = parsed.timeSlots;
+    colorIndex = classList.length;
+
+    clampAssignmentDurations();
+
+    updatePeopleList();
+    updateClassList();
+    updateModalSelects();
+
+    if (timeSlots.length > 0) {
+      document.getElementById("daySelector").style.display = "flex";
+      document.getElementById("timetableWrapper").style.display = "block";
+      document.getElementById("editTimeSlotsBtn").style.display =
+        "inline-block";
+      document.getElementById("countersSection").style.display = "block";
+      renderTimetable();
+      updateCounters();
+    }
+
+    autoSave();
+    showNotification("Backup imported successfully");
+  };
+  reader.onerror = function () {
+    showNotification("Could not read file", true);
   };
   reader.readAsText(file);
 

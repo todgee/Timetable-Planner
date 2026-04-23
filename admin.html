@@ -149,14 +149,14 @@
             <div class="action-group">
               <span class="action-group-label">Data Management</span>
               <button class="btn btn-primary btn-icon" onclick="exportSchedule()">
-                Export Schedule
+                Download Schedule
               </button>
-              <button class="btn btn-secondary btn-icon" onclick="saveProject()">
-                Save Project
+              <button class="btn btn-secondary btn-icon" onclick="exportTimetableBackup()" title="Download a JSON backup of your entire timetable">
+                Export Backup
               </button>
-              <label class="btn btn-secondary btn-icon" style="cursor: pointer; text-align: center">
-                Load Project
-                <input type="file" accept=".json" onchange="loadProject(event)" style="display: none" />
+              <label class="btn btn-secondary btn-icon" style="cursor: pointer; text-align: center" title="Replace the current timetable with a backup file">
+                Import Backup
+                <input type="file" accept=".json" onchange="importTimetableBackup(event)" style="display: none" />
               </label>
             </div>
 

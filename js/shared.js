@@ -168,6 +168,92 @@ function hasTimetable() {
      (data.classList && data.classList.length > 0)));
 }
 
+// ============================================
+// Backup import/export
+// ============================================
+const SUPPORTED_BACKUP_VERSIONS = ['1.0'];
+
+function parseTimetableBackup(jsonText) {
+  let raw;
+  try {
+    raw = JSON.parse(jsonText);
+  } catch (e) {
+    throw new Error('File is not valid JSON.');
+  }
+
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+    throw new Error("File doesn't look like a timetable backup.");
+  }
+
+  if (!raw.version) {
+    throw new Error('Missing "version" field — this may not be a timetable backup.');
+  }
+
+  if (!SUPPORTED_BACKUP_VERSIONS.includes(raw.version)) {
+    throw new Error(
+      `Backup version "${raw.version}" is not supported by this app ` +
+      `(supported: ${SUPPORTED_BACKUP_VERSIONS.join(', ')}).`
+    );
+  }
+
+  const requiredShape = {
+    peopleList: Array.isArray,
+    classList: Array.isArray,
+    classColors: (v) => v && typeof v === 'object' && !Array.isArray(v),
+    timeSlots: Array.isArray,
+  };
+  for (const [key, check] of Object.entries(requiredShape)) {
+    if (!check(raw[key])) {
+      throw new Error(`Backup is missing or has an invalid "${key}" field.`);
+    }
+  }
+
+  const assignments = raw.assignments && typeof raw.assignments === 'object'
+    ? raw.assignments : {};
+  const normalizedAssignments = {};
+  days.forEach((day) => {
+    normalizedAssignments[day] = assignments[day] && typeof assignments[day] === 'object'
+      ? assignments[day] : {};
+  });
+
+  return {
+    version: raw.version,
+    savedDate: raw.savedDate || null,
+    peopleList: raw.peopleList.slice(),
+    classList: raw.classList.slice(),
+    classColors: { ...raw.classColors },
+    assignments: normalizedAssignments,
+    timeSlots: raw.timeSlots.map((s) => ({
+      start: s && s.start,
+      end: s && s.end,
+      type: (s && s.type) || 'class',
+    })),
+  };
+}
+
+function buildTimetableBackup(state) {
+  return {
+    version: '1.0',
+    savedDate: new Date().toISOString(),
+    peopleList: state.peopleList || [],
+    classList: state.classList || [],
+    classColors: state.classColors || {},
+    assignments: state.assignments || {},
+    timeSlots: state.timeSlots || [],
+  };
+}
+
+function downloadTimetableBackup(state) {
+  const payload = buildTimetableBackup(state);
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Timetable_Backup_${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 function initializeEmptyTimetable() {
   if (!loadTimetable()) {
     saveTimetable({
