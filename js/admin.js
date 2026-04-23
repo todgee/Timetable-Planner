@@ -21,6 +21,21 @@ let currentEditCell = null;
 
 const daysArray = days;
 
+const SLOT_TYPE_LABELS = {
+  class: "Class",
+  recess: "Recess",
+  lunch: "Lunch",
+  break: "Break",
+};
+
+function slotType(slot) {
+  return (slot && slot.type) || "class";
+}
+
+function isBreakSlot(slot) {
+  return slotType(slot) !== "class";
+}
+
 // ============================================
 // Bootstrap: load from localStorage, or send user to setup
 // ============================================
@@ -351,6 +366,19 @@ function openEditTimeSlots() {
       updateTimeSlot(index, "end", this.value);
     };
 
+    const typeSelect = document.createElement("select");
+    typeSelect.className = "slot-type-select";
+    ["class", "recess", "lunch", "break"].forEach((t) => {
+      const opt = document.createElement("option");
+      opt.value = t;
+      opt.textContent = SLOT_TYPE_LABELS[t];
+      if (slotType(slot) === t) opt.selected = true;
+      typeSelect.appendChild(opt);
+    });
+    typeSelect.onchange = function () {
+      updateTimeSlot(index, "type", this.value);
+    };
+
     const removeBtn = document.createElement("button");
     removeBtn.className = "btn btn-secondary btn-small delete-btn";
     removeBtn.textContent = "Remove";
@@ -360,6 +388,7 @@ function openEditTimeSlots() {
 
     itemDiv.appendChild(startInput);
     itemDiv.appendChild(endInput);
+    itemDiv.appendChild(typeSelect);
     itemDiv.appendChild(removeBtn);
     fragment.appendChild(itemDiv);
   });
@@ -379,7 +408,7 @@ function addNewTimeSlot() {
   const newStart = lastSlot ? lastSlot.end : "08:00";
   const newEnd = minutesToTime(timeToMinutes(newStart) + 60);
 
-  timeSlots.push({ start: newStart, end: newEnd });
+  timeSlots.push({ start: newStart, end: newEnd, type: "class" });
   openEditTimeSlots();
 }
 
@@ -433,14 +462,14 @@ function renderTimetable() {
 
   let html = '<div style="display: inline-block; min-width: 100%;">';
   html += `<div class="day-title ${currentDay}">${currentDay.charAt(0).toUpperCase() + currentDay.slice(1)}</div>`;
-  html += '<div class="timetable">';
+  html += '<table class="timetable"><tbody>';
 
-  html += '<div class="timetable-header-row">';
-  html += "<div>Time</div>";
+  html += '<tr class="timetable-header-row">';
+  html += "<th>Time</th>";
   peopleList.forEach((name) => {
-    html += `<div>${name}</div>`;
+    html += `<th>${escapeHtml(name)}</th>`;
   });
-  html += "</div>";
+  html += "</tr>";
 
   const validTimeSlots = timeSlots.filter(
     (slot) =>
@@ -451,9 +480,22 @@ function renderTimetable() {
       typeof slot.end === "string"
   );
 
+  const personCount = peopleList.length || 1;
+
   validTimeSlots.forEach((slot) => {
-    html += '<div class="timetable-row">';
-    html += `<div class="time-cell"><div class="time-range">${formatTime12Hour(slot.start)}<br>${formatTime12Hour(slot.end)}</div></div>`;
+    const type = slotType(slot);
+
+    if (type !== "class") {
+      const label = SLOT_TYPE_LABELS[type] || "Break";
+      html += `<tr class="timetable-row break-row break-row--${type}">`;
+      html += `<td class="time-cell"><div class="time-range">${formatTime12Hour(slot.start)}<br>${formatTime12Hour(slot.end)}</div></td>`;
+      html += `<td class="break-cell" colspan="${personCount}">${label}</td>`;
+      html += "</tr>";
+      return;
+    }
+
+    html += '<tr class="timetable-row">';
+    html += `<td class="time-cell"><div class="time-range">${formatTime12Hour(slot.start)}<br>${formatTime12Hour(slot.end)}</div></td>`;
 
     peopleList.forEach((person) => {
       const cellKey = `${slot.start}-${person}`;
@@ -463,30 +505,41 @@ function renderTimetable() {
       const bgColor = hasContent ? classColors[cellData.class] : "";
       const style = hasContent ? `style="background: ${bgColor};"` : "";
 
-      const clickHandler = `onclick="editCell('${slot.start}', '${person.replace(/'/g, "\\'")}')"`;
+      const safePerson = person.replace(/'/g, "\\'");
+      const clickHandler = `onclick="editCell('${slot.start}', '${safePerson}')"`;
 
-      html += `<div class="roster-cell ${hasContent ? "has-content" : ""}" ${style} ${clickHandler}>`;
+      html += `<td class="roster-cell ${hasContent ? "has-content" : ""}" ${style} ${clickHandler}>`;
 
       if (hasContent) {
-        html += `<button class="remove-btn-cell" onclick="event.stopPropagation(); removeCell('${slot.start}', '${person.replace(/'/g, "\\'")}')">×</button>`;
+        html += `<button class="remove-btn-cell" onclick="event.stopPropagation(); removeCell('${slot.start}', '${safePerson}')">×</button>`;
         html += `<div class="cell-content">`;
-        html += `<div class="assignment-class">${cellData.class}</div>`;
+        html += `<div class="assignment-class">${escapeHtml(cellData.class)}</div>`;
         html += `<div class="assignment-duration">${cellData.duration} min</div>`;
         if (cellData.notes) {
-          html += `<div class="assignment-notes">${cellData.notes}</div>`;
+          html += `<div class="assignment-notes">${escapeHtml(cellData.notes)}</div>`;
         }
         html += `</div>`;
       }
 
-      html += "</div>";
+      html += "</td>";
     });
 
-    html += "</div>";
+    html += "</tr>";
   });
 
-  html += "</div>";
+  html += "</tbody></table>";
   html += "</div>";
   container.innerHTML = html;
+}
+
+function escapeHtml(str) {
+  if (str == null) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 function switchDay(day) {
@@ -699,7 +752,11 @@ function loadProject(event) {
       classList = projectData.classList || [];
       classColors = projectData.classColors || {};
       assignments = projectData.assignments || {};
-      timeSlots = projectData.timeSlots || [];
+      timeSlots = (projectData.timeSlots || []).map((s) => ({
+        start: s.start,
+        end: s.end,
+        type: s.type || "class",
+      }));
       colorIndex = classList.length;
 
       updatePeopleList();
@@ -758,7 +815,11 @@ function loadFromStorage() {
     thursday: data.assignments?.thursday || {},
     friday: data.assignments?.friday || {},
   };
-  timeSlots = data.timeSlots || [];
+  timeSlots = (data.timeSlots || []).map((s) => ({
+    start: s.start,
+    end: s.end,
+    type: s.type || "class",
+  }));
   colorIndex = classList.length;
 
   updatePeopleList();
@@ -821,6 +882,16 @@ function exportToExcel() {
       const row = [
         `${formatTime12Hour(slot.start)} - ${formatTime12Hour(slot.end)}`,
       ];
+
+      const type = slotType(slot);
+      if (type !== "class") {
+        const label = SLOT_TYPE_LABELS[type] || "Break";
+        for (let i = 0; i < peopleList.length; i++) {
+          row.push(i === 0 ? label : "");
+        }
+        sheetData.push(row);
+        return;
+      }
 
       peopleList.forEach((person) => {
         const cellKey = `${slot.start}-${person}`;
@@ -892,10 +963,19 @@ async function exportToPDF() {
 
     const tableData = [];
     timeSlots.forEach((slot) => {
-      const row = [
-        `${formatTime12Hour(slot.start)}-${formatTime12Hour(slot.end)}`,
-      ];
+      const timeLabel = `${formatTime12Hour(slot.start)}-${formatTime12Hour(slot.end)}`;
+      const type = slotType(slot);
 
+      if (type !== "class") {
+        const label = SLOT_TYPE_LABELS[type] || "Break";
+        tableData.push([
+          timeLabel,
+          { content: label, colSpan: peopleList.length, styles: { halign: "center", fontStyle: "italic", fillColor: [240, 230, 215] } },
+        ]);
+        return;
+      }
+
+      const row = [timeLabel];
       peopleList.forEach((person) => {
         const cellKey = `${slot.start}-${person}`;
         const data = assignments[day]?.[cellKey];

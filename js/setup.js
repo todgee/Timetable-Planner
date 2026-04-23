@@ -8,7 +8,14 @@ const totalSteps = 5;
 const setupData = {
     classes: [],     // { name, color }
     people: [],      // string[]
-    timeSlots: []    // { start, end }
+    timeSlots: []    // { start, end, type }  type: 'class' | 'recess' | 'lunch' | 'break'
+};
+
+const SLOT_TYPE_LABELS = {
+    class: 'Class',
+    recess: 'Recess',
+    lunch: 'Lunch',
+    break: 'Break'
 };
 
 const classColorPalette = [
@@ -216,24 +223,32 @@ function applyTemplate(template, event) {
     switch (template) {
         case 'school':
             setupData.timeSlots = [
-                { start: '08:00', end: '09:00' },
-                { start: '09:00', end: '10:00' },
-                { start: '10:00', end: '11:00' },
-                { start: '11:00', end: '12:00' },
-                { start: '12:00', end: '13:00' },
-                { start: '13:00', end: '14:00' },
-                { start: '14:00', end: '15:00' }
+                { start: '08:00', end: '08:45', type: 'class' },
+                { start: '09:00', end: '09:40', type: 'class' },
+                { start: '09:40', end: '10:20', type: 'class' },
+                { start: '10:20', end: '11:00', type: 'class' },
+                { start: '11:00', end: '11:15', type: 'recess' },
+                { start: '11:15', end: '11:30', type: 'recess' },
+                { start: '11:30', end: '12:10', type: 'class' },
+                { start: '12:10', end: '12:50', type: 'class' },
+                { start: '12:50', end: '13:00', type: 'break' },
+                { start: '13:00', end: '13:15', type: 'lunch' },
+                { start: '13:15', end: '13:30', type: 'lunch' },
+                { start: '13:30', end: '14:10', type: 'class' },
+                { start: '14:10', end: '14:50', type: 'class' },
+                { start: '14:50', end: '15:00', type: 'break' },
+                { start: '15:00', end: '15:30', type: 'class' }
             ];
             break;
         case 'halfday':
             setupData.timeSlots = [
-                { start: '09:00', end: '10:00' },
-                { start: '10:00', end: '11:00' },
-                { start: '11:00', end: '12:00' }
+                { start: '09:00', end: '10:00', type: 'class' },
+                { start: '10:00', end: '11:00', type: 'class' },
+                { start: '11:00', end: '12:00', type: 'class' }
             ];
             break;
         case 'custom':
-            setupData.timeSlots = [{ start: '09:00', end: '10:00' }];
+            setupData.timeSlots = [{ start: '09:00', end: '10:00', type: 'class' }];
             break;
     }
 
@@ -253,7 +268,7 @@ function addTimeSlot() {
         endTime = `${endHours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
     }
 
-    setupData.timeSlots.push({ start: startTime, end: endTime });
+    setupData.timeSlots.push({ start: startTime, end: endTime, type: 'class' });
     renderTimeSlots();
     updateButtonStates();
 }
@@ -276,15 +291,24 @@ function renderTimeSlots() {
         return;
     }
 
-    container.innerHTML = setupData.timeSlots.map((slot, index) => `
+    container.innerHTML = setupData.timeSlots.map((slot, index) => {
+        const type = slot.type || 'class';
+        return `
         <div class="time-slot-row">
             <span>Period ${index + 1}:</span>
             <input type="time" value="${slot.start}" onchange="updateTimeSlot(${index}, 'start', this.value)">
             <span>to</span>
             <input type="time" value="${slot.end}" onchange="updateTimeSlot(${index}, 'end', this.value)">
+            <select onchange="updateTimeSlot(${index}, 'type', this.value)" class="slot-type-select">
+                <option value="class" ${type === 'class' ? 'selected' : ''}>Class</option>
+                <option value="recess" ${type === 'recess' ? 'selected' : ''}>Recess</option>
+                <option value="lunch" ${type === 'lunch' ? 'selected' : ''}>Lunch</option>
+                <option value="break" ${type === 'break' ? 'selected' : ''}>Break</option>
+            </select>
             <button class="remove-slot" onclick="removeTimeSlot(${index})">&times;</button>
         </div>
-    `).join('');
+    `;
+    }).join('');
 }
 
 // ============================================
@@ -304,11 +328,16 @@ function populateReview() {
     `).join('');
 
     document.getElementById('reviewSlotsCount').textContent = setupData.timeSlots.length;
-    document.getElementById('reviewSlots').innerHTML = setupData.timeSlots.map((slot, index) => `
-        <span class="review-item">
-            Period ${index + 1}: ${formatTime12Hour(slot.start)} - ${formatTime12Hour(slot.end)}
+    document.getElementById('reviewSlots').innerHTML = setupData.timeSlots.map((slot, index) => {
+        const type = slot.type || 'class';
+        const label = SLOT_TYPE_LABELS[type] || 'Class';
+        const prefix = type === 'class' ? `Period ${index + 1}` : label;
+        return `
+        <span class="review-item slot-type-${type}">
+            ${prefix}: ${formatTime12Hour(slot.start)} - ${formatTime12Hour(slot.end)}
         </span>
-    `).join('');
+    `;
+    }).join('');
 }
 
 // ============================================
