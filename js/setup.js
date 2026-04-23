@@ -328,14 +328,24 @@ function populateReview() {
     `).join('');
 
     document.getElementById('reviewSlotsCount').textContent = setupData.timeSlots.length;
-    document.getElementById('reviewSlots').innerHTML = setupData.timeSlots.map((slot, index) => {
+    let periodIndex = 0;
+    document.getElementById('reviewSlots').innerHTML = setupData.timeSlots.map(slot => {
         const type = slot.type || 'class';
         const label = SLOT_TYPE_LABELS[type] || 'Class';
-        const prefix = type === 'class' ? `Period ${index + 1}` : label;
+        let prefix;
+        if (type === 'class') {
+            periodIndex++;
+            prefix = `Period ${periodIndex}`;
+        } else {
+            prefix = label;
+        }
+        const durationMin = Math.max(0, timeToMinutes(slot.end) - timeToMinutes(slot.start));
         return `
-        <span class="review-item slot-type-${type}">
-            ${prefix}: ${formatTime12Hour(slot.start)} - ${formatTime12Hour(slot.end)}
-        </span>
+        <div class="review-slot slot-type-${type}">
+            <span class="review-slot-label">${prefix}</span>
+            <span class="review-slot-time">${formatTime12Hour(slot.start)} – ${formatTime12Hour(slot.end)}</span>
+            <span class="review-slot-duration">${durationMin} min</span>
+        </div>
     `;
     }).join('');
 }
