@@ -562,20 +562,50 @@ function editCell(time, person) {
   const cellKey = `${time}-${person}`;
   const currentData = assignments[currentDay][cellKey];
 
+  const slot = timeSlots.find((s) => s.start === time);
+  const periodMinutes = slot
+    ? Math.max(1, timeToMinutes(slot.end) - timeToMinutes(slot.start))
+    : 60;
+
+  populateDurationOptions(periodMinutes);
+
   document.getElementById("modalInfo").textContent =
-    `${currentDay.charAt(0).toUpperCase() + currentDay.slice(1)} - ${formatTime12Hour(time)} - ${person}`;
+    `${currentDay.charAt(0).toUpperCase() + currentDay.slice(1)} - ${formatTime12Hour(time)} - ${person} (period: ${periodMinutes} min)`;
+
+  const durationSelect = document.getElementById("modalDuration");
 
   if (currentData) {
     document.getElementById("modalClass").value = currentData.class;
-    document.getElementById("modalDuration").value = currentData.duration;
+    const capped = Math.min(currentData.duration, periodMinutes);
+    durationSelect.value = String(capped);
     document.getElementById("modalNotes").value = currentData.notes || "";
   } else {
     document.getElementById("modalClass").value = "";
-    document.getElementById("modalDuration").value = 60;
+    durationSelect.value = String(periodMinutes);
     document.getElementById("modalNotes").value = "";
   }
 
   document.getElementById("assignmentModal").classList.add("active");
+}
+
+function populateDurationOptions(periodMinutes) {
+  const candidates = [5, 10, 15, 20, 30, 45, 60, 90, 120];
+  const allowed = candidates.filter((m) => m <= periodMinutes);
+  if (!allowed.includes(periodMinutes)) allowed.push(periodMinutes);
+  allowed.sort((a, b) => a - b);
+
+  const select = document.getElementById("modalDuration");
+  select.innerHTML = allowed
+    .map((m) => {
+      const label =
+        m === periodMinutes
+          ? `${m} minutes (full period)`
+          : m >= 60 && m % 60 === 0
+            ? `${m} minutes (${m / 60} hour${m === 60 ? "" : "s"})`
+            : `${m} minutes`;
+      return `<option value="${m}">${label}</option>`;
+    })
+    .join("");
 }
 
 function closeModal() {
@@ -587,12 +617,20 @@ function confirmAssignment() {
   if (!currentEditCell) return;
 
   const className = document.getElementById("modalClass").value;
-  const duration = parseInt(document.getElementById("modalDuration").value);
+  let duration = parseInt(document.getElementById("modalDuration").value);
   const notes = document.getElementById("modalNotes").value.trim();
 
   if (!className) {
     alert("Please select a class");
     return;
+  }
+
+  const slot = timeSlots.find((s) => s.start === currentEditCell.time);
+  if (slot) {
+    const periodMinutes = Math.max(1, timeToMinutes(slot.end) - timeToMinutes(slot.start));
+    if (!isFinite(duration) || duration <= 0 || duration > periodMinutes) {
+      duration = periodMinutes;
+    }
   }
 
   const cellKey = `${currentEditCell.time}-${currentEditCell.person}`;
