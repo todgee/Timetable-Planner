@@ -1052,6 +1052,336 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 26px rgba(212, 165, 116, 0.5);
         }
+
+        /* ================================================
+           PHASE 3 — POLISH
+           Welcome hero · Template cards · Review sections
+           Loading overlay · Micro-animations · Mobile
+           ================================================ */
+
+        /* --- Welcome step hero ---------------------------------------------- */
+        .welcome-content {
+            padding: 0.75rem 0;
+        }
+
+        .welcome-icon {
+            width: 76px;
+            height: 76px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, rgba(44, 95, 79, 0.55) 0%, rgba(212, 165, 116, 0.35) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .welcome-content h2 {
+            font-size: 2.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-content .step-description {
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 0;
+        }
+
+        .welcome-features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-top: 2rem;
+            text-align: left;
+        }
+
+        .feature-item {
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
+        }
+
+        .feature-item:hover {
+            border-color: rgba(255, 255, 255, 0.16);
+            background: rgba(255, 255, 255, 0.07);
+            transform: translateY(-2px);
+        }
+
+        .feature-icon {
+            font-size: 1.5rem;
+            display: block;
+            margin-bottom: 0.6rem;
+        }
+
+        /* Feature item titles — NOT the wizard-content label style */
+        .feature-item h4 {
+            margin: 0 0 0.3rem;
+            color: rgba(255, 255, 255, 0.88);
+            font-size: 0.88rem;
+            font-weight: 600;
+            font-family: "Work Sans", sans-serif;
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        .feature-item p {
+            margin: 0;
+            font-size: 0.78rem;
+            color: rgba(255, 255, 255, 0.36);
+            line-height: 1.5;
+        }
+
+        /* --- Template cards -------------------------------------------------- */
+        .templates-grid {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .template-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 12px;
+            padding: 1.1rem 1rem;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.25s ease, background 0.25s ease,
+                        transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .template-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(44, 95, 79, 0.14) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.25s ease;
+            pointer-events: none;
+        }
+
+        .template-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .template-card:hover::after {
+            opacity: 1;
+        }
+
+        .template-card.selected {
+            border-color: var(--accent);
+            background: rgba(212, 165, 116, 0.07);
+            box-shadow: 0 0 0 1px var(--accent), 0 8px 24px rgba(212, 165, 116, 0.15);
+        }
+
+        .template-card.selected::after {
+            background: linear-gradient(135deg, rgba(212, 165, 116, 0.1) 0%, transparent 60%);
+            opacity: 1;
+        }
+
+        /* Template card titles — override the wizard-content h4 label style */
+        .template-card h4 {
+            color: rgba(255, 255, 255, 0.88);
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: "Work Sans", sans-serif;
+            text-transform: none;
+            letter-spacing: normal;
+            margin: 0 0 0.3rem;
+        }
+
+        .template-card p {
+            color: rgba(255, 255, 255, 0.36);
+            font-size: 0.78rem;
+            line-height: 1.45;
+        }
+
+        /* --- Review sections ------------------------------------------------- */
+        .review-section {
+            padding: 1rem 1.2rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            margin-bottom: 0.7rem;
+        }
+
+        /* Review section headers — keep label style but make them readable */
+        .review-section h4 {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.32);
+            font-family: "Work Sans", sans-serif;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .review-section .edit-btn {
+            font-size: 0.7rem;
+            color: var(--accent);
+            background: rgba(212, 165, 116, 0.1);
+            border: 1px solid rgba(212, 165, 116, 0.22);
+            border-radius: 5px;
+            padding: 0.15rem 0.55rem;
+            font-family: "Work Sans", sans-serif;
+            cursor: pointer;
+            font-weight: 500;
+            text-transform: none;
+            letter-spacing: normal;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+
+        .review-section .edit-btn:hover {
+            background: rgba(212, 165, 116, 0.2);
+            border-color: var(--accent);
+        }
+
+        .review-item {
+            background: rgba(255, 255, 255, 0.07);
+            border-radius: 100px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.8rem;
+            padding: 0.35rem 0.8rem;
+            font-family: "Work Sans", sans-serif;
+        }
+
+        #reviewSlots {
+            background: transparent;
+            border: none;
+            padding: 0;
+            gap: 0.3rem;
+            max-height: 220px;
+        }
+
+        #reviewSlots::-webkit-scrollbar { width: 4px; }
+        #reviewSlots::-webkit-scrollbar-track { background: transparent; }
+        #reviewSlots::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 2px;
+        }
+
+        .review-slot {
+            background: rgba(255, 255, 255, 0.05);
+            border-left-color: rgba(255, 255, 255, 0.14);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            padding: 0.5rem 0.85rem;
+        }
+
+        .review-slot-label  { color: rgba(255, 255, 255, 0.75); }
+        .review-slot-time   { color: rgba(255, 255, 255, 0.48); }
+        .review-slot-duration { color: rgba(255, 255, 255, 0.28); }
+
+        .review-slot.slot-type-recess {
+            background: rgba(96, 213, 245, 0.07);
+            border-left-color: rgba(96, 213, 245, 0.55);
+        }
+        .review-slot.slot-type-recess .review-slot-label { color: #60d5f5; }
+
+        .review-slot.slot-type-lunch {
+            background: rgba(212, 165, 116, 0.08);
+            border-left-color: var(--accent);
+        }
+        .review-slot.slot-type-lunch .review-slot-label { color: var(--accent); }
+
+        .review-slot.slot-type-break {
+            background: rgba(255, 255, 255, 0.03);
+            border-left-color: rgba(255, 255, 255, 0.18);
+        }
+
+        /* --- Loading overlay ------------------------------------------------- */
+        .setup-loading {
+            background: rgba(12, 24, 18, 0.88);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+        }
+
+        .setup-loading .spinner {
+            width: 44px;
+            height: 44px;
+            border: 3px solid rgba(255, 255, 255, 0.08);
+            border-top-color: var(--accent);
+        }
+
+        .setup-loading p {
+            color: rgba(255, 255, 255, 0.58);
+            font-family: "Work Sans", sans-serif;
+            font-size: 0.95rem;
+            margin-top: 1.25rem;
+        }
+
+        /* --- Micro-animations ----------------------------------------------- */
+        @keyframes stepFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .wizard-step.active {
+            animation: stepFadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes chipPop {
+            from { opacity: 0; transform: scale(0.82); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+
+        .item-tag {
+            animation: chipPop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* --- Mobile ---------------------------------------------------------- */
+        @media (max-width: 640px) {
+            .setup-page {
+                padding: 1.5rem 0.75rem 3rem;
+            }
+
+            .wizard-card {
+                padding: 1.5rem;
+                border-radius: 18px;
+            }
+
+            .welcome-features,
+            .templates-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome-content h2 {
+                font-size: 1.75rem;
+            }
+
+            .wizard-step h2 {
+                font-size: 1.7rem;
+            }
+
+            .step-label {
+                display: none;
+            }
+
+            .wizard-nav {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .wizard-nav button,
+            .wizard-nav > div {
+                width: 100%;
+            }
+
+            .time-slot-row {
+                flex-wrap: wrap;
+                gap: 0.4rem;
+            }
+        }
     </style>
 </head>
 <body>
