@@ -32,6 +32,363 @@
     <!-- Stylesheet -->
     <link rel="stylesheet" href="css/styles.css" />
 
+    <style>
+        /* =====================================================
+           ADMIN PAGE — DARK THEME
+           Mirrors the visual language from setup.html:
+           dark backdrop · glassmorphic panels · same palette
+           ===================================================== */
+
+        /* --- Background & page layer -------------------------------- */
+        body {
+            background: #0c1812;
+        }
+
+        .admin-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .admin-bg::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: -15%;
+            width: 60%;
+            height: 60%;
+            background: radial-gradient(ellipse, rgba(44, 95, 79, 0.3) 0%, transparent 70%);
+            animation: adminOrb1 13s ease-in-out infinite;
+        }
+
+        .admin-bg::after {
+            content: '';
+            position: absolute;
+            bottom: -20%;
+            right: -10%;
+            width: 55%;
+            height: 55%;
+            background: radial-gradient(ellipse, rgba(212, 165, 116, 0.17) 0%, transparent 70%);
+            animation: adminOrb2 16s ease-in-out infinite;
+        }
+
+        @keyframes adminOrb1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50%       { transform: translate(3%, 4%) scale(1.05); }
+        }
+
+        @keyframes adminOrb2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50%       { transform: translate(-3%, -3%) scale(1.04); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* --- Header ------------------------------------------------- */
+        header {
+            border-bottom-color: rgba(255, 255, 255, 0.08);
+        }
+
+        header h1 {
+            color: rgba(255, 255, 255, 0.92);
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.35);
+        }
+
+        #autoSaveIndicator {
+            color: var(--accent) !important;
+        }
+
+        /* --- Timetable header panel --------------------------------- */
+        .timetable-header {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(32px) saturate(1.3);
+            -webkit-backdrop-filter: blur(32px) saturate(1.3);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        }
+
+        .timetable-header-top {
+            border-bottom-color: rgba(255, 255, 255, 0.07);
+        }
+
+        .panel-title {
+            color: rgba(255, 255, 255, 0.88);
+            border-bottom-color: rgba(255, 255, 255, 0.07);
+        }
+
+        .action-group-label {
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        /* --- Day selector ------------------------------------------ */
+        .day-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.55);
+            font-family: "Work Sans", sans-serif;
+        }
+
+        .day-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.22);
+            color: rgba(255, 255, 255, 0.88);
+            transform: translateY(-2px);
+        }
+
+        .day-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 16px rgba(44, 95, 79, 0.4);
+        }
+
+        /* --- View controls ----------------------------------------- */
+        .view-controls-group {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.09);
+            box-shadow: none;
+        }
+
+        .view-control-btn {
+            color: rgba(255, 255, 255, 0.45);
+        }
+
+        .view-control-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.88);
+        }
+
+        .view-control-btn:disabled {
+            color: rgba(255, 255, 255, 0.15);
+            background: transparent;
+        }
+
+        .view-controls-zoom-value {
+            color: rgba(255, 255, 255, 0.65);
+        }
+
+        /* --- Timetable wrapper & table ------------------------------ */
+        .timetable-wrapper {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+        }
+
+        .timetable {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .timetable-row:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .time-cell {
+            background: rgba(255, 255, 255, 0.04);
+            color: rgba(255, 255, 255, 0.65);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .roster-cell {
+            border-color: rgba(255, 255, 255, 0.07);
+        }
+
+        .roster-cell:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* --- Break rows -------------------------------------------- */
+        .break-row--recess .break-cell {
+            background: rgba(96, 213, 245, 0.07);
+            color: #60d5f5;
+        }
+
+        .break-row--lunch .break-cell {
+            background: rgba(212, 165, 116, 0.09);
+            color: var(--accent);
+        }
+
+        .break-row--break .break-cell {
+            background: rgba(255, 255, 255, 0.03);
+            color: rgba(255, 255, 255, 0.28);
+        }
+
+        .break-row .time-cell {
+            color: rgba(255, 255, 255, 0.38);
+        }
+
+        /* --- Counters section --------------------------------------- */
+        .counters-section {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(32px) saturate(1.3);
+            -webkit-backdrop-filter: blur(32px) saturate(1.3);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .counter-tabs {
+            border-bottom-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .counter-tab {
+            color: rgba(255, 255, 255, 0.3);
+            font-family: "Work Sans", sans-serif;
+        }
+
+        .counter-tab:hover {
+            color: rgba(255, 255, 255, 0.65);
+        }
+
+        .counter-tab.active {
+            color: rgba(255, 255, 255, 0.88);
+            border-bottom-color: var(--accent);
+        }
+
+        .counter-item {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .counter-item span {
+            color: rgba(255, 255, 255, 0.72);
+        }
+
+        .counter-value {
+            color: var(--accent);
+        }
+
+        /* --- Modals ------------------------------------------------- */
+        .modal {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            background: rgba(15, 26, 20, 0.94);
+            backdrop-filter: blur(48px) saturate(1.4);
+            -webkit-backdrop-filter: blur(48px) saturate(1.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 32px 80px rgba(0, 0, 0, 0.65),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.07);
+        }
+
+        .modal-title {
+            color: rgba(255, 255, 255, 0.92);
+            font-family: "Crimson Pro", serif;
+        }
+
+        .modal-info {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.55);
+            border-radius: 8px;
+        }
+
+        /* Override inline style="color: var(--primary)" on modal h4s */
+        .modal-content h4 {
+            color: rgba(255, 255, 255, 0.5) !important;
+            font-family: "Work Sans", sans-serif;
+        }
+
+        /* Override inline style="color: var(--text-light)" on modal paragraphs */
+        .modal-content p {
+            color: rgba(255, 255, 255, 0.48) !important;
+        }
+
+        .modal-content label {
+            color: rgba(255, 255, 255, 0.45);
+        }
+
+        .modal-content input,
+        .modal-content select,
+        .modal-content textarea {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(255, 255, 255, 0.12);
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .modal-content input:focus,
+        .modal-content select:focus,
+        .modal-content textarea:focus {
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.15);
+        }
+
+        .modal-content input::placeholder,
+        .modal-content textarea::placeholder {
+            color: rgba(255, 255, 255, 0.22);
+        }
+
+        .modal-content select option {
+            background: #152018;
+            color: white;
+        }
+
+        /* --- List items (People & Classes modals) ------------------- */
+        .list-item {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .list-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.16);
+        }
+
+        .item-name {
+            color: rgba(255, 255, 255, 0.82);
+        }
+
+        .empty-state,
+        .empty-state p {
+            color: rgba(255, 255, 255, 0.22);
+        }
+
+        /* --- Time slot items (Edit Time Slots modal) ---------------- */
+        .time-slot-item {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .slot-type-select {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.72);
+        }
+
+        .slot-type-select option {
+            background: #152018;
+            color: white;
+        }
+
+        /* --- Sync indicator ---------------------------------------- */
+        .sync-indicator {
+            background: rgba(15, 26, 20, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-color: var(--success);
+            color: rgba(255, 255, 255, 0.72);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        /* --- Fullscreen mode adjustments --------------------------- */
+        .timetable-section.timetable-fullscreen {
+            background: #0c1812;
+        }
+    </style>
+
     <!-- Export Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -43,6 +400,9 @@
     <script src="theme-loader.js"></script>
   </head>
   <body>
+    <!-- Animated orb background -->
+    <div class="admin-bg" aria-hidden="true"></div>
+
     <div class="container">
       <header>
         <h1>Universal Timetable Maker</h1>
@@ -162,6 +522,9 @@
 
             <div class="action-group">
               <span class="action-group-label">Settings</span>
+              <a href="view.html" class="btn btn-secondary btn-icon" style="text-decoration: none; text-align: center">
+                View Timetable
+              </a>
               <a href="config.html" class="btn btn-primary btn-icon" style="text-decoration: none; text-align: center">
                 Configuration
               </a>

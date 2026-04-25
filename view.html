@@ -18,11 +18,264 @@
     <!-- Stylesheet -->
     <link rel="stylesheet" href="css/styles.css" />
 
+    <style>
+        /* =====================================================
+           VIEW PAGE — DARK THEME
+           Same visual language as admin.html / setup.html
+           ===================================================== */
+
+        /* --- Background & page layer -------------------------------- */
+        body {
+            background: #0c1812;
+        }
+
+        .view-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .view-bg::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: -15%;
+            width: 60%;
+            height: 60%;
+            background: radial-gradient(ellipse, rgba(44, 95, 79, 0.3) 0%, transparent 70%);
+            animation: viewOrb1 13s ease-in-out infinite;
+        }
+
+        .view-bg::after {
+            content: '';
+            position: absolute;
+            bottom: -20%;
+            right: -10%;
+            width: 55%;
+            height: 55%;
+            background: radial-gradient(ellipse, rgba(212, 165, 116, 0.17) 0%, transparent 70%);
+            animation: viewOrb2 16s ease-in-out infinite;
+        }
+
+        @keyframes viewOrb1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50%       { transform: translate(3%, 4%) scale(1.05); }
+        }
+
+        @keyframes viewOrb2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50%       { transform: translate(-3%, -3%) scale(1.04); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* --- Header ------------------------------------------------- */
+        header {
+            border-bottom-color: rgba(255, 255, 255, 0.08);
+        }
+
+        header h1 {
+            color: rgba(255, 255, 255, 0.92);
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.35);
+        }
+
+        /* --- Timetable header panel --------------------------------- */
+        .timetable-header {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(32px) saturate(1.3);
+            -webkit-backdrop-filter: blur(32px) saturate(1.3);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        }
+
+        .panel-title {
+            color: rgba(255, 255, 255, 0.88);
+        }
+
+        /* --- Day selector ------------------------------------------ */
+        .day-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.55);
+            font-family: "Work Sans", sans-serif;
+        }
+
+        .day-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.22);
+            color: rgba(255, 255, 255, 0.88);
+            transform: translateY(-2px);
+        }
+
+        .day-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 16px rgba(44, 95, 79, 0.4);
+        }
+
+        /* --- View controls ----------------------------------------- */
+        .view-controls-group {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.09);
+            box-shadow: none;
+        }
+
+        .view-control-btn {
+            color: rgba(255, 255, 255, 0.45);
+        }
+
+        .view-control-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.88);
+        }
+
+        .view-control-btn:disabled {
+            color: rgba(255, 255, 255, 0.15);
+            background: transparent;
+        }
+
+        .view-controls-zoom-value {
+            color: rgba(255, 255, 255, 0.65);
+        }
+
+        /* --- Timetable wrapper & table ------------------------------ */
+        .timetable-wrapper {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+        }
+
+        .timetable {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .timetable-row:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .time-cell {
+            background: rgba(255, 255, 255, 0.04);
+            color: rgba(255, 255, 255, 0.65);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .roster-cell {
+            border-color: rgba(255, 255, 255, 0.07);
+            cursor: default;
+        }
+
+        /* --- Break rows -------------------------------------------- */
+        .break-row--recess .break-cell {
+            background: rgba(96, 213, 245, 0.07);
+            color: #60d5f5;
+        }
+
+        .break-row--lunch .break-cell {
+            background: rgba(212, 165, 116, 0.09);
+            color: var(--accent);
+        }
+
+        .break-row--break .break-cell {
+            background: rgba(255, 255, 255, 0.03);
+            color: rgba(255, 255, 255, 0.28);
+        }
+
+        .break-row .time-cell {
+            color: rgba(255, 255, 255, 0.38);
+        }
+
+        /* --- Counters section --------------------------------------- */
+        .counters-section {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(32px) saturate(1.3);
+            -webkit-backdrop-filter: blur(32px) saturate(1.3);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .counter-tabs {
+            border-bottom-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .counter-tab {
+            color: rgba(255, 255, 255, 0.3);
+            font-family: "Work Sans", sans-serif;
+        }
+
+        .counter-tab:hover {
+            color: rgba(255, 255, 255, 0.65);
+        }
+
+        .counter-tab.active {
+            color: rgba(255, 255, 255, 0.88);
+            border-bottom-color: var(--accent);
+        }
+
+        .counter-item {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        /* view.js renders .counter-label (not .counter-class) */
+        .counter-label {
+            color: rgba(255, 255, 255, 0.72);
+            font-weight: 500;
+        }
+
+        .counter-value {
+            color: var(--accent);
+        }
+
+        /* --- Empty state -------------------------------------------- */
+        .empty-state,
+        .empty-state p {
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        /* --- Fullscreen mode --------------------------------------- */
+        .timetable-section.timetable-fullscreen {
+            background: #0c1812;
+        }
+
+        /* --- Print: restore light theme for readability ------------ */
+        @media print {
+            body        { background: white; }
+            .view-bg    { display: none; }
+            .timetable-header,
+            .timetable-wrapper,
+            .counters-section {
+                background: white;
+                border-color: #e0e0e0;
+                box-shadow: none;
+                backdrop-filter: none;
+            }
+            .time-cell  { background: white; color: #2c5f4f; }
+            header h1   { color: #2c5f4f; }
+            .day-btn    { border-color: #ddd; color: #333; }
+            .day-btn.active { background: #2c5f4f; color: white; }
+        }
+    </style>
+
     <!-- Shared utilities -->
     <script src="js/shared.js"></script>
     <script src="theme-loader.js"></script>
   </head>
   <body>
+    <!-- Animated orb background -->
+    <div class="view-bg" aria-hidden="true"></div>
+
     <div class="container">
       <header>
         <h1>Timetable Planner</h1>
