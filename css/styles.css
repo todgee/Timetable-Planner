@@ -616,13 +616,26 @@ input[type="file"]:hover {
   margin: 0;
   padding: 1rem;
   background: var(--bg);
-  overflow: auto;
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
+}
+
+.timetable-section.timetable-fullscreen .timetable-header,
+.timetable-section.timetable-fullscreen .counters-section {
+  display: none;
+}
+
+.timetable-section.timetable-fullscreen .day-selector {
+  margin-bottom: 0;
+}
+
+.timetable-section.timetable-fullscreen .view-controls {
+  margin-bottom: 0;
 }
 
 .timetable-section.timetable-fullscreen .timetable-wrapper {
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 0;
   overflow: auto;
 }
