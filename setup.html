@@ -700,6 +700,358 @@
         .setup-header {
             display: none;
         }
+
+        /* ================================================
+           PHASE 2 — COMPONENTS
+           Stepper · Headings · Inputs · Buttons · Chips
+           Tags · Time rows · Nav · Selects
+           ================================================ */
+
+        /* --- Progress stepper ----------------------------------------------- */
+        .progress-steps {
+            padding: 0 0.5rem;
+        }
+
+        .progress-steps::before {
+            background: rgba(255, 255, 255, 0.08);
+            top: 18px;
+        }
+
+        /* Animated fill line that sits on top of the track */
+        .progress-line-fill {
+            position: absolute;
+            top: 18px;
+            left: calc(10% + 18px);
+            height: 2px;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            z-index: 0;
+            transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 1px;
+        }
+
+        .step-circle {
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.12);
+            color: rgba(255, 255, 255, 0.28);
+            font-family: "Work Sans", sans-serif;
+            font-size: 0.85rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .progress-step.active .step-circle {
+            background: var(--primary);
+            border-color: rgba(212, 165, 116, 0.6);
+            color: white;
+            box-shadow: 0 0 0 4px rgba(44, 95, 79, 0.25), 0 0 20px rgba(44, 95, 79, 0.4);
+        }
+
+        .progress-step.completed .step-circle {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: transparent;
+            font-size: 0;
+            box-shadow: 0 0 12px rgba(212, 165, 116, 0.3);
+        }
+
+        /* Checkmark injected via ::after on completed circles */
+        .progress-step.completed .step-circle::after {
+            content: '✓';
+            font-size: 0.95rem;
+            color: white;
+            font-family: "Work Sans", sans-serif;
+        }
+
+        .step-label {
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.2);
+            transition: color 0.3s ease;
+        }
+
+        .progress-step.active .step-label {
+            color: rgba(255, 255, 255, 0.75);
+            font-weight: 600;
+        }
+
+        .progress-step.completed .step-label {
+            color: var(--accent);
+        }
+
+        /* --- Step headings & descriptions ----------------------------------- */
+        .wizard-step h2 {
+            font-family: "Crimson Pro", serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.92);
+            letter-spacing: -0.02em;
+            margin-bottom: 0.35rem;
+        }
+
+        .wizard-step .step-description {
+            color: rgba(255, 255, 255, 0.42);
+            font-size: 0.93rem;
+            margin-bottom: 1.75rem;
+        }
+
+        /* Sub-labels inside wizard content (e.g. "Quick Templates" heading) */
+        .wizard-content h4 {
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.28);
+            font-family: "Work Sans", sans-serif;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Wizard content scrollbar */
+        .wizard-content::-webkit-scrollbar { width: 5px; }
+        .wizard-content::-webkit-scrollbar-track { background: transparent; }
+        .wizard-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 3px;
+        }
+
+        /* --- Input rows ------------------------------------------------------ */
+        .item-input-row {
+            margin-bottom: 1.25rem;
+        }
+
+        .item-input-row input[type="text"] {
+            flex: 1;
+            padding: 0.875rem 1rem;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.11);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.88);
+            font-family: "Work Sans", sans-serif;
+            transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+            width: auto;
+        }
+
+        .item-input-row input[type="text"]:focus {
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.15);
+        }
+
+        .item-input-row input[type="color"] {
+            width: 50px;
+            height: 50px;
+            padding: 4px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.11);
+            background: rgba(255, 255, 255, 0.06);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .item-input-row button {
+            padding: 0.875rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-family: "Work Sans", sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .item-input-row button:hover {
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(44, 95, 79, 0.4);
+        }
+
+        /* --- Chips / item tags ----------------------------------------------- */
+        .items-list {
+            min-height: 56px;
+        }
+
+        .item-tag {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.11);
+            border-radius: 100px;
+            color: rgba(255, 255, 255, 0.82);
+            font-family: "Work Sans", sans-serif;
+            padding: 0.45rem 0.9rem;
+            font-size: 0.875rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .item-tag:hover {
+            border-color: rgba(255, 255, 255, 0.22);
+        }
+
+        .item-tag .color-dot {
+            width: 10px;
+            height: 10px;
+        }
+
+        .item-tag .remove-item {
+            color: rgba(255, 255, 255, 0.28);
+            font-size: 1.05rem;
+            transition: color 0.15s ease;
+        }
+
+        .item-tag .remove-item:hover {
+            color: #ff6b6b;
+        }
+
+        /* --- Empty hint -------------------------------------------------------- */
+        .empty-hint {
+            color: rgba(255, 255, 255, 0.18);
+            font-style: normal;
+            font-size: 0.875rem;
+        }
+
+        /* --- Time slot rows --------------------------------------------------- */
+        .time-slot-row {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 0.7rem 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .time-slot-row:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .time-slot-row span {
+            color: rgba(255, 255, 255, 0.38);
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        .time-slot-row input[type="time"] {
+            padding: 0.45rem 0.6rem;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 7px;
+            color: rgba(255, 255, 255, 0.85);
+            font-family: "Work Sans", sans-serif;
+            font-size: 0.875rem;
+            width: auto;
+            min-width: 0;
+            transition: border-color 0.2s ease;
+        }
+
+        .time-slot-row input[type="time"]:focus {
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: none;
+        }
+
+        /* type dropdown inside time slot rows */
+        .slot-type-select {
+            padding: 0.45rem 0.6rem;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 7px;
+            color: rgba(255, 255, 255, 0.75);
+            font-family: "Work Sans", sans-serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+            width: auto;
+            transition: border-color 0.2s ease;
+        }
+
+        .slot-type-select option {
+            background: #152018;
+            color: white;
+        }
+
+        .time-slot-row .remove-slot {
+            color: rgba(255, 255, 255, 0.22);
+            font-size: 1.1rem;
+            transition: color 0.15s ease;
+        }
+
+        .time-slot-row .remove-slot:hover {
+            color: #ff6b6b;
+        }
+
+        .add-slot-btn {
+            background: transparent;
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: rgba(255, 255, 255, 0.3);
+            font-family: "Work Sans", sans-serif;
+            font-size: 0.875rem;
+            transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+        }
+
+        .add-slot-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: rgba(212, 165, 116, 0.05);
+        }
+
+        /* --- Wizard nav buttons ---------------------------------------------- */
+        .wizard-nav {
+            border-top: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .wizard-nav button {
+            font-family: "Work Sans", sans-serif;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            border-radius: 10px;
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.45);
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.09);
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border: none;
+            color: white;
+            box-shadow: 0 4px 18px rgba(44, 95, 79, 0.35);
+        }
+
+        .btn-next:hover {
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            transform: translateY(-2px);
+            box-shadow: 0 8px 26px rgba(44, 95, 79, 0.5);
+        }
+
+        .btn-next:disabled {
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.2);
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-finish {
+            background: linear-gradient(135deg, var(--accent), #b8895a);
+            border: none;
+            color: white;
+            box-shadow: 0 4px 18px rgba(212, 165, 116, 0.35);
+        }
+
+        .btn-finish:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 26px rgba(212, 165, 116, 0.5);
+        }
     </style>
 </head>
 <body>
@@ -725,6 +1077,7 @@
         </div>
 
         <div class="progress-steps">
+            <div class="progress-line-fill" id="progressLineFill"></div>
             <div class="progress-step active" data-step="1">
                 <div class="step-circle">1</div>
                 <span class="step-label">Welcome</span>
@@ -908,5 +1261,16 @@
 
     <script src="js/shared.js"></script>
     <script src="js/setup.js"></script>
+    <script>
+        // Animate the progress fill line whenever the step changes
+        (function () {
+            const _orig = setStep;
+            setStep = function (step) {
+                _orig(step);
+                const fill = document.getElementById('progressLineFill');
+                if (fill) fill.style.width = ((step - 1) / 4 * 100) + '%';
+            };
+        })();
+    </script>
 </body>
 </html>
