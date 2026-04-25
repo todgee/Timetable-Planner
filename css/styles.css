@@ -521,6 +521,116 @@ input[type="file"]:hover {
   border-color: var(--primary);
 }
 
+/* View Controls (zoom / scroll / fullscreen) */
+.view-controls {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.view-controls-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.25rem;
+  box-shadow: 0 2px 6px var(--shadow);
+}
+
+.view-control-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.5rem;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--text);
+  font-family: "Work Sans", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.view-control-btn:hover {
+  background: var(--bg);
+  color: var(--primary);
+}
+
+.view-control-btn:active {
+  transform: translateY(1px);
+}
+
+.view-control-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: transparent;
+  color: var(--text-light);
+  transform: none;
+}
+
+.view-controls-zoom-value {
+  min-width: 3.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+  padding: 0 0.25rem;
+}
+
+.fullscreen-icon-exit {
+  display: none;
+}
+
+.timetable-fullscreen .fullscreen-icon-enter {
+  display: none;
+}
+
+.timetable-fullscreen .fullscreen-icon-exit {
+  display: inline;
+}
+
+/* Zoom container — scales the timetable contents only */
+.timetable-zoom {
+  display: block;
+  min-width: 100%;
+  transition: zoom 0.15s ease;
+}
+
+/* Fullscreen mode — pin the timetable section to the viewport */
+.timetable-section.timetable-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  margin: 0;
+  padding: 1rem;
+  background: var(--bg);
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.timetable-section.timetable-fullscreen .timetable-wrapper {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+body.timetable-fullscreen-active {
+  overflow: hidden;
+}
+
 /* Timetable Grid */
 .timetable-wrapper {
   background: var(--surface);
@@ -528,7 +638,8 @@ input[type="file"]:hover {
   padding: 1.5rem;
   box-shadow: 0 4px 20px var(--shadow);
   border: 1px solid var(--border);
-  overflow-x: auto;
+  overflow: auto;
+  scroll-behavior: smooth;
 }
 
 .day-title {
@@ -1570,6 +1681,10 @@ input[type="file"]:hover {
   .day-btn {
     padding: 0.6rem 1rem;
     font-size: 0.85rem;
+  }
+
+  .view-controls {
+    justify-content: center;
   }
 }
 

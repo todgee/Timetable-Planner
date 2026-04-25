@@ -55,11 +55,32 @@
           <button class="day-btn" data-day="friday" onclick="switchDay('friday')">Friday</button>
         </div>
 
+        <!-- View Controls -->
+        <div class="view-controls" id="viewControls">
+          <div class="view-controls-group">
+            <button type="button" class="view-control-btn" id="scrollLeftBtn" title="Scroll left" aria-label="Scroll timetable left">&#x2039;</button>
+            <button type="button" class="view-control-btn" id="scrollRightBtn" title="Scroll right" aria-label="Scroll timetable right">&#x203A;</button>
+          </div>
+          <div class="view-controls-group view-controls-zoom">
+            <button type="button" class="view-control-btn" id="zoomOutBtn" title="Zoom out" aria-label="Zoom out">&minus;</button>
+            <span class="view-controls-zoom-value" id="zoomValue" title="Click to reset zoom">100%</span>
+            <button type="button" class="view-control-btn" id="zoomInBtn" title="Zoom in" aria-label="Zoom in">+</button>
+          </div>
+          <div class="view-controls-group">
+            <button type="button" class="view-control-btn" id="fullscreenBtn" title="Toggle fullscreen" aria-label="Toggle fullscreen">
+              <span class="fullscreen-icon-enter">⛶</span>
+              <span class="fullscreen-icon-exit">✕</span>
+            </button>
+          </div>
+        </div>
+
         <div class="timetable-wrapper" id="timetableWrapper">
-          <div id="timetableContainer">
-            <div class="empty-state" style="padding: 4rem 2rem">
-              <div class="empty-state-icon">📋</div>
-              <p>Loading timetable...</p>
+          <div class="timetable-zoom" id="timetableZoom">
+            <div id="timetableContainer">
+              <div class="empty-state" style="padding: 4rem 2rem">
+                <div class="empty-state-icon">📋</div>
+                <p>Loading timetable...</p>
+              </div>
             </div>
           </div>
         </div>
