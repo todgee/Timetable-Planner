@@ -198,44 +198,151 @@
             color: rgba(255, 255, 255, 0.38);
         }
 
-        /* --- Counters section --------------------------------------- */
-        .counters-section {
-            background: rgba(13, 24, 18, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.09);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-        }
-
-        .counter-tabs {
-            border-bottom-color: rgba(255, 255, 255, 0.08);
-        }
-
-        .counter-tab {
-            color: rgba(255, 255, 255, 0.3);
-            font-family: "Work Sans", sans-serif;
-        }
-
-        .counter-tab:hover {
+        /* --- Filter Staff dropdown --------------------------------- */
+        .filter-staff-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.45rem 0.9rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.05);
             color: rgba(255, 255, 255, 0.65);
-        }
-
-        .counter-tab.active {
-            color: rgba(255, 255, 255, 0.88);
-            border-bottom-color: var(--accent);
-        }
-
-        .counter-item {
-            background: rgba(255, 255, 255, 0.04);
-            border-color: rgba(255, 255, 255, 0.08);
-        }
-
-        /* view.js renders .counter-label (not .counter-class) */
-        .counter-label {
-            color: rgba(255, 255, 255, 0.72);
+            font-family: "Work Sans", sans-serif;
+            font-size: 0.82rem;
             font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.15s, border-color 0.15s, color 0.15s;
         }
 
-        .counter-value {
-            color: var(--accent);
+        .filter-staff-btn:hover,
+        .filter-staff-btn.active {
+            background: rgba(44, 95, 79, 0.22);
+            border-color: rgba(44, 95, 79, 0.5);
+            color: #7ecfb0;
+        }
+
+        .toolbar-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 4px;
+            border-radius: 9px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: rgba(44, 95, 79, 0.35);
+            color: #7ecfb0;
+            line-height: 1;
+        }
+
+        .filter-dropdown {
+            position: absolute;
+            top: calc(100% + 0.4rem);
+            left: 0;
+            z-index: 200;
+            background: rgba(13, 24, 18, 0.98);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            min-width: 220px;
+            max-width: 280px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            display: none;
+        }
+
+        .filter-dropdown-header {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.6rem 0.7rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .filter-dropdown-btn {
+            flex: 1;
+            padding: 0.32rem 0.5rem;
+            border-radius: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.04);
+            color: rgba(255, 255, 255, 0.55);
+            font-family: "Work Sans", sans-serif;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .filter-dropdown-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.88);
+        }
+
+        .filter-people-list {
+            max-height: 250px;
+            overflow-y: auto;
+            padding: 0.35rem 0;
+        }
+
+        .filter-person-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.42rem 0.7rem;
+            cursor: pointer;
+            transition: background 0.12s;
+        }
+
+        .filter-person-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .filter-person-item input[type="checkbox"] {
+            accent-color: #7ecfb0;
+            width: 14px;
+            height: 14px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .filter-person-item span {
+            color: rgba(255, 255, 255, 0.75);
+            font-family: "Work Sans", sans-serif;
+            font-size: 0.83rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .filter-empty {
+            padding: 0.9rem 0.7rem;
+            color: rgba(255, 255, 255, 0.28);
+            font-family: "Work Sans", sans-serif;
+            font-size: 0.82rem;
+            text-align: center;
+            margin: 0;
+        }
+
+        .filter-dropdown-footer {
+            padding: 0.6rem 0.7rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .filter-apply-btn {
+            width: 100%;
+            padding: 0.45rem;
+            border-radius: 6px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-family: "Work Sans", sans-serif;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .filter-apply-btn:hover {
+            background: rgba(44, 95, 79, 0.85);
         }
 
         /* --- Empty state -------------------------------------------- */
@@ -254,8 +361,7 @@
             body        { background: white; }
             .view-bg    { display: none; }
             .timetable-header,
-            .timetable-wrapper,
-            .counters-section {
+            .timetable-wrapper {
                 background: white;
                 border-color: #e0e0e0;
                 box-shadow: none;
@@ -301,6 +407,24 @@
 
         <!-- Day Selector + View Controls row -->
         <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap; margin-bottom:1rem;">
+
+          <!-- Filter Staff -->
+          <div style="position:relative; flex-shrink:0;" id="filterStaffWrapper">
+            <button class="filter-staff-btn" id="filterStaffBtn" onclick="toggleFilterDropdown()">
+              ⊟ Filter Staff<span class="toolbar-badge" id="filterBadge" style="display:none; margin-left:0.35rem;"></span>
+            </button>
+            <div id="filterDropdown" class="filter-dropdown">
+              <div class="filter-dropdown-header">
+                <button class="filter-dropdown-btn" onclick="filterSelectAll()">Select All</button>
+                <button class="filter-dropdown-btn" onclick="filterClearAll()">Clear</button>
+              </div>
+              <div class="filter-people-list" id="filterPeopleList"></div>
+              <div class="filter-dropdown-footer">
+                <button class="filter-apply-btn" onclick="applyFilter()">Apply</button>
+              </div>
+            </div>
+          </div>
+
           <div class="day-selector" id="daySelector" style="margin-bottom:0; flex:1; min-width:0;">
             <button class="day-btn active" data-day="monday" onclick="switchDay('monday')">Monday</button>
             <button class="day-btn" data-day="tuesday" onclick="switchDay('tuesday')">Tuesday</button>
@@ -340,23 +464,6 @@
           </div>
         </div>
 
-        <!-- Counters Section -->
-        <div class="counters-section" id="countersSection">
-          <div class="counter-tabs">
-            <button class="counter-tab active" onclick="switchCounterTab('day')">
-              <span id="currentDayLabel">Today</span>
-            </button>
-            <button class="counter-tab" onclick="switchCounterTab('week')">Full Week</button>
-          </div>
-
-          <div class="counter-content active" id="dayCounters">
-            <div class="counter-grid" id="dayCounterGrid"></div>
-          </div>
-
-          <div class="counter-content" id="weekCounters">
-            <div class="counter-grid" id="weekCounterGrid"></div>
-          </div>
-        </div>
       </div>
     </div>
 
