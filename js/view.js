@@ -9,7 +9,10 @@ let classColors = {};
 let assignments = {};
 let timeSlots = [];
 let currentDay = "monday";
-let currentCounterTab = "day";
+
+// Filter state
+let activeFilter = [];
+let tempFilter = [];
 
 const SLOT_TYPE_LABELS = {
   class: "Class",
@@ -57,7 +60,6 @@ function loadTimetableData() {
       }));
 
       renderTimetable();
-      updateCounters();
     } else {
       document.getElementById("timetableContainer").innerHTML = `
         <div class="empty-state" style="padding: 4rem 2rem;">
@@ -82,9 +84,11 @@ function renderTimetable() {
   html += `<div class="day-title ${currentDay}">${currentDay.charAt(0).toUpperCase() + currentDay.slice(1)}</div>`;
   html += '<table class="timetable"><tbody>';
 
+  const visiblePeople = getFilteredPeople();
+
   html += '<tr class="timetable-header-row">';
   html += "<th>Time</th>";
-  peopleList.forEach((name) => {
+  visiblePeople.forEach((name) => {
     html += `<th>${escapeHtml(name)}</th>`;
   });
   html += "</tr>";
@@ -98,7 +102,7 @@ function renderTimetable() {
       typeof slot.end === "string"
   );
 
-  const personCount = peopleList.length || 1;
+  const personCount = visiblePeople.length || 1;
 
   validTimeSlots.forEach((slot) => {
     const type = slotType(slot);
@@ -115,7 +119,7 @@ function renderTimetable() {
     html += '<tr class="timetable-row">';
     html += `<td class="time-cell"><div class="time-range">${formatTime12Hour(slot.start)}<br>${formatTime12Hour(slot.end)}</div></td>`;
 
-    peopleList.forEach((person) => {
+    visiblePeople.forEach((person) => {
       const cellKey = `${slot.start}-${person}`;
       const cellData = assignments[currentDay]?.[cellKey];
       const hasContent = cellData !== undefined;
@@ -158,82 +162,91 @@ function switchDay(day) {
   document.querySelector(`[data-day="${day}"]`).classList.add("active");
 
   renderTimetable();
-  updateCounters();
-  updateDayLabel();
-}
-
-function updateDayLabel() {
-  document.getElementById("currentDayLabel").textContent =
-    currentDay.charAt(0).toUpperCase() + currentDay.slice(1);
 }
 
 // ============================================
-// Counters
+// Staff Filter
 // ============================================
-function updateCounters() {
-  // Day counters
-  const dayCounts = {};
-  classList.forEach((cls) => (dayCounts[cls] = 0));
 
-  if (assignments[currentDay]) {
-    Object.values(assignments[currentDay]).forEach((assignment) => {
-      dayCounts[assignment.class]++;
-    });
-  }
-
-  const dayGrid = document.getElementById("dayCounterGrid");
-  dayGrid.innerHTML = classList
-    .map(
-      (cls) => `
-      <div class="counter-item">
-        <div class="counter-label">${cls}</div>
-        <div class="counter-value">${dayCounts[cls]}</div>
-      </div>
-    `
-    )
-    .join("");
-
-  // Week counters
-  const weekCounts = {};
-  classList.forEach((cls) => (weekCounts[cls] = 0));
-
-  days.forEach((day) => {
-    if (assignments[day]) {
-      Object.values(assignments[day]).forEach((assignment) => {
-        weekCounts[assignment.class]++;
-      });
-    }
-  });
-
-  const weekGrid = document.getElementById("weekCounterGrid");
-  weekGrid.innerHTML = classList
-    .map(
-      (cls) => `
-      <div class="counter-item">
-        <div class="counter-label">${cls}</div>
-        <div class="counter-value">${weekCounts[cls]}</div>
-      </div>
-    `
-    )
-    .join("");
+function getFilteredPeople() {
+  if (activeFilter.length === 0) return peopleList;
+  return peopleList.filter((p) => activeFilter.includes(p));
 }
 
-function switchCounterTab(tab) {
-  currentCounterTab = tab;
-
-  document.querySelectorAll(".counter-tab").forEach((btn) => {
-    btn.classList.remove("active");
-  });
-  document.querySelectorAll(".counter-content").forEach((content) => {
-    content.classList.remove("active");
-  });
-
-  if (tab === "day") {
-    document.querySelector(".counter-tab").classList.add("active");
-    document.getElementById("dayCounters").classList.add("active");
+function toggleFilterDropdown() {
+  const dropdown = document.getElementById("filterDropdown");
+  if (dropdown.style.display === "block") {
+    closeFilterDropdown();
   } else {
-    document.querySelectorAll(".counter-tab")[1].classList.add("active");
-    document.getElementById("weekCounters").classList.add("active");
+    tempFilter = [...activeFilter];
+    renderFilterDropdownList();
+    dropdown.style.display = "block";
+  }
+}
+
+function closeFilterDropdown() {
+  const dropdown = document.getElementById("filterDropdown");
+  if (dropdown) dropdown.style.display = "none";
+}
+
+function renderFilterDropdownList() {
+  const container = document.getElementById("filterPeopleList");
+  if (!container) return;
+  if (peopleList.length === 0) {
+    container.innerHTML = '<p class="filter-empty">No staff added yet</p>';
+    return;
+  }
+  container.innerHTML = peopleList
+    .map((person) => {
+      const checked = tempFilter.includes(person) ? "checked" : "";
+      const safe = escapeHtml(person);
+      const safeJs = person.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+      return `<label class="filter-person-item">
+        <input type="checkbox" value="${safe}" ${checked}
+          onchange="toggleTempFilter('${safeJs}', this.checked)">
+        <span>${safe}</span>
+      </label>`;
+    })
+    .join("");
+}
+
+function toggleTempFilter(person, checked) {
+  if (checked) {
+    if (!tempFilter.includes(person)) tempFilter.push(person);
+  } else {
+    tempFilter = tempFilter.filter((p) => p !== person);
+  }
+}
+
+function filterSelectAll() {
+  tempFilter = [...peopleList];
+  renderFilterDropdownList();
+}
+
+function filterClearAll() {
+  tempFilter = [];
+  renderFilterDropdownList();
+}
+
+function applyFilter() {
+  if (tempFilter.length === 0 || tempFilter.length === peopleList.length) {
+    activeFilter = [];
+  } else {
+    activeFilter = [...tempFilter];
+  }
+  updateFilterBadge();
+  closeFilterDropdown();
+  renderTimetable();
+}
+
+function updateFilterBadge() {
+  const badge = document.getElementById("filterBadge");
+  if (!badge) return;
+  if (activeFilter.length > 0) {
+    badge.textContent = activeFilter.length;
+    badge.style.display = "inline-flex";
+  } else {
+    badge.style.display = "none";
   }
 }
 
@@ -242,7 +255,13 @@ function switchCounterTab(tab) {
 // ============================================
 window.addEventListener("DOMContentLoaded", function () {
   loadTimetableData();
-  updateDayLabel();
+
+  document.addEventListener("click", function (e) {
+    const wrapper = document.getElementById("filterStaffWrapper");
+    if (wrapper && !wrapper.contains(e.target)) {
+      closeFilterDropdown();
+    }
+  });
 });
 
 console.log("view.js loaded");
