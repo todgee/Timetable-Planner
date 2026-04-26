@@ -1471,6 +1471,41 @@ async function exportToPNG() {
       scale: 2,
       backgroundColor: "#ffffff",
       logging: false,
+      onclone: (clonedDoc) => {
+        const style = clonedDoc.createElement("style");
+        style.textContent = `
+          .time-cell {
+            background: #ffffff !important;
+            color: #2c5f4f !important;
+            border-color: #e8e3db !important;
+          }
+          .break-row .time-cell {
+            color: #2c5f4f !important;
+          }
+          .timetable {
+            border-color: #e8e3db !important;
+          }
+          .timetable-row:nth-child(even) {
+            background: rgba(0,0,0,0.02) !important;
+          }
+          .roster-cell {
+            border-color: #e8e3db !important;
+          }
+          .break-row--recess .break-cell {
+            background: rgba(96, 213, 245, 0.18) !important;
+            color: #0b6e85 !important;
+          }
+          .break-row--lunch .break-cell {
+            background: rgba(212, 165, 116, 0.22) !important;
+            color: #8a5a20 !important;
+          }
+          .break-row--break .break-cell {
+            background: rgba(232, 227, 219, 0.55) !important;
+            color: #666666 !important;
+          }
+        `;
+        clonedDoc.head.appendChild(style);
+      },
     });
 
     const dayName = day.charAt(0).toUpperCase() + day.slice(1);
