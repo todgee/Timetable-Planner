@@ -162,6 +162,14 @@ function updatePeopleList() {
     nameSpan.className = "item-name";
     nameSpan.textContent = person;
 
+    const editBtn = document.createElement("button");
+    editBtn.className = "edit-name-btn";
+    editBtn.title = "Edit name";
+    editBtn.innerHTML = "✎";
+    editBtn.onclick = function () {
+      startEditPerson(person, itemDiv);
+    };
+
     const removeBtn = document.createElement("button");
     removeBtn.className = "delete-btn";
     removeBtn.textContent = "Remove";
@@ -170,6 +178,7 @@ function updatePeopleList() {
     };
 
     itemDiv.appendChild(nameSpan);
+    itemDiv.appendChild(editBtn);
     itemDiv.appendChild(removeBtn);
     fragment.appendChild(itemDiv);
   });
@@ -293,6 +302,7 @@ function updateClassList() {
 
     const classItemDiv = document.createElement("div");
     classItemDiv.className = "class-item";
+    classItemDiv.style.flex = "1";
 
     const colorInput = document.createElement("input");
     colorInput.type = "color";
@@ -309,6 +319,14 @@ function updateClassList() {
     classItemDiv.appendChild(colorInput);
     classItemDiv.appendChild(nameSpan);
 
+    const editBtn = document.createElement("button");
+    editBtn.className = "edit-name-btn";
+    editBtn.title = "Edit name";
+    editBtn.innerHTML = "✎";
+    editBtn.onclick = function () {
+      startEditClass(cls, itemDiv);
+    };
+
     const removeBtn = document.createElement("button");
     removeBtn.className = "delete-btn";
     removeBtn.textContent = "Remove";
@@ -317,6 +335,7 @@ function updateClassList() {
     };
 
     itemDiv.appendChild(classItemDiv);
+    itemDiv.appendChild(editBtn);
     itemDiv.appendChild(removeBtn);
     fragment.appendChild(itemDiv);
   });
@@ -545,6 +564,164 @@ function renderTimetable() {
   html += "</tbody></table>";
   html += "</div>";
   container.innerHTML = html;
+}
+
+// ============================================
+// Inline Name Editing
+// ============================================
+
+function startEditPerson(oldName, itemDiv) {
+  const nameSpan = itemDiv.querySelector(".item-name");
+  const editBtn = itemDiv.querySelector(".edit-name-btn");
+  const removeBtn = itemDiv.querySelector(".delete-btn");
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.className = "item-edit-input";
+  input.value = oldName;
+
+  nameSpan.replaceWith(input);
+  removeBtn.disabled = true;
+
+  editBtn.textContent = "✓";
+  editBtn.className = "save-name-btn";
+  editBtn.title = "Save";
+  editBtn.onclick = () => savePersonEdit(oldName, input, itemDiv, editBtn, removeBtn);
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") savePersonEdit(oldName, input, itemDiv, editBtn, removeBtn);
+    if (e.key === "Escape") cancelPersonEdit(oldName, input, itemDiv, editBtn, removeBtn);
+  });
+
+  input.focus();
+  input.select();
+}
+
+function savePersonEdit(oldName, input, itemDiv, editBtn, removeBtn) {
+  const newName = input.value.trim();
+  if (!newName) { input.focus(); return; }
+  if (newName !== oldName && peopleList.includes(newName)) {
+    alert(`"${newName}" already exists.`);
+    input.focus();
+    return;
+  }
+
+  if (newName !== oldName) {
+    const idx = peopleList.indexOf(oldName);
+    if (idx !== -1) peopleList[idx] = newName;
+
+    // Re-key assignments: keys are "${time}-${personName}"
+    const suffix = `-${oldName}`;
+    daysArray.forEach((day) => {
+      if (!assignments[day]) return;
+      Object.keys(assignments[day])
+        .filter((k) => k.endsWith(suffix))
+        .forEach((k) => {
+          const newKey = k.slice(0, k.length - oldName.length) + newName;
+          assignments[day][newKey] = assignments[day][k];
+          delete assignments[day][k];
+        });
+    });
+
+    const fi = activeFilter.indexOf(oldName);
+    if (fi !== -1) activeFilter[fi] = newName;
+    updateFilterBadge();
+
+    renderCurrentTimetable();
+    autoSave();
+  }
+
+  updatePeopleList();
+}
+
+function cancelPersonEdit(oldName, input, itemDiv, editBtn, removeBtn) {
+  const nameSpan = document.createElement("span");
+  nameSpan.className = "item-name";
+  nameSpan.textContent = oldName;
+  input.replaceWith(nameSpan);
+
+  removeBtn.disabled = false;
+  editBtn.innerHTML = "✎";
+  editBtn.title = "Edit name";
+  editBtn.className = "edit-name-btn";
+  editBtn.onclick = () => startEditPerson(oldName, itemDiv);
+}
+
+function startEditClass(oldName, itemDiv) {
+  const nameSpan = itemDiv.querySelector(".item-name");
+  const editBtn = itemDiv.querySelector(".edit-name-btn");
+  const removeBtn = itemDiv.querySelector(".delete-btn");
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.className = "item-edit-input";
+  input.value = oldName;
+
+  nameSpan.replaceWith(input);
+  removeBtn.disabled = true;
+
+  editBtn.textContent = "✓";
+  editBtn.className = "save-name-btn";
+  editBtn.title = "Save";
+  editBtn.onclick = () => saveClassEdit(oldName, input, itemDiv, editBtn, removeBtn);
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") saveClassEdit(oldName, input, itemDiv, editBtn, removeBtn);
+    if (e.key === "Escape") cancelClassEdit(oldName, input, itemDiv, editBtn, removeBtn);
+  });
+
+  input.focus();
+  input.select();
+}
+
+function saveClassEdit(oldName, input, itemDiv, editBtn, removeBtn) {
+  const newName = input.value.trim();
+  if (!newName) { input.focus(); return; }
+  if (newName !== oldName && classList.includes(newName)) {
+    alert(`"${newName}" already exists.`);
+    input.focus();
+    return;
+  }
+
+  if (newName !== oldName) {
+    const idx = classList.indexOf(oldName);
+    if (idx !== -1) classList[idx] = newName;
+
+    classColors[newName] = classColors[oldName];
+    delete classColors[oldName];
+
+    // Update assignment cell data values
+    daysArray.forEach((day) => {
+      if (!assignments[day]) return;
+      Object.values(assignments[day]).forEach((cell) => {
+        if (cell && cell.class === oldName) cell.class = newName;
+      });
+    });
+
+    const fi = activeClassFilter.indexOf(oldName);
+    if (fi !== -1) activeClassFilter[fi] = newName;
+    updateClassFilterBadge();
+
+    updateModalSelects();
+    renderCurrentTimetable();
+    updateCounters();
+    autoSave();
+  }
+
+  updateClassList();
+}
+
+function cancelClassEdit(oldName, input, itemDiv, editBtn, removeBtn) {
+  const nameSpan = document.createElement("span");
+  nameSpan.className = "item-name";
+  nameSpan.textContent = oldName;
+  input.replaceWith(nameSpan);
+
+  removeBtn.disabled = false;
+  editBtn.innerHTML = "✎";
+  editBtn.title = "Edit name";
+  editBtn.className = "edit-name-btn";
+  editBtn.onclick = () => startEditClass(oldName, itemDiv);
 }
 
 // ============================================
