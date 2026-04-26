@@ -544,18 +544,18 @@ body {
 
 .wizard-card {
     background: rgba(13, 24, 18, 0.92);
-    border: 1px solid rgba(255, 255, 255, 0.09);
+    border: 1px solid var(--dt-border-dim);
     border-radius: 24px;
     box-shadow:
         0 32px 80px rgba(0, 0, 0, 0.55),
-        inset 0 1px 0 rgba(255, 255, 255, 0.07);
+        inset 0 1px 0 var(--dt-border-faint);
 }
 
 .wizard-card input,
 .wizard-card select,
 .wizard-card textarea {
-    background: rgba(255, 255, 255, 0.07);
-    border-color: rgba(255, 255, 255, 0.12);
+    background: var(--dt-fill-input);
+    border-color: var(--dt-border-soft);
     color: rgba(255, 255, 255, 0.85);
 }
 
@@ -579,7 +579,7 @@ body {
 }
 
 .progress-steps::before {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--dt-border);
     top: 18px;
 }
 
@@ -598,8 +598,8 @@ body {
 .step-circle {
     width: 36px;
     height: 36px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 2px solid rgba(255, 255, 255, 0.12);
+    background: var(--dt-fill-control);
+    border: 2px solid var(--dt-border-soft);
     color: rgba(255, 255, 255, 0.28);
     font-family: "Work Sans", sans-serif;
     font-size: 0.85rem;
@@ -610,7 +610,7 @@ body {
     background: var(--primary);
     border-color: rgba(212, 165, 116, 0.6);
     color: white;
-    box-shadow: 0 0 0 4px rgba(44, 95, 79, 0.25), 0 0 20px rgba(44, 95, 79, 0.4);
+    box-shadow: 0 0 0 4px var(--dt-green-fill), 0 0 20px var(--dt-green-glow);
 }
 
 .progress-step.completed .step-circle {
@@ -644,7 +644,7 @@ body {
     font-family: "Crimson Pro", serif;
     font-size: 2rem;
     font-weight: 700;
-    color: rgba(255, 255, 255, 0.92);
+    color: var(--dt-text-bright);
     letter-spacing: -0.02em;
     margin-bottom: 0.35rem;
 }
@@ -667,7 +667,7 @@ body {
 
 .wizard-content::-webkit-scrollbar { width: 5px; }
 .wizard-content::-webkit-scrollbar-track { background: transparent; }
-.wizard-content::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 3px; }
+.wizard-content::-webkit-scrollbar-thumb { background: var(--dt-border-soft); border-radius: 3px; }
 
 .item-input-row {
     margin-bottom: 1.25rem;
@@ -680,7 +680,7 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.11);
     border-radius: 10px;
     font-size: 0.95rem;
-    color: rgba(255, 255, 255, 0.88);
+    color: var(--dt-text);
     font-family: "Work Sans", sans-serif;
     transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
     width: auto;
@@ -689,7 +689,7 @@ body {
 .item-input-row input[type="text"]:focus {
     border-color: var(--accent);
     background: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.15);
+    box-shadow: 0 0 0 3px var(--dt-gold-glow);
 }
 
 .item-input-row input[type="color"] {
@@ -726,7 +726,7 @@ body {
 .items-list { min-height: 56px; }
 
 .item-tag {
-    background: rgba(255, 255, 255, 0.07);
+    background: var(--dt-fill-input);
     border: 1px solid rgba(255, 255, 255, 0.11);
     border-radius: 100px;
     color: rgba(255, 255, 255, 0.82);
@@ -755,8 +755,8 @@ body {
 }
 
 .time-slot-row {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--dt-fill-subtle);
+    border: 1px solid var(--dt-border);
     border-radius: 10px;
     padding: 0.7rem 1rem;
     transition: border-color 0.2s ease;
@@ -772,8 +772,8 @@ body {
 
 .time-slot-row input[type="time"] {
     padding: 0.45rem 0.6rem;
-    background: rgba(255, 255, 255, 0.07);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--dt-fill-input);
+    border: 1px solid var(--dt-border-mid);
     border-radius: 7px;
     color: rgba(255, 255, 255, 0.85);
     font-family: "Work Sans", sans-serif;
@@ -791,8 +791,8 @@ body {
 
 .slot-type-select {
     padding: 0.45rem 0.6rem;
-    background: rgba(255, 255, 255, 0.07);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--dt-fill-input);
+    border: 1px solid var(--dt-border-mid);
     border-radius: 7px;
     color: rgba(255, 255, 255, 0.75);
     font-family: "Work Sans", sans-serif;
@@ -802,7 +802,7 @@ body {
     transition: border-color 0.2s ease;
 }
 
-.slot-type-select option { background: #152018; color: white; }
+.slot-type-select option { background: var(--dt-option-bg); color: white; }
 
 .time-slot-row .remove-slot {
     color: rgba(255, 255, 255, 0.22);
@@ -814,7 +814,7 @@ body {
 
 .add-slot-btn {
     background: transparent;
-    border: 2px dashed rgba(255, 255, 255, 0.1);
+    border: 2px dashed var(--dt-border-mid);
     border-radius: 10px;
     color: rgba(255, 255, 255, 0.3);
     font-family: "Work Sans", sans-serif;
@@ -828,7 +828,7 @@ body {
     background: rgba(212, 165, 116, 0.05);
 }
 
-.wizard-nav { border-top: 1px solid rgba(255, 255, 255, 0.07); }
+.wizard-nav { border-top: 1px solid var(--dt-border-faint); }
 
 .wizard-nav button {
     font-family: "Work Sans", sans-serif;
@@ -838,9 +838,9 @@ body {
 }
 
 .btn-back {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.45);
+    background: var(--dt-fill-control);
+    border: 1px solid var(--dt-border-mid);
+    color: var(--dt-text-muted);
 }
 
 .btn-back:hover { background: rgba(255, 255, 255, 0.09); color: rgba(255, 255, 255, 0.75); }
@@ -885,13 +885,13 @@ body {
     height: 76px;
     margin: 0 auto 1.5rem;
     background: linear-gradient(135deg, rgba(44, 95, 79, 0.55) 0%, rgba(212, 165, 116, 0.35) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--dt-border-mid);
     border-radius: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 2rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 var(--dt-border-mid);
 }
 
 .welcome-content h2 { font-size: 2.25rem; margin-bottom: 0.5rem; }
@@ -913,15 +913,15 @@ body {
 
 .feature-item {
     padding: 1rem;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--dt-fill-subtle);
+    border: 1px solid var(--dt-border);
     border-radius: 14px;
     transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
 }
 
 .feature-item:hover {
     border-color: rgba(255, 255, 255, 0.16);
-    background: rgba(255, 255, 255, 0.07);
+    background: var(--dt-fill-input);
     transform: translateY(-2px);
 }
 
@@ -929,7 +929,7 @@ body {
 
 .feature-item h4 {
     margin: 0 0 0.3rem;
-    color: rgba(255, 255, 255, 0.88);
+    color: var(--dt-text);
     font-size: 0.88rem;
     font-weight: 600;
     font-family: "Work Sans", sans-serif;
@@ -946,8 +946,8 @@ body {
 }
 
 .template-card {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.09);
+    background: var(--dt-fill-subtle);
+    border: 1px solid var(--dt-border-dim);
     border-radius: 12px;
     padding: 1.1rem 1rem;
     position: relative;
@@ -987,7 +987,7 @@ body {
 }
 
 .template-card h4 {
-    color: rgba(255, 255, 255, 0.88);
+    color: var(--dt-text);
     font-size: 0.9rem;
     font-weight: 600;
     font-family: "Work Sans", sans-serif;
@@ -1000,8 +1000,8 @@ body {
 
 .review-section {
     padding: 1rem 1.2rem;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--dt-fill-subtle);
+    border: 1px solid var(--dt-border);
     border-radius: 14px;
     margin-bottom: 0.7rem;
 }
@@ -1040,7 +1040,7 @@ body {
 }
 
 .review-item {
-    background: rgba(255, 255, 255, 0.07);
+    background: var(--dt-fill-input);
     border-radius: 100px;
     color: rgba(255, 255, 255, 0.7);
     font-size: 0.8rem;
@@ -1058,10 +1058,10 @@ body {
 
 #reviewSlots::-webkit-scrollbar { width: 4px; }
 #reviewSlots::-webkit-scrollbar-track { background: transparent; }
-#reviewSlots::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 2px; }
+#reviewSlots::-webkit-scrollbar-thumb { background: var(--dt-border-soft); border-radius: 2px; }
 
 .review-slot {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--dt-fill-control);
     border-left-color: rgba(255, 255, 255, 0.14);
     border-radius: 8px;
     font-size: 0.875rem;
@@ -1087,7 +1087,7 @@ body {
 .setup-loading .spinner {
     width: 44px;
     height: 44px;
-    border: 3px solid rgba(255, 255, 255, 0.08);
+    border: 3px solid var(--dt-border);
     border-top-color: var(--accent);
 }
 
