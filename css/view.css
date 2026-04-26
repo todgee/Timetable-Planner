@@ -1,0 +1,52 @@
+/* ==========================================================
+   VIEW PAGE — read-only overrides and print styles
+   ========================================================== */
+
+/* --- View header nav --------------------------------------- */
+.view-header-nav {
+  margin-top: 0.75rem;
+}
+
+/* --- Timetable header layout (flex row with actions) ------- */
+.timetable-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.timetable-header .panel-title {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.timetable-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* --- Read-only cursor on roster cells ---------------------- */
+.roster-cell {
+  cursor: default;
+}
+
+/* --- Print: restore light theme for readability ------------ */
+@media print {
+  body { background: white; }
+  .view-bg { display: none; }
+  .timetable-header,
+  .timetable-wrapper {
+    background: white;
+    border-color: #e0e0e0;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+  .time-cell { background: white; color: #2c5f4f; }
+  header h1 { color: #2c5f4f; }
+  .day-btn { border-color: #ddd; color: #333; }
+  .day-btn.active { background: #2c5f4f; color: white; }
+}

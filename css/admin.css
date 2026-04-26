@@ -44,6 +44,12 @@
   flex-shrink: 0;
 }
 
+/* --- Filter staff wrapper ---------------------------------- */
+#filterStaffWrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
 /* --- Counter tabs layout ----------------------------------- */
 .counter-tabs {
   display: flex;
