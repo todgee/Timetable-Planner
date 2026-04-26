@@ -325,6 +325,33 @@
         box-shadow:
           0 32px 80px rgba(0, 0, 0, 0.65),
           inset 0 1px 0 rgba(255, 255, 255, 0.07);
+        position: relative;
+      }
+
+      .modal-close-btn {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.07);
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.15s, color 0.15s, border-color 0.15s;
+        line-height: 1;
+        flex-shrink: 0;
+      }
+
+      .modal-close-btn:hover {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.3);
+        color: rgba(255, 255, 255, 0.92);
       }
 
       .modal-title {
@@ -583,6 +610,7 @@
           "
         >
           <h3 class="modal-title">Manage People</h3>
+          <button class="modal-close-btn" onclick="closePeopleManager()" aria-label="Close">&#x2715;</button>
 
           <div style="flex: 1; padding: 1rem 0; will-change: scroll-position">
             <div class="form-group">
@@ -621,11 +649,6 @@
             </div>
           </div>
 
-          <div class="modal-buttons" style="margin-top: 1rem">
-            <button class="btn btn-cancel" onclick="closePeopleManager()">
-              Close
-            </button>
-          </div>
         </div>
       </div>
 
@@ -642,6 +665,7 @@
           "
         >
           <h3 class="modal-title">Manage Classes</h3>
+          <button class="modal-close-btn" onclick="closeClassesManager()" aria-label="Close">&#x2715;</button>
 
           <div style="flex: 1; padding: 1rem 0; will-change: scroll-position">
             <div class="form-group">
@@ -680,11 +704,6 @@
             </div>
           </div>
 
-          <div class="modal-buttons" style="margin-top: 1rem">
-            <button class="btn btn-cancel" onclick="closeClassesManager()">
-              Close
-            </button>
-          </div>
         </div>
       </div>
 
@@ -923,6 +942,7 @@
     <div class="modal" id="assignmentModal">
       <div class="modal-content">
         <h3 class="modal-title">Assign Class</h3>
+        <button class="modal-close-btn" onclick="closeModal()" aria-label="Close">&#x2715;</button>
         <div class="modal-info" id="modalInfo"></div>
 
         <div class="form-group">
@@ -959,6 +979,7 @@
     <div class="modal" id="editTimeSlotsModal">
       <div class="modal-content">
         <h3 class="modal-title">Edit Time Slots</h3>
+        <button class="modal-close-btn" onclick="closeEditTimeSlotsModal()" aria-label="Close">&#x2715;</button>
 
         <div class="time-slot-list" id="timeSlotList"></div>
 
@@ -985,6 +1006,7 @@
     <div class="modal" id="exportModal">
       <div class="modal-content">
         <h3 class="modal-title">Export Timetable</h3>
+        <button class="modal-close-btn" onclick="closeExportModal()" aria-label="Close">&#x2715;</button>
 
         <p style="margin-bottom: 1.5rem; color: var(--text-light)">
           Choose your export format. Each format includes all 5 days.
@@ -1029,15 +1051,6 @@
           </button>
         </div>
 
-        <div class="modal-buttons" style="margin-top: 1.5rem">
-          <button
-            class="btn btn-cancel"
-            onclick="closeExportModal()"
-            style="grid-column: 1 / -1"
-          >
-            Cancel
-          </button>
-        </div>
       </div>
     </div>
 
