@@ -951,7 +951,7 @@ body.timetable-fullscreen-active {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
+  backdrop-filter: none;
   z-index: 1000;
   align-items: center;
   justify-content: center;
@@ -970,6 +970,8 @@ body.timetable-fullscreen-active {
   max-height: 80vh;
   overflow-y: auto;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  contain: paint;
+  will-change: scroll-position;
 }
 
 .modal-title {
