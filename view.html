@@ -299,33 +299,35 @@
           </div>
         </div>
 
-        <!-- Day Selector -->
-        <div class="day-selector" id="daySelector">
-          <button class="day-btn active" data-day="monday" onclick="switchDay('monday')">Monday</button>
-          <button class="day-btn" data-day="tuesday" onclick="switchDay('tuesday')">Tuesday</button>
-          <button class="day-btn" data-day="wednesday" onclick="switchDay('wednesday')">Wednesday</button>
-          <button class="day-btn" data-day="thursday" onclick="switchDay('thursday')">Thursday</button>
-          <button class="day-btn" data-day="friday" onclick="switchDay('friday')">Friday</button>
-        </div>
+        <!-- Day Selector + View Controls row -->
+        <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap; margin-bottom:1rem;">
+          <div class="day-selector" id="daySelector" style="margin-bottom:0; flex:1; min-width:0;">
+            <button class="day-btn active" data-day="monday" onclick="switchDay('monday')">Monday</button>
+            <button class="day-btn" data-day="tuesday" onclick="switchDay('tuesday')">Tuesday</button>
+            <button class="day-btn" data-day="wednesday" onclick="switchDay('wednesday')">Wednesday</button>
+            <button class="day-btn" data-day="thursday" onclick="switchDay('thursday')">Thursday</button>
+            <button class="day-btn" data-day="friday" onclick="switchDay('friday')">Friday</button>
+          </div>
 
-        <!-- View Controls -->
-        <div class="view-controls" id="viewControls">
-          <div class="view-controls-group">
-            <button type="button" class="view-control-btn" id="scrollLeftBtn" title="Scroll left" aria-label="Scroll timetable left">&#x2039;</button>
-            <button type="button" class="view-control-btn" id="scrollRightBtn" title="Scroll right" aria-label="Scroll timetable right">&#x203A;</button>
+          <!-- View Controls -->
+          <div class="view-controls" id="viewControls" style="margin-bottom:0; flex-shrink:0;">
+            <div class="view-controls-group">
+              <button type="button" class="view-control-btn" id="scrollLeftBtn" title="Scroll left" aria-label="Scroll timetable left">&#x2039;</button>
+              <button type="button" class="view-control-btn" id="scrollRightBtn" title="Scroll right" aria-label="Scroll timetable right">&#x203A;</button>
+            </div>
+            <div class="view-controls-group view-controls-zoom">
+              <button type="button" class="view-control-btn" id="zoomOutBtn" title="Zoom out" aria-label="Zoom out">&minus;</button>
+              <span class="view-controls-zoom-value" id="zoomValue" title="Click to reset zoom">100%</span>
+              <button type="button" class="view-control-btn" id="zoomInBtn" title="Zoom in" aria-label="Zoom in">+</button>
+            </div>
+            <div class="view-controls-group">
+              <button type="button" class="view-control-btn" id="fullscreenBtn" title="Toggle fullscreen" aria-label="Toggle fullscreen">
+                <span class="fullscreen-icon-enter">⛶</span>
+                <span class="fullscreen-icon-exit">✕</span>
+              </button>
+            </div>
           </div>
-          <div class="view-controls-group view-controls-zoom">
-            <button type="button" class="view-control-btn" id="zoomOutBtn" title="Zoom out" aria-label="Zoom out">&minus;</button>
-            <span class="view-controls-zoom-value" id="zoomValue" title="Click to reset zoom">100%</span>
-            <button type="button" class="view-control-btn" id="zoomInBtn" title="Zoom in" aria-label="Zoom in">+</button>
-          </div>
-          <div class="view-controls-group">
-            <button type="button" class="view-control-btn" id="fullscreenBtn" title="Toggle fullscreen" aria-label="Toggle fullscreen">
-              <span class="fullscreen-icon-enter">⛶</span>
-              <span class="fullscreen-icon-exit">✕</span>
-            </button>
-          </div>
-        </div>
+        </div><!-- end day+controls row -->
 
         <div class="timetable-wrapper" id="timetableWrapper">
           <div class="timetable-zoom" id="timetableZoom">
