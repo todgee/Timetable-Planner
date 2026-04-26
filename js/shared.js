@@ -250,4 +250,52 @@ function validateImageFile(file, maxSizeMB = 5) {
   return { valid: true, error: null };
 }
 
+// ============================================
+// Shared UI Renderers
+// Called from admin.html and view.html to avoid duplicated markup.
+// ============================================
+function renderFilterDropdown(el) {
+  el.innerHTML =
+    '<button class="filter-staff-btn" id="filterStaffBtn" onclick="toggleFilterDropdown()">' +
+      '⊟ Filter Staff' +
+      '<span class="toolbar-badge" id="filterBadge" style="display:none; margin-left:0.35rem;"></span>' +
+    '</button>' +
+    '<div id="filterDropdown" class="filter-dropdown">' +
+      '<div class="filter-dropdown-header">' +
+        '<button class="filter-dropdown-btn" onclick="filterSelectAll()">Select All</button>' +
+        '<button class="filter-dropdown-btn" onclick="filterClearAll()">Clear</button>' +
+      '</div>' +
+      '<div class="filter-people-list" id="filterPeopleList"></div>' +
+      '<div class="filter-dropdown-footer">' +
+        '<button class="filter-apply-btn" onclick="applyFilter()">Apply</button>' +
+      '</div>' +
+    '</div>';
+}
+
+function renderDaySelector(el) {
+  el.innerHTML = days.map((d, i) => {
+    const label = d[0].toUpperCase() + d.slice(1);
+    return `<button class="day-btn${i === 0 ? ' active' : ''}" data-day="${d}" onclick="switchDay('${d}')">${label}</button>`;
+  }).join('');
+}
+
+function renderViewControls(el) {
+  el.innerHTML =
+    '<div class="view-controls-group">' +
+      '<button type="button" class="view-control-btn" id="scrollLeftBtn" title="Scroll left" aria-label="Scroll timetable left">&#x2039;</button>' +
+      '<button type="button" class="view-control-btn" id="scrollRightBtn" title="Scroll right" aria-label="Scroll timetable right">&#x203A;</button>' +
+    '</div>' +
+    '<div class="view-controls-group view-controls-zoom">' +
+      '<button type="button" class="view-control-btn" id="zoomOutBtn" title="Zoom out" aria-label="Zoom out">&minus;</button>' +
+      '<span class="view-controls-zoom-value" id="zoomValue" title="Click to reset zoom">100%</span>' +
+      '<button type="button" class="view-control-btn" id="zoomInBtn" title="Zoom in" aria-label="Zoom in">+</button>' +
+    '</div>' +
+    '<div class="view-controls-group">' +
+      '<button type="button" class="view-control-btn" id="fullscreenBtn" title="Toggle fullscreen" aria-label="Toggle fullscreen">' +
+        '<span class="fullscreen-icon-enter">&#x26F6;</span>' +
+        '<span class="fullscreen-icon-exit">&#x2715;</span>' +
+      '</button>' +
+    '</div>';
+}
+
 console.log('shared.js loaded');
