@@ -231,12 +231,12 @@ function applyTemplate(template, event) {
                 { start: '11:15', end: '11:30', type: 'recess' },
                 { start: '11:30', end: '12:10', type: 'class' },
                 { start: '12:10', end: '12:50', type: 'class' },
-                { start: '12:50', end: '13:00', type: 'break' },
+                { start: '12:50', end: '13:00', type: 'class' },
                 { start: '13:00', end: '13:15', type: 'lunch' },
                 { start: '13:15', end: '13:30', type: 'lunch' },
                 { start: '13:30', end: '14:10', type: 'class' },
                 { start: '14:10', end: '14:50', type: 'class' },
-                { start: '14:50', end: '15:00', type: 'break' },
+                { start: '14:50', end: '15:00', type: 'class' },
                 { start: '15:00', end: '15:30', type: 'class' }
             ];
             break;
