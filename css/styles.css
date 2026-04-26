@@ -699,12 +699,17 @@ body.timetable-fullscreen-active {
   font-weight: 600;
   text-align: center;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   font-family: "Crimson Pro", serif;
   font-size: 1.05rem;
   color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.timetable-header-row > th:first-child,
+.timetable-header-row > td:first-child {
+  width: 110px;
 }
 
 .timetable-row {
