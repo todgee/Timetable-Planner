@@ -9,19 +9,47 @@
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#2c5f4f" />
     <meta name="apple-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
     <meta name="apple-mobile-web-app-title" content="Timetable" />
-    <meta name="description" content="Professional timetable and roster scheduling application for schools and organizations" />
+    <meta
+      name="description"
+      content="Professional timetable and roster scheduling application for schools and organizations"
+    />
 
     <!-- iOS Icons -->
     <link rel="apple-touch-icon" href="icons/icon-152x152.png" />
-    <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152x152.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-192x192.png" />
-    <link rel="apple-touch-icon" sizes="167x167" href="icons/icon-192x192.png" />
+    <link
+      rel="apple-touch-icon"
+      sizes="152x152"
+      href="icons/icon-152x152.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="icons/icon-192x192.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="167x167"
+      href="icons/icon-192x192.png"
+    />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-128x128.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-72x72.png" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="icons/icon-128x128.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="icons/icon-72x72.png"
+    />
 
     <!-- Fonts -->
     <link
@@ -33,451 +61,482 @@
     <link rel="stylesheet" href="css/styles.css" />
 
     <style>
-        /* =====================================================
+      /* =====================================================
            ADMIN PAGE — DARK THEME
            Mirrors the visual language from setup.html:
            dark backdrop · glassmorphic panels · same palette
            ===================================================== */
 
-        /* --- Background & page layer -------------------------------- */
-        body {
-            background: #0c1812;
-        }
+      /* --- Background & page layer -------------------------------- */
+      body {
+        background: #0c1812;
+      }
 
-        .admin-bg {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            overflow: hidden;
-            pointer-events: none;
-        }
+      .admin-bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        overflow: hidden;
+        pointer-events: none;
+      }
 
-        .admin-bg::before {
-            content: '';
-            position: absolute;
-            top: -20%;
-            left: -15%;
-            width: 60%;
-            height: 60%;
-            background: radial-gradient(ellipse, rgba(44, 95, 79, 0.3) 0%, transparent 70%);
-            animation: adminOrb1 13s ease-in-out infinite;
-            will-change: transform;
-            transform: translateZ(0);
-        }
+      .admin-bg::before {
+        content: "";
+        position: absolute;
+        top: -20%;
+        left: -15%;
+        width: 60%;
+        height: 60%;
+        background: radial-gradient(
+          ellipse,
+          rgba(44, 95, 79, 0.3) 0%,
+          transparent 70%
+        );
+        animation: adminOrb1 13s ease-in-out infinite;
+        will-change: transform;
+        transform: translateZ(0);
+      }
 
-        .admin-bg::after {
-            content: '';
-            position: absolute;
-            bottom: -20%;
-            right: -10%;
-            width: 55%;
-            height: 55%;
-            background: radial-gradient(ellipse, rgba(212, 165, 116, 0.17) 0%, transparent 70%);
-            animation: adminOrb2 16s ease-in-out infinite;
-            will-change: transform;
-            transform: translateZ(0);
-        }
+      .admin-bg::after {
+        content: "";
+        position: absolute;
+        bottom: -20%;
+        right: -10%;
+        width: 55%;
+        height: 55%;
+        background: radial-gradient(
+          ellipse,
+          rgba(212, 165, 116, 0.17) 0%,
+          transparent 70%
+        );
+        animation: adminOrb2 16s ease-in-out infinite;
+        will-change: transform;
+        transform: translateZ(0);
+      }
 
-        @keyframes adminOrb1 {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            50%       { transform: translate(3%, 4%) scale(1.05); }
+      @keyframes adminOrb1 {
+        0%,
+        100% {
+          transform: translate(0, 0) scale(1);
         }
-
-        @keyframes adminOrb2 {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            50%       { transform: translate(-3%, -3%) scale(1.04); }
+        50% {
+          transform: translate(3%, 4%) scale(1.05);
         }
+      }
 
-        .container {
-            position: relative;
-            z-index: 1;
+      @keyframes adminOrb2 {
+        0%,
+        100% {
+          transform: translate(0, 0) scale(1);
         }
-
-        /* --- Header ------------------------------------------------- */
-        header {
-            border-bottom-color: rgba(255, 255, 255, 0.08);
+        50% {
+          transform: translate(-3%, -3%) scale(1.04);
         }
+      }
 
-        header h1 {
-            color: rgba(255, 255, 255, 0.92);
+      .container {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* --- Header ------------------------------------------------- */
+      header {
+        border-bottom-color: rgba(255, 255, 255, 0.08);
+      }
+
+      header h1 {
+        color: rgba(255, 255, 255, 0.92);
+      }
+
+      .subtitle {
+        color: rgba(255, 255, 255, 0.35);
+      }
+
+      #autoSaveIndicator {
+        color: var(--accent) !important;
+      }
+
+      /* --- Timetable header panel --------------------------------- */
+      .timetable-header {
+        background: rgba(13, 24, 18, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        box-shadow:
+          0 8px 32px rgba(0, 0, 0, 0.4),
+          inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      }
+
+      .timetable-header-top {
+        border-bottom-color: rgba(255, 255, 255, 0.07);
+      }
+
+      .panel-title {
+        color: rgba(255, 255, 255, 0.88);
+        border-bottom-color: rgba(255, 255, 255, 0.07);
+      }
+
+      .action-group-label {
+        color: rgba(255, 255, 255, 0.25);
+      }
+
+      /* --- Day selector ------------------------------------------ */
+      .day-btn {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.55);
+        font-family: "Work Sans", sans-serif;
+      }
+
+      .day-btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.22);
+        color: rgba(255, 255, 255, 0.88);
+        transform: translateY(-2px);
+      }
+
+      .day-btn.active {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: white;
+        box-shadow: 0 4px 16px rgba(44, 95, 79, 0.4);
+      }
+
+      /* --- View controls ----------------------------------------- */
+      .view-controls-group {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.09);
+        box-shadow: none;
+      }
+
+      .view-control-btn {
+        color: rgba(255, 255, 255, 0.45);
+      }
+
+      .view-control-btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: rgba(255, 255, 255, 0.88);
+      }
+
+      .view-control-btn:disabled {
+        color: rgba(255, 255, 255, 0.15);
+        background: transparent;
+      }
+
+      .view-controls-zoom-value {
+        color: rgba(255, 255, 255, 0.65);
+      }
+
+      /* --- Timetable wrapper & table ------------------------------ */
+      .timetable-wrapper {
+        background: rgba(13, 24, 18, 0.88);
+        border-color: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+        contain: paint;
+        will-change: scroll-position;
+      }
+
+      .timetable {
+        border-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .timetable-row:nth-child(even) {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .time-cell {
+        background: rgba(255, 255, 255, 0.04);
+        color: rgba(255, 255, 255, 0.65);
+        border-color: rgba(255, 255, 255, 0.08);
+      }
+
+      .roster-cell {
+        border-color: rgba(255, 255, 255, 0.07);
+      }
+
+      .roster-cell:hover {
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      /* --- Break rows -------------------------------------------- */
+      .break-row--recess .break-cell {
+        background: rgba(96, 213, 245, 0.07);
+        color: #60d5f5;
+      }
+
+      .break-row--lunch .break-cell {
+        background: rgba(212, 165, 116, 0.09);
+        color: var(--accent);
+      }
+
+      .break-row--break .break-cell {
+        background: rgba(255, 255, 255, 0.03);
+        color: rgba(255, 255, 255, 0.28);
+      }
+
+      .break-row .time-cell {
+        color: rgba(255, 255, 255, 0.38);
+      }
+
+      /* --- Counters section --------------------------------------- */
+      .counters-section {
+        background: rgba(13, 24, 18, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      }
+
+      .counter-tabs {
+        border-bottom-color: rgba(255, 255, 255, 0.08);
+      }
+
+      .counter-tab {
+        color: rgba(255, 255, 255, 0.3);
+        font-family: "Work Sans", sans-serif;
+      }
+
+      .counter-tab:hover {
+        color: rgba(255, 255, 255, 0.65);
+      }
+
+      .counter-tab.active {
+        color: rgba(255, 255, 255, 0.88);
+        border-bottom-color: var(--accent);
+      }
+
+      .counter-item {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(255, 255, 255, 0.08);
+      }
+
+      .counter-item span {
+        color: rgba(255, 255, 255, 0.72);
+      }
+
+      .counter-value {
+        color: var(--accent);
+      }
+
+      /* --- Modals ------------------------------------------------- */
+      .modal {
+        background: rgba(0, 0, 0, 0.65);
+      }
+
+      .modal-content {
+        background: rgba(13, 24, 18, 0.97);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow:
+          0 32px 80px rgba(0, 0, 0, 0.65),
+          inset 0 1px 0 rgba(255, 255, 255, 0.07);
+      }
+
+      .modal-title {
+        color: rgba(255, 255, 255, 0.92);
+        font-family: "Crimson Pro", serif;
+      }
+
+      .modal-info {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: rgba(255, 255, 255, 0.55);
+        border-radius: 8px;
+      }
+
+      /* Override inline style="color: var(--primary)" on modal h4s */
+      .modal-content h4 {
+        color: rgba(255, 255, 255, 0.5) !important;
+        font-family: "Work Sans", sans-serif;
+      }
+
+      /* Override inline style="color: var(--text-light)" on modal paragraphs */
+      .modal-content p {
+        color: rgba(255, 255, 255, 0.48) !important;
+      }
+
+      .modal-content label {
+        color: rgba(255, 255, 255, 0.45);
+      }
+
+      .modal-content input,
+      .modal-content select,
+      .modal-content textarea {
+        background: rgba(255, 255, 255, 0.07);
+        border-color: rgba(255, 255, 255, 0.12);
+        color: rgba(255, 255, 255, 0.85);
+      }
+
+      .modal-content input:focus,
+      .modal-content select:focus,
+      .modal-content textarea:focus {
+        border-color: var(--accent);
+        background: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.15);
+      }
+
+      .modal-content input::placeholder,
+      .modal-content textarea::placeholder {
+        color: rgba(255, 255, 255, 0.22);
+      }
+
+      .modal-content select option {
+        background: #152018;
+        color: white;
+      }
+
+      /* --- List items (People & Classes modals) ------------------- */
+      .list-item {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(255, 255, 255, 0.08);
+      }
+
+      .list-item:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.16);
+      }
+
+      .item-name {
+        color: rgba(255, 255, 255, 0.82);
+      }
+
+      .empty-state,
+      .empty-state p {
+        color: rgba(255, 255, 255, 0.22);
+      }
+
+      /* --- Time slot items (Edit Time Slots modal) ---------------- */
+      .time-slot-item {
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(255, 255, 255, 0.08);
+      }
+
+      .slot-type-select {
+        background: rgba(255, 255, 255, 0.07);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.72);
+      }
+
+      .slot-type-select option {
+        background: #152018;
+        color: white;
+      }
+
+      /* --- Sync indicator ---------------------------------------- */
+      .sync-indicator {
+        background: rgba(13, 24, 18, 0.96);
+        border-color: var(--success);
+        color: rgba(255, 255, 255, 0.72);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      }
+
+      /* --- Fullscreen mode adjustments --------------------------- */
+      .timetable-section.timetable-fullscreen {
+        background: #0c1812;
+      }
+
+      /* --- Admin Toolbar ----------------------------------------- */
+      .admin-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.25rem;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 10px;
+        padding: 0.4rem 0.5rem;
+      }
+
+      .toolbar-group {
+        display: flex;
+        align-items: center;
+        gap: 0.2rem;
+      }
+
+      .toolbar-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.38rem;
+        padding: 0.38rem 0.75rem;
+        border-radius: 7px;
+        font-family: "Work Sans", sans-serif;
+        font-size: 0.8rem;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        background: transparent;
+        border: 1px solid transparent;
+        color: rgba(255, 255, 255, 0.6);
+        cursor: pointer;
+        transition:
+          background 0.15s,
+          color 0.15s,
+          border-color 0.15s;
+        white-space: nowrap;
+        text-decoration: none;
+        line-height: 1;
+      }
+
+      .toolbar-btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.14);
+        color: rgba(255, 255, 255, 0.92);
+      }
+
+      .toolbar-btn--accent {
+        color: rgba(255, 255, 255, 0.75);
+      }
+
+      .toolbar-btn--accent:hover {
+        background: rgba(44, 95, 79, 0.25);
+        border-color: rgba(44, 95, 79, 0.5);
+        color: #7ecfb0;
+      }
+
+      .toolbar-btn--danger:hover {
+        background: rgba(185, 50, 50, 0.2);
+        border-color: rgba(185, 50, 50, 0.4);
+        color: #e88;
+      }
+
+      .toolbar-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 4px;
+        border-radius: 9px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        background: rgba(44, 95, 79, 0.35);
+        color: #7ecfb0;
+        line-height: 1;
+      }
+
+      .toolbar-sep {
+        width: 1px;
+        height: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        margin: 0 0.25rem;
+        flex-shrink: 0;
+      }
+
+      .toolbar-sep--push {
+        flex: 1;
+        width: auto;
+        min-width: 0.5rem;
+        background: transparent;
+      }
+
+      @media (max-width: 640px) {
+        .toolbar-btn span:not(.toolbar-badge) {
+          display: none;
         }
-
-        .subtitle {
-            color: rgba(255, 255, 255, 0.35);
-        }
-
-        #autoSaveIndicator {
-            color: var(--accent) !important;
-        }
-
-        /* --- Timetable header panel --------------------------------- */
-        .timetable-header {
-            background: rgba(13, 24, 18, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.09);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.06);
-        }
-
-        .timetable-header-top {
-            border-bottom-color: rgba(255, 255, 255, 0.07);
-        }
-
-        .panel-title {
-            color: rgba(255, 255, 255, 0.88);
-            border-bottom-color: rgba(255, 255, 255, 0.07);
-        }
-
-        .action-group-label {
-            color: rgba(255, 255, 255, 0.25);
-        }
-
-        /* --- Day selector ------------------------------------------ */
-        .day-btn {
-            background: rgba(255, 255, 255, 0.04);
-            border-color: rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.55);
-            font-family: "Work Sans", sans-serif;
-        }
-
-        .day-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.22);
-            color: rgba(255, 255, 255, 0.88);
-            transform: translateY(-2px);
-        }
-
-        .day-btn.active {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: white;
-            box-shadow: 0 4px 16px rgba(44, 95, 79, 0.4);
-        }
-
-        /* --- View controls ----------------------------------------- */
-        .view-controls-group {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.09);
-            box-shadow: none;
-        }
-
-        .view-control-btn {
-            color: rgba(255, 255, 255, 0.45);
-        }
-
-        .view-control-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-            color: rgba(255, 255, 255, 0.88);
-        }
-
-        .view-control-btn:disabled {
-            color: rgba(255, 255, 255, 0.15);
-            background: transparent;
-        }
-
-        .view-controls-zoom-value {
-            color: rgba(255, 255, 255, 0.65);
-        }
-
-        /* --- Timetable wrapper & table ------------------------------ */
-        .timetable-wrapper {
-            background: rgba(13, 24, 18, 0.88);
-            border-color: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
-            contain: paint;
-            will-change: scroll-position;
-        }
-
-        .timetable {
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .timetable-row:nth-child(even) {
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .time-cell {
-            background: rgba(255, 255, 255, 0.04);
-            color: rgba(255, 255, 255, 0.65);
-            border-color: rgba(255, 255, 255, 0.08);
-        }
-
-        .roster-cell {
-            border-color: rgba(255, 255, 255, 0.07);
-        }
-
-        .roster-cell:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        /* --- Break rows -------------------------------------------- */
-        .break-row--recess .break-cell {
-            background: rgba(96, 213, 245, 0.07);
-            color: #60d5f5;
-        }
-
-        .break-row--lunch .break-cell {
-            background: rgba(212, 165, 116, 0.09);
-            color: var(--accent);
-        }
-
-        .break-row--break .break-cell {
-            background: rgba(255, 255, 255, 0.03);
-            color: rgba(255, 255, 255, 0.28);
-        }
-
-        .break-row .time-cell {
-            color: rgba(255, 255, 255, 0.38);
-        }
-
-        /* --- Counters section --------------------------------------- */
-        .counters-section {
-            background: rgba(13, 24, 18, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.09);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-        }
-
-        .counter-tabs {
-            border-bottom-color: rgba(255, 255, 255, 0.08);
-        }
-
-        .counter-tab {
-            color: rgba(255, 255, 255, 0.3);
-            font-family: "Work Sans", sans-serif;
-        }
-
-        .counter-tab:hover {
-            color: rgba(255, 255, 255, 0.65);
-        }
-
-        .counter-tab.active {
-            color: rgba(255, 255, 255, 0.88);
-            border-bottom-color: var(--accent);
-        }
-
-        .counter-item {
-            background: rgba(255, 255, 255, 0.04);
-            border-color: rgba(255, 255, 255, 0.08);
-        }
-
-        .counter-item span {
-            color: rgba(255, 255, 255, 0.72);
-        }
-
-        .counter-value {
-            color: var(--accent);
-        }
-
-        /* --- Modals ------------------------------------------------- */
-        .modal {
-            background: rgba(0, 0, 0, 0.65);
-        }
-
-        .modal-content {
-            background: rgba(13, 24, 18, 0.97);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 32px 80px rgba(0, 0, 0, 0.65),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.07);
-        }
-
-        .modal-title {
-            color: rgba(255, 255, 255, 0.92);
-            font-family: "Crimson Pro", serif;
-        }
-
-        .modal-info {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: rgba(255, 255, 255, 0.55);
-            border-radius: 8px;
-        }
-
-        /* Override inline style="color: var(--primary)" on modal h4s */
-        .modal-content h4 {
-            color: rgba(255, 255, 255, 0.5) !important;
-            font-family: "Work Sans", sans-serif;
-        }
-
-        /* Override inline style="color: var(--text-light)" on modal paragraphs */
-        .modal-content p {
-            color: rgba(255, 255, 255, 0.48) !important;
-        }
-
-        .modal-content label {
-            color: rgba(255, 255, 255, 0.45);
-        }
-
-        .modal-content input,
-        .modal-content select,
-        .modal-content textarea {
-            background: rgba(255, 255, 255, 0.07);
-            border-color: rgba(255, 255, 255, 0.12);
-            color: rgba(255, 255, 255, 0.85);
-        }
-
-        .modal-content input:focus,
-        .modal-content select:focus,
-        .modal-content textarea:focus {
-            border-color: var(--accent);
-            background: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.15);
-        }
-
-        .modal-content input::placeholder,
-        .modal-content textarea::placeholder {
-            color: rgba(255, 255, 255, 0.22);
-        }
-
-        .modal-content select option {
-            background: #152018;
-            color: white;
-        }
-
-        /* --- List items (People & Classes modals) ------------------- */
-        .list-item {
-            background: rgba(255, 255, 255, 0.04);
-            border-color: rgba(255, 255, 255, 0.08);
-        }
-
-        .list-item:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.16);
-        }
-
-        .item-name {
-            color: rgba(255, 255, 255, 0.82);
-        }
-
-        .empty-state,
-        .empty-state p {
-            color: rgba(255, 255, 255, 0.22);
-        }
-
-        /* --- Time slot items (Edit Time Slots modal) ---------------- */
-        .time-slot-item {
-            background: rgba(255, 255, 255, 0.04);
-            border-color: rgba(255, 255, 255, 0.08);
-        }
-
-        .slot-type-select {
-            background: rgba(255, 255, 255, 0.07);
-            border-color: rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.72);
-        }
-
-        .slot-type-select option {
-            background: #152018;
-            color: white;
-        }
-
-        /* --- Sync indicator ---------------------------------------- */
-        .sync-indicator {
-            background: rgba(13, 24, 18, 0.96);
-            border-color: var(--success);
-            color: rgba(255, 255, 255, 0.72);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-        }
-
-        /* --- Fullscreen mode adjustments --------------------------- */
-        .timetable-section.timetable-fullscreen {
-            background: #0c1812;
-        }
-
-        /* --- Admin Toolbar ----------------------------------------- */
-        .admin-toolbar {
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-            flex-wrap: wrap;
-            margin-bottom: 1.25rem;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            border-radius: 10px;
-            padding: 0.4rem 0.5rem;
-        }
-
-        .toolbar-group {
-            display: flex;
-            align-items: center;
-            gap: 0.2rem;
-        }
-
         .toolbar-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.38rem;
-            padding: 0.38rem 0.75rem;
-            border-radius: 7px;
-            font-family: "Work Sans", sans-serif;
-            font-size: 0.8rem;
-            font-weight: 500;
-            letter-spacing: 0.01em;
-            background: transparent;
-            border: 1px solid transparent;
-            color: rgba(255, 255, 255, 0.6);
-            cursor: pointer;
-            transition: background 0.15s, color 0.15s, border-color 0.15s;
-            white-space: nowrap;
-            text-decoration: none;
-            line-height: 1;
+          padding: 0.4rem 0.55rem;
+          font-size: 1rem;
+          gap: 0;
         }
-
-        .toolbar-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.14);
-            color: rgba(255, 255, 255, 0.92);
-        }
-
-        .toolbar-btn--accent {
-            color: rgba(255, 255, 255, 0.75);
-        }
-
-        .toolbar-btn--accent:hover {
-            background: rgba(44, 95, 79, 0.25);
-            border-color: rgba(44, 95, 79, 0.5);
-            color: #7ecfb0;
-        }
-
-        .toolbar-btn--danger:hover {
-            background: rgba(185, 50, 50, 0.2);
-            border-color: rgba(185, 50, 50, 0.4);
-            color: #e88;
-        }
-
-        .toolbar-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 18px;
-            height: 18px;
-            padding: 0 4px;
-            border-radius: 9px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            background: rgba(44, 95, 79, 0.35);
-            color: #7ecfb0;
-            line-height: 1;
-        }
-
-        .toolbar-sep {
-            width: 1px;
-            height: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            margin: 0 0.25rem;
-            flex-shrink: 0;
-        }
-
         .toolbar-sep--push {
-            flex: 1;
-            width: auto;
-            min-width: 0.5rem;
-            background: transparent;
+          display: none;
         }
-
-        @media (max-width: 640px) {
-            .toolbar-btn span:not(.toolbar-badge) { display: none; }
-            .toolbar-btn { padding: 0.4rem 0.55rem; font-size: 1rem; gap: 0; }
-            .toolbar-sep--push { display: none; }
-        }
+      }
     </style>
 
     <!-- Export Libraries -->
@@ -498,22 +557,49 @@
       <header>
         <h1>Universal Timetable Maker</h1>
         <p class="subtitle">Flexible Scheduling with Custom Time Slots</p>
-        <div id="autoSaveIndicator" style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--success); display: none">
+        <div
+          id="autoSaveIndicator"
+          style="
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--success);
+            display: none;
+          "
+        >
           Auto-saved
         </div>
       </header>
 
-
       <!-- People Manager Modal -->
       <div class="modal" id="peopleManagerModal">
-        <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column">
+        <div
+          class="modal-content"
+          style="
+            max-width: 800px;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+          "
+        >
           <h3 class="modal-title">Manage People</h3>
 
           <div style="flex: 1; overflow-y: auto; padding: 1rem 0">
             <div class="form-group">
-              <label for="peopleInput">Add People (one per line or comma-separated)</label>
-              <textarea id="peopleInput" rows="4" placeholder="Single: John Smith&#10;Multiple: Jane Doe, Bob Wilson, Sarah Chen" style="width: 100%"></textarea>
-              <button class="btn btn-primary" onclick="addPeople()" style="margin-top: 0.5rem; width: 100%">
+              <label for="peopleInput"
+                >Add People (one per line or comma-separated)</label
+              >
+              <textarea
+                id="peopleInput"
+                rows="4"
+                placeholder="Single: John Smith&#10;Multiple: Jane Doe, Bob Wilson, Sarah Chen"
+                style="width: 100%"
+              ></textarea>
+              <button
+                class="btn btn-primary"
+                onclick="addPeople()"
+                style="margin-top: 0.5rem; width: 100%"
+              >
                 Add People
               </button>
             </div>
@@ -522,7 +608,11 @@
               <h4 style="color: var(--primary); margin-bottom: 1rem">
                 Current People (<span id="peopleCountInModal">0</span>)
               </h4>
-              <div class="item-list" id="peopleList" style="max-height: 400px; overflow-y: auto">
+              <div
+                class="item-list"
+                id="peopleList"
+                style="max-height: 400px; overflow-y: auto"
+              >
                 <div class="empty-state">
                   <div class="empty-state-icon">👤</div>
                   <p>No people added yet</p>
@@ -532,21 +622,43 @@
           </div>
 
           <div class="modal-buttons" style="margin-top: 1rem">
-            <button class="btn btn-cancel" onclick="closePeopleManager()">Close</button>
+            <button class="btn btn-cancel" onclick="closePeopleManager()">
+              Close
+            </button>
           </div>
         </div>
       </div>
 
       <!-- Classes Manager Modal -->
       <div class="modal" id="classesManagerModal">
-        <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column">
+        <div
+          class="modal-content"
+          style="
+            max-width: 800px;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+          "
+        >
           <h3 class="modal-title">Manage Classes</h3>
 
           <div style="flex: 1; overflow-y: auto; padding: 1rem 0">
             <div class="form-group">
-              <label for="classesInput">Add Classes (one per line or comma-separated)</label>
-              <textarea id="classesInput" rows="4" placeholder="Single: Mathematics&#10;Multiple: English, Science, History" style="width: 100%"></textarea>
-              <button class="btn btn-primary" onclick="addClasses()" style="margin-top: 0.5rem; width: 100%">
+              <label for="classesInput"
+                >Add Classes (one per line or comma-separated)</label
+              >
+              <textarea
+                id="classesInput"
+                rows="4"
+                placeholder="Single: Mathematics&#10;Multiple: English, Science, History"
+                style="width: 100%"
+              ></textarea>
+              <button
+                class="btn btn-primary"
+                onclick="addClasses()"
+                style="margin-top: 0.5rem; width: 100%"
+              >
                 Add Classes
               </button>
             </div>
@@ -555,7 +667,11 @@
               <h4 style="color: var(--primary); margin-bottom: 1rem">
                 Current Classes (<span id="classesCountInModal">0</span>)
               </h4>
-              <div class="item-list" id="classList" style="max-height: 400px; overflow-y: auto">
+              <div
+                class="item-list"
+                id="classList"
+                style="max-height: 400px; overflow-y: auto"
+              >
                 <div class="empty-state">
                   <div class="empty-state-icon">📖</div>
                   <p>No classes added yet</p>
@@ -565,7 +681,9 @@
           </div>
 
           <div class="modal-buttons" style="margin-top: 1rem">
-            <button class="btn btn-cancel" onclick="closeClassesManager()">Close</button>
+            <button class="btn btn-cancel" onclick="closeClassesManager()">
+              Close
+            </button>
           </div>
         </div>
       </div>
@@ -582,61 +700,188 @@
 
           <div class="admin-toolbar">
             <div class="toolbar-group">
-              <button class="toolbar-btn toolbar-btn--accent" onclick="openPeopleManager()">
-                👥 <span>People</span><span class="toolbar-badge" id="peopleCount">0</span>
+              <button
+                class="toolbar-btn toolbar-btn--accent"
+                onclick="openPeopleManager()"
+              >
+                👥 <span>People</span
+                ><span class="toolbar-badge" id="peopleCount">0</span>
               </button>
-              <button class="toolbar-btn toolbar-btn--accent" onclick="openClassesManager()">
-                📚 <span>Classes</span><span class="toolbar-badge" id="classesCount">0</span>
+              <button
+                class="toolbar-btn toolbar-btn--accent"
+                onclick="openClassesManager()"
+              >
+                📚 <span>Classes</span
+                ><span class="toolbar-badge" id="classesCount">0</span>
               </button>
             </div>
             <div class="toolbar-sep"></div>
             <div class="toolbar-group">
-              <button class="toolbar-btn" id="editTimeSlotsBtn" onclick="openEditTimeSlots()" style="display:none">⏱ <span>Time Slots</span></button>
+              <button
+                class="toolbar-btn"
+                id="editTimeSlotsBtn"
+                onclick="openEditTimeSlots()"
+                style="display: none"
+              >
+                ⏱ <span>Time Slots</span>
+              </button>
               <a class="toolbar-btn" href="view.html">👁 <span>View</span></a>
             </div>
             <div class="toolbar-sep"></div>
             <div class="toolbar-group">
-              <button class="toolbar-btn" onclick="exportSchedule()">↑ <span>Export</span></button>
-              <button class="toolbar-btn" onclick="saveProject()">💾 <span>Save</span></button>
-              <label class="toolbar-btn" style="cursor:pointer; align-self:center">📂 <span>Load</span><input type="file" accept=".json" onchange="loadProject(event)" style="display:none"></label>
+              <button class="toolbar-btn" onclick="exportSchedule()">
+                ↑ <span>Export</span>
+              </button>
+              <button class="toolbar-btn" onclick="saveProject()">
+                💾 <span>Save</span>
+              </button>
+              <button
+                class="toolbar-btn"
+                style="cursor: pointer; align-self: center"
+              >
+                📂 <span>Load</span
+                ><input
+                  type="file"
+                  accept=".json"
+                  onchange="loadProject(event)"
+                  style="display: none"
+                />
+              </button>
             </div>
             <div class="toolbar-sep toolbar-sep--push"></div>
             <div class="toolbar-group">
-              <a class="toolbar-btn" href="config.html">⚙️ <span>Config</span></a>
-              <button class="toolbar-btn toolbar-btn--danger" onclick="resetAndSetup()">↺ <span>Reset</span></button>
+              <a class="toolbar-btn" href="config.html"
+                >⚙️ <span>Config</span></a
+              >
+              <button
+                class="toolbar-btn toolbar-btn--danger"
+                onclick="resetAndSetup()"
+              >
+                ↺ <span>Reset</span>
+              </button>
             </div>
           </div>
         </div>
 
         <!-- Day Selector + View Controls row -->
-        <div style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap; margin-bottom:1rem;">
-          <div class="day-selector" id="daySelector" style="margin-bottom:0; flex:1; min-width:0;">
-            <button class="day-btn active" data-day="monday" onclick="switchDay('monday')">Monday</button>
-            <button class="day-btn" data-day="tuesday" onclick="switchDay('tuesday')">Tuesday</button>
-            <button class="day-btn" data-day="wednesday" onclick="switchDay('wednesday')">Wednesday</button>
-            <button class="day-btn" data-day="thursday" onclick="switchDay('thursday')">Thursday</button>
-            <button class="day-btn" data-day="friday" onclick="switchDay('friday')">Friday</button>
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+          "
+        >
+          <div
+            class="day-selector"
+            id="daySelector"
+            style="margin-bottom: 0; flex: 1; min-width: 0"
+          >
+            <button
+              class="day-btn active"
+              data-day="monday"
+              onclick="switchDay('monday')"
+            >
+              Monday
+            </button>
+            <button
+              class="day-btn"
+              data-day="tuesday"
+              onclick="switchDay('tuesday')"
+            >
+              Tuesday
+            </button>
+            <button
+              class="day-btn"
+              data-day="wednesday"
+              onclick="switchDay('wednesday')"
+            >
+              Wednesday
+            </button>
+            <button
+              class="day-btn"
+              data-day="thursday"
+              onclick="switchDay('thursday')"
+            >
+              Thursday
+            </button>
+            <button
+              class="day-btn"
+              data-day="friday"
+              onclick="switchDay('friday')"
+            >
+              Friday
+            </button>
           </div>
 
           <!-- View Controls -->
-          <div class="view-controls" id="viewControls" style="margin-bottom:0; flex-shrink:0;">
-          <div class="view-controls-group">
-            <button type="button" class="view-control-btn" id="scrollLeftBtn" title="Scroll left" aria-label="Scroll timetable left">&#x2039;</button>
-            <button type="button" class="view-control-btn" id="scrollRightBtn" title="Scroll right" aria-label="Scroll timetable right">&#x203A;</button>
-          </div>
-          <div class="view-controls-group view-controls-zoom">
-            <button type="button" class="view-control-btn" id="zoomOutBtn" title="Zoom out" aria-label="Zoom out">&minus;</button>
-            <span class="view-controls-zoom-value" id="zoomValue" title="Click to reset zoom">100%</span>
-            <button type="button" class="view-control-btn" id="zoomInBtn" title="Zoom in" aria-label="Zoom in">+</button>
-          </div>
-          <div class="view-controls-group">
-            <button type="button" class="view-control-btn" id="fullscreenBtn" title="Toggle fullscreen" aria-label="Toggle fullscreen">
-              <span class="fullscreen-icon-enter">⛶</span>
-              <span class="fullscreen-icon-exit">✕</span>
-            </button>
+          <div
+            class="view-controls"
+            id="viewControls"
+            style="margin-bottom: 0; flex-shrink: 0"
+          >
+            <div class="view-controls-group">
+              <button
+                type="button"
+                class="view-control-btn"
+                id="scrollLeftBtn"
+                title="Scroll left"
+                aria-label="Scroll timetable left"
+              >
+                &#x2039;
+              </button>
+              <button
+                type="button"
+                class="view-control-btn"
+                id="scrollRightBtn"
+                title="Scroll right"
+                aria-label="Scroll timetable right"
+              >
+                &#x203A;
+              </button>
+            </div>
+            <div class="view-controls-group view-controls-zoom">
+              <button
+                type="button"
+                class="view-control-btn"
+                id="zoomOutBtn"
+                title="Zoom out"
+                aria-label="Zoom out"
+              >
+                &minus;
+              </button>
+              <span
+                class="view-controls-zoom-value"
+                id="zoomValue"
+                title="Click to reset zoom"
+                >100%</span
+              >
+              <button
+                type="button"
+                class="view-control-btn"
+                id="zoomInBtn"
+                title="Zoom in"
+                aria-label="Zoom in"
+              >
+                +
+              </button>
+            </div>
+            <div class="view-controls-group">
+              <button
+                type="button"
+                class="view-control-btn"
+                id="fullscreenBtn"
+                title="Toggle fullscreen"
+                aria-label="Toggle fullscreen"
+              >
+                <span class="fullscreen-icon-enter">⛶</span>
+                <span class="fullscreen-icon-exit">✕</span>
+              </button>
+            </div>
           </div>
         </div>
-        </div><!-- end day+controls row -->
+        <!-- end day+controls row -->
 
         <div class="timetable-wrapper" id="timetableWrapper">
           <div class="timetable-zoom" id="timetableZoom">
@@ -652,10 +897,15 @@
         <!-- Counters Section -->
         <div class="counters-section" id="countersSection">
           <div class="counter-tabs">
-            <button class="counter-tab active" onclick="switchCounterTab('day')">
+            <button
+              class="counter-tab active"
+              onclick="switchCounterTab('day')"
+            >
               <span id="currentDayLabel">Monday</span>
             </button>
-            <button class="counter-tab" onclick="switchCounterTab('week')">Full Week</button>
+            <button class="counter-tab" onclick="switchCounterTab('week')">
+              Full Week
+            </button>
           </div>
 
           <div class="counter-content active" id="dayCounters">
@@ -689,12 +939,18 @@
 
         <div class="form-group">
           <label for="modalNotes">Notes (optional)</label>
-          <textarea id="modalNotes" rows="2" placeholder="Add any notes..."></textarea>
+          <textarea
+            id="modalNotes"
+            rows="2"
+            placeholder="Add any notes..."
+          ></textarea>
         </div>
 
         <div class="modal-buttons">
           <button class="btn btn-cancel" onclick="closeModal()">Cancel</button>
-          <button class="btn btn-success" onclick="confirmAssignment()">Confirm</button>
+          <button class="btn btn-success" onclick="confirmAssignment()">
+            Confirm
+          </button>
         </div>
       </div>
     </div>
@@ -706,13 +962,21 @@
 
         <div class="time-slot-list" id="timeSlotList"></div>
 
-        <button class="btn btn-secondary" onclick="addNewTimeSlot()" style="margin-bottom: 1rem">
+        <button
+          class="btn btn-secondary"
+          onclick="addNewTimeSlot()"
+          style="margin-bottom: 1rem"
+        >
           Add Time Slot
         </button>
 
         <div class="modal-buttons">
-          <button class="btn btn-cancel" onclick="closeEditTimeSlotsModal()">Cancel</button>
-          <button class="btn btn-success" onclick="saveTimeSlots()">Save Changes</button>
+          <button class="btn btn-cancel" onclick="closeEditTimeSlotsModal()">
+            Cancel
+          </button>
+          <button class="btn btn-success" onclick="saveTimeSlots()">
+            Save Changes
+          </button>
         </div>
       </div>
     </div>
@@ -727,22 +991,50 @@
         </p>
 
         <div style="display: grid; gap: 0.75rem">
-          <button class="btn btn-primary" onclick="exportToExcel(); closeExportModal()">
+          <button
+            class="btn btn-primary"
+            onclick="
+              exportToExcel();
+              closeExportModal();
+            "
+          >
             Excel Spreadsheet (.xlsx)
           </button>
-          <button class="btn btn-secondary" onclick="exportToPDF(); closeExportModal()">
+          <button
+            class="btn btn-secondary"
+            onclick="
+              exportToPDF();
+              closeExportModal();
+            "
+          >
             PDF Document (.pdf)
           </button>
-          <button class="btn btn-secondary" onclick="exportToPNG(); closeExportModal()">
+          <button
+            class="btn btn-secondary"
+            onclick="
+              exportToPNG();
+              closeExportModal();
+            "
+          >
             Images (.png) - One per day
           </button>
-          <button class="btn btn-success" onclick="exportAll(); closeExportModal()">
+          <button
+            class="btn btn-success"
+            onclick="
+              exportAll();
+              closeExportModal();
+            "
+          >
             Export All Formats
           </button>
         </div>
 
         <div class="modal-buttons" style="margin-top: 1.5rem">
-          <button class="btn btn-cancel" onclick="closeExportModal()" style="grid-column: 1 / -1">
+          <button
+            class="btn btn-cancel"
+            onclick="closeExportModal()"
+            style="grid-column: 1 / -1"
+          >
             Cancel
           </button>
         </div>
