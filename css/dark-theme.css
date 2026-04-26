@@ -9,7 +9,8 @@ body {
 }
 
 .admin-bg,
-.view-bg {
+.view-bg,
+.setup-bg {
   position: fixed;
   inset: 0;
   z-index: 0;
