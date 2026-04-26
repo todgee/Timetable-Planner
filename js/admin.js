@@ -347,19 +347,34 @@ function updateClassList() {
 // ============================================
 // Modal Management
 // ============================================
+// Modal Management
+// ============================================
+
+function lockScroll() {
+  document.body.style.overflow = "hidden";
+}
+
+function unlockScroll() {
+  document.body.style.overflow = "";
+}
+
 function openPeopleManager() {
+  lockScroll();
   document.getElementById("peopleManagerModal").classList.add("active");
 }
 
 function closePeopleManager() {
+  unlockScroll();
   document.getElementById("peopleManagerModal").classList.remove("active");
 }
 
 function openClassesManager() {
+  lockScroll();
   document.getElementById("classesManagerModal").classList.add("active");
 }
 
 function closeClassesManager() {
+  unlockScroll();
   document.getElementById("classesManagerModal").classList.remove("active");
 }
 
@@ -427,6 +442,7 @@ function openEditTimeSlots() {
   listContainer.innerHTML = "";
   listContainer.appendChild(fragment);
 
+  lockScroll();
   document.getElementById("editTimeSlotsModal").classList.add("active");
 }
 
@@ -467,6 +483,7 @@ function removeTimeSlot(index) {
 }
 
 function closeEditTimeSlotsModal() {
+  unlockScroll();
   document.getElementById("editTimeSlotsModal").classList.remove("active");
 }
 
@@ -954,6 +971,7 @@ function editCell(time, person) {
     document.getElementById("modalNotes").value = "";
   }
 
+  lockScroll();
   document.getElementById("assignmentModal").classList.add("active");
 }
 
@@ -978,6 +996,7 @@ function populateDurationOptions(periodMinutes) {
 }
 
 function closeModal() {
+  unlockScroll();
   document.getElementById("assignmentModal").classList.remove("active");
   currentEditCell = null;
 }
@@ -1274,10 +1293,12 @@ function exportSchedule() {
     return;
   }
 
+  lockScroll();
   document.getElementById("exportModal").classList.add("active");
 }
 
 function closeExportModal() {
+  unlockScroll();
   document.getElementById("exportModal").classList.remove("active");
 }
 
