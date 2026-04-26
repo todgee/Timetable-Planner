@@ -1478,7 +1478,7 @@
 
                 <div class="wizard-content">
                     <div class="item-input-row">
-                        <input type="text" id="classNameInput" placeholder="Enter class name (e.g., Math, Science)" onkeypress="handleClassKeypress(event)">
+                        <input type="text" id="classNameInput" placeholder="Enter class name (e.g., Math, Science)" maxlength="60" onkeypress="handleClassKeypress(event)">
                         <input type="color" id="classColorInput" value="#4CAF50" title="Pick a color">
                         <button onclick="addClass()">Add</button>
                     </div>
@@ -1501,7 +1501,7 @@
 
                 <div class="wizard-content">
                     <div class="item-input-row">
-                        <input type="text" id="personNameInput" placeholder="Enter person's name" onkeypress="handlePersonKeypress(event)">
+                        <input type="text" id="personNameInput" placeholder="Enter person's name" maxlength="50" onkeypress="handlePersonKeypress(event)">
                         <button onclick="addPerson()">Add</button>
                     </div>
 

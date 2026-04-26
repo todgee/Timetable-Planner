@@ -6,6 +6,10 @@
 let peopleList = [];
 let classList = [];
 
+// Character limits
+const MAX_PERSON_NAME_LENGTH = 50;
+const MAX_CLASS_NAME_LENGTH = 60;
+
 // Staff filter state
 let activeFilter = []; // currently applied (empty = show all)
 let tempFilter = [];   // working copy while dropdown is open
@@ -85,9 +89,12 @@ function addPeople() {
 
   let added = 0;
   let skipped = 0;
+  let tooLong = 0;
 
   names.forEach((name) => {
-    if (!peopleList.includes(name)) {
+    if (name.length > MAX_PERSON_NAME_LENGTH) {
+      tooLong++;
+    } else if (!peopleList.includes(name)) {
       peopleList.push(name);
       added++;
     } else {
@@ -99,10 +106,13 @@ function addPeople() {
   updatePeopleList();
   autoSave();
 
-  if (added > 0) {
-    alert(
-      `Added ${added} ${added === 1 ? "person" : "people"}${skipped > 0 ? `, skipped ${skipped} duplicate${skipped === 1 ? "" : "s"}` : ""}`
-    );
+  const parts = [];
+  if (added > 0) parts.push(`Added ${added} ${added === 1 ? "person" : "people"}`);
+  if (skipped > 0) parts.push(`skipped ${skipped} duplicate${skipped === 1 ? "" : "s"}`);
+  if (tooLong > 0) parts.push(`skipped ${tooLong} name${tooLong === 1 ? "" : "s"} exceeding ${MAX_PERSON_NAME_LENGTH} characters`);
+
+  if (parts.length > 0) {
+    alert(parts.join(", "));
   } else {
     alert("All names were already in the list");
   }
@@ -216,9 +226,12 @@ function addClasses() {
 
   let added = 0;
   let skipped = 0;
+  let tooLong = 0;
 
   names.forEach((name) => {
-    if (!classList.includes(name)) {
+    if (name.length > MAX_CLASS_NAME_LENGTH) {
+      tooLong++;
+    } else if (!classList.includes(name)) {
       classList.push(name);
       classColors[name] = defaultColors[colorIndex % defaultColors.length];
       colorIndex++;
@@ -233,10 +246,13 @@ function addClasses() {
   updateModalSelects();
   autoSave();
 
-  if (added > 0) {
-    alert(
-      `Added ${added} ${added === 1 ? "class" : "classes"}${skipped > 0 ? `, skipped ${skipped} duplicate${skipped === 1 ? "" : "s"}` : ""}`
-    );
+  const parts = [];
+  if (added > 0) parts.push(`Added ${added} ${added === 1 ? "class" : "classes"}`);
+  if (skipped > 0) parts.push(`skipped ${skipped} duplicate${skipped === 1 ? "" : "s"}`);
+  if (tooLong > 0) parts.push(`skipped ${tooLong} name${tooLong === 1 ? "" : "s"} exceeding ${MAX_CLASS_NAME_LENGTH} characters`);
+
+  if (parts.length > 0) {
+    alert(parts.join(", "));
   } else {
     alert("All classes were already in the list");
   }
@@ -598,6 +614,7 @@ function startEditPerson(oldName, itemDiv) {
   input.type = "text";
   input.className = "item-edit-input";
   input.value = oldName;
+  input.maxLength = MAX_PERSON_NAME_LENGTH;
 
   nameSpan.replaceWith(input);
   removeBtn.disabled = true;
@@ -675,6 +692,7 @@ function startEditClass(oldName, itemDiv) {
   input.type = "text";
   input.className = "item-edit-input";
   input.value = oldName;
+  input.maxLength = MAX_CLASS_NAME_LENGTH;
 
   nameSpan.replaceWith(input);
   removeBtn.disabled = true;
