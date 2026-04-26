@@ -699,6 +699,9 @@ body.timetable-fullscreen-active {
   font-weight: 600;
   text-align: center;
   border: 1px solid rgba(255, 255, 255, 0.2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-family: "Crimson Pro", serif;
   font-size: 1.05rem;
   color: white;
