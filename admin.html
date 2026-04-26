@@ -270,6 +270,7 @@
         /* --- Modals ------------------------------------------------- */
         .modal {
             background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: none; /* blur(4px) from styles.css causes full-page recomposite on every scroll frame */
         }
 
         .modal-content {
@@ -277,6 +278,8 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 32px 80px rgba(0, 0, 0, 0.65),
                         inset 0 1px 0 rgba(255, 255, 255, 0.07);
+            contain: paint;
+            will-change: scroll-position;
         }
 
         .modal-title {
@@ -509,7 +512,7 @@
         <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column">
           <h3 class="modal-title">Manage People</h3>
 
-          <div style="flex: 1; overflow-y: auto; padding: 1rem 0">
+          <div style="flex: 1; overflow-y: auto; padding: 1rem 0; contain: paint; will-change: scroll-position;">
             <div class="form-group">
               <label for="peopleInput">Add People (one per line or comma-separated)</label>
               <textarea id="peopleInput" rows="4" placeholder="Single: John Smith&#10;Multiple: Jane Doe, Bob Wilson, Sarah Chen" style="width: 100%"></textarea>
@@ -542,7 +545,7 @@
         <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column">
           <h3 class="modal-title">Manage Classes</h3>
 
-          <div style="flex: 1; overflow-y: auto; padding: 1rem 0">
+          <div style="flex: 1; overflow-y: auto; padding: 1rem 0; contain: paint; will-change: scroll-position;">
             <div class="form-group">
               <label for="classesInput">Add Classes (one per line or comma-separated)</label>
               <textarea id="classesInput" rows="4" placeholder="Single: Mathematics&#10;Multiple: English, Science, History" style="width: 100%"></textarea>
