@@ -365,6 +365,7 @@ function openPeopleManager() {
 
 function closePeopleManager() {
   unlockScroll();
+  updatePeopleList();
   document.getElementById("peopleManagerModal").classList.remove("active");
 }
 
@@ -375,6 +376,7 @@ function openClassesManager() {
 
 function closeClassesManager() {
   unlockScroll();
+  updateClassList();
   document.getElementById("classesManagerModal").classList.remove("active");
 }
 
