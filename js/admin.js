@@ -6,9 +6,13 @@
 let peopleList = [];
 let classList = [];
 
-// Filter state
+// Staff filter state
 let activeFilter = []; // currently applied (empty = show all)
 let tempFilter = [];   // working copy while dropdown is open
+
+// Class filter state
+let activeClassFilter = []; // currently applied (empty = show all)
+let tempClassFilter = [];   // working copy while dropdown is open
 let classColors = {};
 let assignments = {
   monday: {},
@@ -237,6 +241,8 @@ function removeClass(name) {
   ) {
     classList = classList.filter((cls) => cls !== name);
     delete classColors[name];
+    activeClassFilter = activeClassFilter.filter((c) => c !== name);
+    updateClassFilterBadge();
 
     daysArray.forEach((day) => {
       if (assignments[day]) {
@@ -512,11 +518,12 @@ function renderTimetable() {
 
       const bgColor = hasContent ? classColors[cellData.class] : "";
       const style = hasContent ? `style="background: ${bgColor};"` : "";
+      const dimmed = hasContent && activeClassFilter.length > 0 && !activeClassFilter.includes(cellData.class);
 
       const safePerson = person.replace(/'/g, "\\'");
       const clickHandler = `onclick="editCell('${slot.start}', '${safePerson}')"`;
 
-      html += `<td class="roster-cell ${hasContent ? "has-content" : ""}" ${style} ${clickHandler}>`;
+      html += `<td class="roster-cell ${hasContent ? "has-content" : ""} ${dimmed ? "class-filtered-out" : ""}" ${style} ${clickHandler}>`;
 
       if (hasContent) {
         html += `<button class="remove-btn-cell" onclick="event.stopPropagation(); removeCell('${slot.start}', '${safePerson}')">×</button>`;
@@ -620,6 +627,97 @@ function updateFilterBadge() {
   if (!badge) return;
   if (activeFilter.length > 0) {
     badge.textContent = activeFilter.length;
+    badge.style.display = "inline-flex";
+  } else {
+    badge.style.display = "none";
+  }
+}
+
+// ============================================
+// Class Filter
+// ============================================
+
+function getFilteredClasses() {
+  if (activeClassFilter.length === 0) return classList;
+  return classList.filter((c) => activeClassFilter.includes(c));
+}
+
+function toggleClassFilterDropdown() {
+  const dropdown = document.getElementById("classFilterDropdown");
+  if (dropdown.style.display === "block") {
+    closeClassFilterDropdown();
+  } else {
+    tempClassFilter = [...activeClassFilter];
+    renderClassFilterList();
+    dropdown.style.display = "block";
+  }
+}
+
+function closeClassFilterDropdown() {
+  const dropdown = document.getElementById("classFilterDropdown");
+  if (dropdown) dropdown.style.display = "none";
+}
+
+function renderClassFilterList() {
+  const container = document.getElementById("classFilterList");
+  if (!container) return;
+  if (classList.length === 0) {
+    container.innerHTML = '<p class="filter-empty">No classes added yet</p>';
+    return;
+  }
+  container.innerHTML = classList
+    .map((cls) => {
+      const checked = tempClassFilter.includes(cls) ? "checked" : "";
+      const safe = escapeHtml(cls);
+      const safeJs = cls.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+      const color = classColors[cls] || "transparent";
+      return `<label class="filter-person-item">
+        <input type="checkbox" value="${safe}" ${checked}
+          onchange="toggleTempClassFilter('${safeJs}', this.checked)">
+        <span style="display:inline-flex;align-items:center;gap:0.45rem;">
+          <span style="width:10px;height:10px;border-radius:50%;background:${color};flex-shrink:0;"></span>
+          ${safe}
+        </span>
+      </label>`;
+    })
+    .join("");
+}
+
+function toggleTempClassFilter(cls, checked) {
+  if (checked) {
+    if (!tempClassFilter.includes(cls)) tempClassFilter.push(cls);
+  } else {
+    tempClassFilter = tempClassFilter.filter((c) => c !== cls);
+  }
+}
+
+function classFilterSelectAll() {
+  tempClassFilter = [...classList];
+  renderClassFilterList();
+}
+
+function classFilterClearAll() {
+  tempClassFilter = [];
+  renderClassFilterList();
+}
+
+function applyClassFilter() {
+  if (tempClassFilter.length === 0 || tempClassFilter.length === classList.length) {
+    activeClassFilter = [];
+  } else {
+    activeClassFilter = [...tempClassFilter];
+  }
+  updateClassFilterBadge();
+  closeClassFilterDropdown();
+  renderTimetable();
+  updateCounters();
+}
+
+function updateClassFilterBadge() {
+  const badge = document.getElementById("classFilterBadge");
+  if (!badge) return;
+  if (activeClassFilter.length > 0) {
+    badge.textContent = activeClassFilter.length;
     badge.style.display = "inline-flex";
   } else {
     badge.style.display = "none";
@@ -775,6 +873,8 @@ function updateCounters() {
   document.getElementById("currentDayLabel").textContent =
     currentDay.charAt(0).toUpperCase() + currentDay.slice(1);
 
+  const visibleClasses = getFilteredClasses();
+
   // Day counters
   const dayCounts = {};
   classList.forEach((cls) => (dayCounts[cls] = 0));
@@ -786,7 +886,7 @@ function updateCounters() {
   }
 
   const dayGrid = document.getElementById("dayCounterGrid");
-  dayGrid.innerHTML = classList
+  dayGrid.innerHTML = visibleClasses
     .map(
       (cls) => `
       <div class="counter-item">
@@ -816,7 +916,7 @@ function updateCounters() {
 
   const weekGrid = document.getElementById("weekCounterGrid");
   if (weekGrid) {
-    weekGrid.innerHTML = classList
+    weekGrid.innerHTML = visibleClasses
       .map(
         (cls) => `
         <div class="counter-item">
@@ -1236,11 +1336,15 @@ document.addEventListener("DOMContentLoaded", function () {
     if (e.target === this) closeClassesManager();
   });
 
-  // Close filter dropdown on outside click (without applying changes)
+  // Close dropdowns on outside click (without applying changes)
   document.addEventListener("click", function (e) {
-    const wrapper = document.getElementById("filterStaffWrapper");
-    if (wrapper && !wrapper.contains(e.target)) {
+    const staffWrapper = document.getElementById("filterStaffWrapper");
+    if (staffWrapper && !staffWrapper.contains(e.target)) {
       closeFilterDropdown();
+    }
+    const classWrapper = document.getElementById("classFilterWrapper");
+    if (classWrapper && !classWrapper.contains(e.target)) {
+      closeClassFilterDropdown();
     }
   });
 

@@ -584,6 +584,15 @@
         background: rgba(44, 95, 79, 0.85);
       }
 
+      .filter-dropdown--right {
+        left: auto;
+        right: 0;
+      }
+
+      .roster-cell.class-filtered-out {
+        opacity: 0.15;
+      }
+
       /* --- Fullscreen mode adjustments --------------------------- */
       .timetable-section.timetable-fullscreen {
         background: #0c1812;
@@ -1072,7 +1081,7 @@
 
         <!-- Counters Section -->
         <div class="counters-section" id="countersSection">
-          <div class="counter-tabs">
+          <div class="counter-tabs" style="display: flex; align-items: center">
             <button
               class="counter-tab active"
               onclick="switchCounterTab('day')"
@@ -1082,6 +1091,29 @@
             <button class="counter-tab" onclick="switchCounterTab('week')">
               Full Week
             </button>
+            <div style="margin-left: auto; position: relative; padding: 0.3rem 0.5rem" id="classFilterWrapper">
+              <button
+                class="filter-staff-btn"
+                id="classFilterBtn"
+                onclick="toggleClassFilterDropdown()"
+              >
+                ⊟ Filter Classes<span
+                  class="toolbar-badge"
+                  id="classFilterBadge"
+                  style="display: none; margin-left: 0.35rem"
+                ></span>
+              </button>
+              <div id="classFilterDropdown" class="filter-dropdown filter-dropdown--right">
+                <div class="filter-dropdown-header">
+                  <button class="filter-dropdown-btn" onclick="classFilterSelectAll()">Select All</button>
+                  <button class="filter-dropdown-btn" onclick="classFilterClearAll()">Clear</button>
+                </div>
+                <div class="filter-people-list" id="classFilterList"></div>
+                <div class="filter-dropdown-footer">
+                  <button class="filter-apply-btn" onclick="applyClassFilter()">Apply</button>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="counter-content active" id="dayCounters">
