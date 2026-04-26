@@ -7,8 +7,8 @@ let peopleList = [];
 let classList = [];
 
 // Character limits
-const MAX_PERSON_NAME_LENGTH = 50;
-const MAX_CLASS_NAME_LENGTH = 60;
+const MAX_PERSON_NAME_LENGTH = 20;
+const MAX_CLASS_NAME_LENGTH = 50;
 
 // Staff filter state
 let activeFilter = []; // currently applied (empty = show all)
