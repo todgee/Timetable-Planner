@@ -89,7 +89,7 @@ function renderTimetable() {
   html += '<tr class="timetable-header-row">';
   html += "<th>Time</th>";
   visiblePeople.forEach((name) => {
-    html += `<th>${escapeHtml(name)}</th>`;
+    html += `<th title="${escapeHtml(name)}">${escapeHtml(name)}</th>`;
   });
   html += "</tr>";
 
