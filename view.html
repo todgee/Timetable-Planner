@@ -56,48 +56,12 @@
         <div class="day-controls-row">
 
           <!-- Filter Staff -->
-          <div id="filterStaffWrapper">
-            <button class="filter-staff-btn" id="filterStaffBtn" onclick="toggleFilterDropdown()">
-              ⊟ Filter Staff<span class="toolbar-badge" id="filterBadge" style="display:none; margin-left:0.35rem;"></span>
-            </button>
-            <div id="filterDropdown" class="filter-dropdown">
-              <div class="filter-dropdown-header">
-                <button class="filter-dropdown-btn" onclick="filterSelectAll()">Select All</button>
-                <button class="filter-dropdown-btn" onclick="filterClearAll()">Clear</button>
-              </div>
-              <div class="filter-people-list" id="filterPeopleList"></div>
-              <div class="filter-dropdown-footer">
-                <button class="filter-apply-btn" onclick="applyFilter()">Apply</button>
-              </div>
-            </div>
-          </div>
+          <div id="filterStaffWrapper"></div>
 
-          <div class="day-selector" id="daySelector">
-            <button class="day-btn active" data-day="monday" onclick="switchDay('monday')">Monday</button>
-            <button class="day-btn" data-day="tuesday" onclick="switchDay('tuesday')">Tuesday</button>
-            <button class="day-btn" data-day="wednesday" onclick="switchDay('wednesday')">Wednesday</button>
-            <button class="day-btn" data-day="thursday" onclick="switchDay('thursday')">Thursday</button>
-            <button class="day-btn" data-day="friday" onclick="switchDay('friday')">Friday</button>
-          </div>
+          <div class="day-selector" id="daySelector"></div>
 
           <!-- View Controls -->
-          <div class="view-controls" id="viewControls">
-            <div class="view-controls-group">
-              <button type="button" class="view-control-btn" id="scrollLeftBtn" title="Scroll left" aria-label="Scroll timetable left">&#x2039;</button>
-              <button type="button" class="view-control-btn" id="scrollRightBtn" title="Scroll right" aria-label="Scroll timetable right">&#x203A;</button>
-            </div>
-            <div class="view-controls-group view-controls-zoom">
-              <button type="button" class="view-control-btn" id="zoomOutBtn" title="Zoom out" aria-label="Zoom out">&minus;</button>
-              <span class="view-controls-zoom-value" id="zoomValue" title="Click to reset zoom">100%</span>
-              <button type="button" class="view-control-btn" id="zoomInBtn" title="Zoom in" aria-label="Zoom in">+</button>
-            </div>
-            <div class="view-controls-group">
-              <button type="button" class="view-control-btn" id="fullscreenBtn" title="Toggle fullscreen" aria-label="Toggle fullscreen">
-                <span class="fullscreen-icon-enter">⛶</span>
-                <span class="fullscreen-icon-exit">✕</span>
-              </button>
-            </div>
-          </div>
+          <div class="view-controls" id="viewControls"></div>
         </div><!-- end day+controls row -->
 
         <div class="timetable-wrapper" id="timetableWrapper">
@@ -113,6 +77,12 @@
 
       </div>
     </div>
+
+    <script>
+      renderFilterDropdown(document.getElementById('filterStaffWrapper'));
+      renderDaySelector(document.getElementById('daySelector'));
+      renderViewControls(document.getElementById('viewControls'));
+    </script>
 
     <!-- View JavaScript -->
     <script src="js/view.js"></script>

@@ -80,14 +80,14 @@
 
 .edit-name-btn:hover {
   background: rgba(44, 95, 79, 0.2);
-  border-color: rgba(44, 95, 79, 0.4);
-  color: #7ecfb0;
+  border-color: var(--dt-green-glow);
+  color: var(--dt-green);
 }
 
 .save-name-btn {
-  background: rgba(44, 95, 79, 0.25);
+  background: var(--dt-green-fill);
   border: 1px solid rgba(44, 95, 79, 0.45);
-  color: #7ecfb0;
+  color: var(--dt-green);
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
   cursor: pointer;
@@ -106,10 +106,10 @@
 .item-edit-input {
   flex: 1;
   min-width: 0;
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--dt-fill-input);
   border: 1px solid rgba(212, 165, 116, 0.5);
   border-radius: 4px;
-  color: rgba(255, 255, 255, 0.88);
+  color: var(--dt-text);
   font-family: "Work Sans", sans-serif;
   font-size: 0.9rem;
   font-weight: 500;
@@ -119,7 +119,7 @@
 
 .item-edit-input:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(212, 165, 116, 0.15);
+  box-shadow: 0 0 0 2px var(--dt-gold-glow);
 }
 
 /* --- Filter Staff dropdown --------------------------------- */
@@ -129,9 +129,9 @@
   gap: 0.4rem;
   padding: 0.45rem 0.9rem;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.65);
+  border: 1px solid var(--dt-border-soft);
+  background: var(--dt-fill-control);
+  color: var(--dt-text-mid);
   font-family: "Work Sans", sans-serif;
   font-size: 0.82rem;
   font-weight: 500;
@@ -144,7 +144,7 @@
 .filter-staff-btn.active {
   background: rgba(44, 95, 79, 0.22);
   border-color: rgba(44, 95, 79, 0.5);
-  color: #7ecfb0;
+  color: var(--dt-green);
 }
 
 .filter-dropdown {
@@ -152,8 +152,8 @@
   top: calc(100% + 0.4rem);
   left: 0;
   z-index: 200;
-  background: rgba(13, 24, 18, 0.98);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--dt-surface-float);
+  border: 1px solid var(--dt-border-soft);
   border-radius: 10px;
   min-width: 220px;
   max-width: 280px;
@@ -165,16 +165,16 @@
   display: flex;
   gap: 0.5rem;
   padding: 0.6rem 0.7rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  border-bottom: 1px solid var(--dt-border-faint);
 }
 
 .filter-dropdown-btn {
   flex: 1;
   padding: 0.32rem 0.5rem;
   border-radius: 5px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 255, 255, 0.55);
+  border: 1px solid var(--dt-border-mid);
+  background: var(--dt-fill-subtle);
+  color: var(--dt-text-soft);
   font-family: "Work Sans", sans-serif;
   font-size: 0.75rem;
   cursor: pointer;
@@ -182,8 +182,8 @@
 }
 
 .filter-dropdown-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.88);
+  background: var(--dt-border-mid);
+  color: var(--dt-text);
 }
 
 .filter-people-list {
@@ -202,11 +202,11 @@
 }
 
 .filter-person-item:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--dt-fill-control);
 }
 
 .filter-person-item input[type="checkbox"] {
-  accent-color: #7ecfb0;
+  accent-color: var(--dt-green);
   width: 14px;
   height: 14px;
   cursor: pointer;
@@ -233,7 +233,7 @@
 
 .filter-dropdown-footer {
   padding: 0.6rem 0.7rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-top: 1px solid var(--dt-border-faint);
 }
 
 .filter-apply-btn {
@@ -265,7 +265,7 @@
 
 /* --- Fullscreen mode --------------------------------------- */
 .timetable-section.timetable-fullscreen {
-  background: #0c1812;
+  background: var(--dt-bg);
 }
 
 /* --- Admin Toolbar ----------------------------------------- */
@@ -276,7 +276,7 @@
   flex-wrap: wrap;
   margin-bottom: 1.25rem;
   background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--dt-border-faint);
   border-radius: 10px;
   padding: 0.4rem 0.5rem;
 }
@@ -311,9 +311,9 @@
 }
 
 .toolbar-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--dt-border);
   border-color: rgba(255, 255, 255, 0.14);
-  color: rgba(255, 255, 255, 0.92);
+  color: var(--dt-text-bright);
 }
 
 .toolbar-btn--accent {
@@ -321,9 +321,9 @@
 }
 
 .toolbar-btn--accent:hover {
-  background: rgba(44, 95, 79, 0.25);
+  background: var(--dt-green-fill);
   border-color: rgba(44, 95, 79, 0.5);
-  color: #7ecfb0;
+  color: var(--dt-green);
 }
 
 .toolbar-btn--danger:hover {
@@ -343,14 +343,14 @@
   font-size: 0.7rem;
   font-weight: 600;
   background: rgba(44, 95, 79, 0.35);
-  color: #7ecfb0;
+  color: var(--dt-green);
   line-height: 1;
 }
 
 .toolbar-sep {
   width: 1px;
   height: 20px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--dt-border-mid);
   margin: 0 0.25rem;
   flex-shrink: 0;
 }
