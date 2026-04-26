@@ -381,6 +381,103 @@
         .timetable-section.timetable-fullscreen {
             background: #0c1812;
         }
+
+        /* --- Admin Toolbar ----------------------------------------- */
+        .admin-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.25rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 10px;
+            padding: 0.4rem 0.5rem;
+        }
+
+        .toolbar-group {
+            display: flex;
+            align-items: center;
+            gap: 0.2rem;
+        }
+
+        .toolbar-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.38rem;
+            padding: 0.38rem 0.75rem;
+            border-radius: 7px;
+            font-family: "Work Sans", sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.01em;
+            background: transparent;
+            border: 1px solid transparent;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s, border-color 0.15s;
+            white-space: nowrap;
+            text-decoration: none;
+            line-height: 1;
+        }
+
+        .toolbar-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.14);
+            color: rgba(255, 255, 255, 0.92);
+        }
+
+        .toolbar-btn--accent {
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .toolbar-btn--accent:hover {
+            background: rgba(44, 95, 79, 0.25);
+            border-color: rgba(44, 95, 79, 0.5);
+            color: #7ecfb0;
+        }
+
+        .toolbar-btn--danger:hover {
+            background: rgba(185, 50, 50, 0.2);
+            border-color: rgba(185, 50, 50, 0.4);
+            color: #e88;
+        }
+
+        .toolbar-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 4px;
+            border-radius: 9px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: rgba(44, 95, 79, 0.35);
+            color: #7ecfb0;
+            line-height: 1;
+        }
+
+        .toolbar-sep {
+            width: 1px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 0 0.25rem;
+            flex-shrink: 0;
+        }
+
+        .toolbar-sep--push {
+            flex: 1;
+            width: auto;
+            min-width: 0.5rem;
+            background: transparent;
+        }
+
+        @media (max-width: 640px) {
+            .toolbar-btn span:not(.toolbar-badge) { display: none; }
+            .toolbar-btn { padding: 0.4rem 0.55rem; font-size: 1rem; gap: 0; }
+            .toolbar-sep--push { display: none; }
+        }
     </style>
 
     <!-- Export Libraries -->
@@ -406,15 +503,6 @@
         </div>
       </header>
 
-      <!-- Setup Section - Compact Buttons -->
-      <div class="setup-section" style="display: flex; gap: 1rem; justify-content: center; padding: 1rem">
-        <button class="btn btn-primary btn-icon" onclick="openPeopleManager()" style="font-size: 1.1rem; padding: 1rem 2rem">
-          Manage People (<span id="peopleCount">0</span>)
-        </button>
-        <button class="btn btn-primary btn-icon" onclick="openClassesManager()" style="font-size: 1.1rem; padding: 1rem 2rem">
-          Manage Classes (<span id="classesCount">0</span>)
-        </button>
-      </div>
 
       <!-- People Manager Modal -->
       <div class="modal" id="peopleManagerModal">
@@ -492,39 +580,30 @@
             </h2>
           </div>
 
-          <div class="timetable-actions">
-            <div class="action-group">
-              <span class="action-group-label">Time Settings</span>
-              <button class="btn btn-secondary btn-icon" id="editTimeSlotsBtn" onclick="openEditTimeSlots()" style="display: none">
-                Edit Time Slots
+          <div class="admin-toolbar">
+            <div class="toolbar-group">
+              <button class="toolbar-btn toolbar-btn--accent" onclick="openPeopleManager()">
+                👥 <span>People</span><span class="toolbar-badge" id="peopleCount">0</span>
+              </button>
+              <button class="toolbar-btn toolbar-btn--accent" onclick="openClassesManager()">
+                📚 <span>Classes</span><span class="toolbar-badge" id="classesCount">0</span>
               </button>
             </div>
-
-            <div class="action-group">
-              <span class="action-group-label">Data Management</span>
-              <button class="btn btn-primary btn-icon" onclick="exportSchedule()">
-                Export Schedule
-              </button>
-              <button class="btn btn-secondary btn-icon" onclick="saveProject()">
-                Save Project
-              </button>
-              <label class="btn btn-secondary btn-icon" style="cursor: pointer; text-align: center">
-                Load Project
-                <input type="file" accept=".json" onchange="loadProject(event)" style="display: none" />
-              </label>
+            <div class="toolbar-sep"></div>
+            <div class="toolbar-group">
+              <button class="toolbar-btn" id="editTimeSlotsBtn" onclick="openEditTimeSlots()" style="display:none">⏱ <span>Time Slots</span></button>
+              <a class="toolbar-btn" href="view.html">👁 <span>View</span></a>
             </div>
-
-            <div class="action-group">
-              <span class="action-group-label">Settings</span>
-              <a href="view.html" class="btn btn-secondary btn-icon" style="text-decoration: none; text-align: center">
-                View Timetable
-              </a>
-              <a href="config.html" class="btn btn-primary btn-icon" style="text-decoration: none; text-align: center">
-                Configuration
-              </a>
-              <button class="btn btn-danger btn-icon" onclick="resetAndSetup()" title="[DEV] Clear all data and restart setup">
-                Reset Setup
-              </button>
+            <div class="toolbar-sep"></div>
+            <div class="toolbar-group">
+              <button class="toolbar-btn" onclick="exportSchedule()">↑ <span>Export</span></button>
+              <button class="toolbar-btn" onclick="saveProject()">💾 <span>Save</span></button>
+              <label class="toolbar-btn" style="cursor:pointer">📂 <span>Load</span><input type="file" accept=".json" onchange="loadProject(event)" style="display:none"></label>
+            </div>
+            <div class="toolbar-sep toolbar-sep--push"></div>
+            <div class="toolbar-group">
+              <a class="toolbar-btn" href="config.html">⚙️ <span>Config</span></a>
+              <button class="toolbar-btn toolbar-btn--danger" onclick="resetAndSetup()">↺ <span>Reset</span></button>
             </div>
           </div>
         </div>
