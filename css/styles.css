@@ -677,6 +677,7 @@ body.timetable-fullscreen-active {
 .timetable {
   display: table;
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   border: 2px solid var(--border);
   border-radius: 8px;
@@ -719,7 +720,7 @@ body.timetable-fullscreen-active {
   border: 1px solid var(--border);
   text-align: center;
   vertical-align: middle;
-  min-width: 100px;
+  width: 110px;
   background: var(--surface);
 }
 
