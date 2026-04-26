@@ -26,6 +26,13 @@
   --wednesday: #f59e0b;
   --thursday: #a78bfa;
   --friday: #fb923c;
+
+  /* Break / slot-type palette (shared by timetable rows and review chips) */
+  --slot-recess-bg:   rgba(96, 213, 245, 0.18);
+  --slot-recess-text: #0b6e85;
+  --slot-lunch-bg:    rgba(212, 165, 116, 0.22);
+  --slot-lunch-text:  #8a5a20;
+  --slot-break-bg:    rgba(232, 227, 219, 0.55);
 }
 
 /* ----------------------------------------
@@ -236,7 +243,7 @@ input[type="file"]:hover {
 }
 
 .btn-success:hover {
-  background: #3d7861;
+  background: var(--primary-light);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(74, 139, 111, 0.3);
 }
@@ -824,17 +831,17 @@ body.timetable-fullscreen-active {
 }
 
 .break-row--recess .break-cell {
-  background: rgba(96, 213, 245, 0.18);
-  color: #0b6e85;
+  background: var(--slot-recess-bg);
+  color: var(--slot-recess-text);
 }
 
 .break-row--lunch .break-cell {
-  background: rgba(212, 165, 116, 0.22);
-  color: #8a5a20;
+  background: var(--slot-lunch-bg);
+  color: var(--slot-lunch-text);
 }
 
 .break-row--break .break-cell {
-  background: rgba(232, 227, 219, 0.55);
+  background: var(--slot-break-bg);
   color: var(--text-light);
 }
 
@@ -856,15 +863,15 @@ body.timetable-fullscreen-active {
 
 /* Review chip styling by type */
 .review-item.slot-type-recess {
-  background: rgba(96, 213, 245, 0.18);
-  color: #0b6e85;
+  background: var(--slot-recess-bg);
+  color: var(--slot-recess-text);
 }
 .review-item.slot-type-lunch {
-  background: rgba(212, 165, 116, 0.22);
-  color: #8a5a20;
+  background: var(--slot-lunch-bg);
+  color: var(--slot-lunch-text);
 }
 .review-item.slot-type-break {
-  background: rgba(232, 227, 219, 0.55);
+  background: var(--slot-break-bg);
   color: var(--text-light);
 }
 
@@ -1305,13 +1312,6 @@ body.timetable-fullscreen-active {
   margin-bottom: 3rem;
   padding-bottom: 2rem;
   border-bottom: 2px solid var(--border);
-}
-
-.page-header h1 {
-  font-family: "Crimson Pro", serif;
-  font-size: 2.5rem;
-  color: var(--primary);
-  margin-bottom: 0.5rem;
 }
 
 .page-header p {
