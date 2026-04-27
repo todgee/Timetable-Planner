@@ -17,7 +17,7 @@
 
 body {
   font-family: "Work Sans", sans-serif;
-  background: linear-gradient(135deg, var(--surface-page) 0%, #f5f1e8 100%);
+  background: linear-gradient(135deg, var(--surface-page) 0%, var(--surface-raised) 100%);
   color: var(--text-primary);
   line-height: 1.6;
   min-height: 100vh;
@@ -189,49 +189,49 @@ input[type="file"]:hover {
 
 .btn-primary {
   background: var(--brand-500);
-  color: white;
+  color: var(--text-on-brand);
 }
 
 .btn-primary:hover {
   background: var(--brand-600);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(44, 95, 79, 0.3);
+  box-shadow: 0 4px 12px var(--brand-glow);
 }
 
 .btn-secondary {
   background: var(--accent-500);
-  color: white;
+  color: var(--text-on-brand);
 }
 
 .btn-secondary:hover {
-  background: #c49563;
+  background: var(--accent-600);
   transform: translateY(-2px);
 }
 
 .btn-success {
   background: var(--state-success);
-  color: white;
+  color: var(--text-on-brand);
 }
 
 .btn-success:hover {
   background: var(--brand-400);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(74, 139, 111, 0.3);
+  box-shadow: 0 4px 12px var(--state-success-glow);
 }
 
 .btn-danger {
   background: var(--state-error);
-  color: white;
+  color: var(--text-on-brand);
 }
 
 .btn-danger:hover {
-  background: #b83c3c;
+  background: var(--state-error-hover);
   transform: translateY(-2px);
 }
 
 .btn-cancel {
   background: var(--text-secondary);
-  color: white;
+  color: var(--text-on-brand);
 }
 
 .btn-cancel:hover {
@@ -289,7 +289,7 @@ input[type="file"]:hover {
    ---------------------------------------- */
 .delete-btn {
   background: var(--state-error);
-  color: white;
+  color: var(--text-on-brand);
   border: none;
   padding: 0.4rem 0.75rem;
   border-radius: 4px;
@@ -299,7 +299,7 @@ input[type="file"]:hover {
 }
 
 .delete-btn:hover {
-  background: #b23838;
+  background: var(--state-error-hover);
 }
 
 /* ----------------------------------------
@@ -494,7 +494,7 @@ input[type="file"]:hover {
 
 .day-btn.active {
   background: var(--brand-500);
-  color: white;
+  color: var(--text-on-brand);
   border-color: var(--brand-500);
 }
 
@@ -636,7 +636,7 @@ body.timetable-fullscreen-active {
   font-family: "Crimson Pro", serif;
   font-size: 2rem;
   font-weight: 700;
-  color: white;
+  color: var(--text-on-brand);
   padding: 1rem;
   text-align: center;
   border-radius: 8px;
@@ -666,7 +666,7 @@ body.timetable-fullscreen-active {
 .timetable-header-row {
   display: table-row;
   background: var(--brand-500);
-  color: white;
+  color: var(--text-on-brand);
 }
 
 .timetable-header-row > div,
@@ -676,10 +676,10 @@ body.timetable-fullscreen-active {
   padding: 1rem;
   font-weight: 600;
   text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid var(--border-on-brand);
   font-family: "Crimson Pro", serif;
   font-size: 1.05rem;
-  color: white;
+  color: var(--text-on-brand);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -728,11 +728,11 @@ body.timetable-fullscreen-active {
 }
 
 .roster-cell:hover {
-  background: rgba(44, 95, 79, 0.05);
+  background: var(--fill-hover);
 }
 
 .roster-cell.has-content {
-  color: white;
+  color: var(--text-on-brand);
   cursor: default;
 }
 
@@ -763,8 +763,8 @@ body.timetable-fullscreen-active {
   position: absolute;
   top: 2px;
   right: 2px;
-  background: rgba(255, 255, 255, 0.3);
-  color: white;
+  background: var(--overlay-btn);
+  color: var(--text-on-brand);
   border: none;
   width: 20px;
   height: 20px;
@@ -781,7 +781,7 @@ body.timetable-fullscreen-active {
 }
 
 .remove-btn-cell:hover {
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--overlay-btn-hover);
 }
 
 /* ----------------------------------------
@@ -937,7 +937,7 @@ body.timetable-fullscreen-active {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--surface-overlay);
   backdrop-filter: none;
   z-index: 1000;
   align-items: center;
@@ -956,7 +956,7 @@ body.timetable-fullscreen-active {
   width: 90%;
   max-height: 80vh;
   overflow-y: auto;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 40px var(--shadow-overlay);
   contain: paint;
   will-change: scroll-position;
 }
@@ -1078,7 +1078,7 @@ body.timetable-fullscreen-active {
 
 .role-card.selected {
   border-color: var(--brand-500);
-  background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);
+  background: var(--brand-fill);
 }
 
 .role-icon {
@@ -1125,7 +1125,7 @@ body.timetable-fullscreen-active {
   width: 100%;
   padding: 1rem 2rem;
   background: var(--brand-500);
-  color: white;
+  color: var(--text-on-brand);
   border: none;
   border-radius: 8px;
   font-size: 1.1rem;
@@ -1140,7 +1140,7 @@ body.timetable-fullscreen-active {
 .login-button:hover {
   background: var(--brand-600);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(44, 95, 79, 0.3);
+  box-shadow: 0 4px 12px var(--brand-glow);
 }
 
 .login-button:disabled {
@@ -1150,9 +1150,9 @@ body.timetable-fullscreen-active {
 }
 
 .login-error {
-  background: #fee;
-  border: 1px solid #fcc;
-  color: #c00;
+  background: var(--state-error-bg);
+  border: 1px solid var(--state-error-border);
+  color: var(--state-error);
   padding: 1rem;
   border-radius: 8px;
   margin-bottom: 1rem;
@@ -1166,7 +1166,7 @@ body.timetable-fullscreen-active {
 
 .back-button {
   background: var(--text-secondary);
-  color: white;
+  color: var(--text-on-brand);
   margin-top: 1rem;
 }
 
@@ -1199,7 +1199,7 @@ body.timetable-fullscreen-active {
 
 .logout-btn {
   background: var(--state-error);
-  color: white;
+  color: var(--text-on-brand);
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 4px;
@@ -1209,7 +1209,7 @@ body.timetable-fullscreen-active {
 }
 
 .logout-btn:hover {
-  background: #b23838;
+  background: var(--state-error-hover);
 }
 
 /* ----------------------------------------
@@ -1263,14 +1263,14 @@ body.timetable-fullscreen-active {
 
 .status-message.success {
   display: block;
-  background: rgba(74, 139, 111, 0.1);
+  background: var(--state-success-bg);
   color: var(--state-success);
   border: 1px solid var(--state-success);
 }
 
 .status-message.error {
   display: block;
-  background: rgba(200, 72, 72, 0.1);
+  background: var(--state-error-bg);
   color: var(--state-error);
   border: 1px solid var(--state-error);
 }
@@ -1539,7 +1539,7 @@ body.timetable-fullscreen-active {
    Config Page - Warning & Loading
    ---------------------------------------- */
 .warning-box {
-  background: rgba(245, 158, 11, 0.1);
+  background: var(--state-warning-bg);
   border: 1px solid var(--state-warning);
   border-radius: 8px;
   padding: 1rem;
@@ -1566,7 +1566,7 @@ body.timetable-fullscreen-active {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--surface-overlay);
   display: none;
   align-items: center;
   justify-content: center;
@@ -1578,7 +1578,7 @@ body.timetable-fullscreen-active {
 }
 
 .loading-spinner {
-  background: white;
+  background: var(--surface-base);
   padding: 2rem;
   border-radius: 12px;
   text-align: center;
