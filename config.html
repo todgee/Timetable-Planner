@@ -11,9 +11,10 @@
       rel="stylesheet"
     />
 
-    <!-- Stylesheet -->
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="css/tokens.css" />
     <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/config.css" />
 
     <!-- Shared utilities -->
     <script src="js/shared.js"></script>
@@ -44,7 +45,16 @@
             Customize the color scheme to match your organization branding.
           </p>
 
-          <!-- Color Pickers -->
+          <!-- Mode Toggle -->
+          <div class="color-picker-row">
+            <label>Color Mode</label>
+            <div class="view-controls-group">
+              <button class="view-control-btn" id="mode-btn-light" data-mode="light">☀️ Light</button>
+              <button class="view-control-btn" id="mode-btn-dark"  data-mode="dark">🌙 Dark</button>
+            </div>
+          </div>
+
+          <!-- Primary Color Picker -->
           <div class="color-picker-row">
             <label for="color-primary">Primary Color</label>
             <div class="color-preview">
@@ -53,15 +63,17 @@
             </div>
           </div>
 
+          <!-- Accent Toggle -->
           <div class="color-picker-row">
-            <label for="color-primary-light">Primary Light</label>
-            <div class="color-preview">
-              <input type="color" id="color-primary-light" value="#3d7861" />
-              <span class="color-hex" id="primary-light-hex">#3d7861</span>
+            <label>Accent Color</label>
+            <div class="view-controls-group">
+              <button class="view-control-btn" id="accent-btn-auto"   data-accent="auto">Auto</button>
+              <button class="view-control-btn" id="accent-btn-custom" data-accent="custom">Custom</button>
             </div>
           </div>
 
-          <div class="color-picker-row">
+          <!-- Custom Accent Picker (shown only when Custom is active) -->
+          <div class="accent-override-row" id="accent-override-row">
             <label for="color-accent">Accent Color</label>
             <div class="color-preview">
               <input type="color" id="color-accent" value="#d4a574" />
@@ -69,18 +81,27 @@
             </div>
           </div>
 
+          <!-- Palette Swatch Strip -->
+          <div class="palette-swatches" id="palette-swatches">
+            <div class="swatch"><div class="swatch-color" id="sw-brand-600"></div><span class="swatch-label">Dark</span></div>
+            <div class="swatch"><div class="swatch-color" id="sw-brand-500"></div><span class="swatch-label">Primary</span></div>
+            <div class="swatch"><div class="swatch-color" id="sw-brand-400"></div><span class="swatch-label">Light</span></div>
+            <div class="swatch" style="margin-left:0.5rem"><div class="swatch-color" id="sw-accent-600"></div><span class="swatch-label">Acc·Dark</span></div>
+            <div class="swatch"><div class="swatch-color" id="sw-accent-500"></div><span class="swatch-label">Accent</span></div>
+          </div>
+
           <!-- Preset Colors -->
           <div class="divider"></div>
           <label>Preset Color Schemes</label>
           <div class="preset-colors">
-            <button class="preset-color selected" data-color="#2c5f4f" style="background: #2c5f4f" title="Forest Green"></button>
-            <button class="preset-color" data-color="#1e40af" style="background: #1e40af" title="Royal Blue"></button>
-            <button class="preset-color" data-color="#7c3aed" style="background: #7c3aed" title="Purple"></button>
-            <button class="preset-color" data-color="#b91c1c" style="background: #b91c1c" title="Crimson"></button>
-            <button class="preset-color" data-color="#0891b2" style="background: #0891b2" title="Cyan"></button>
-            <button class="preset-color" data-color="#4f46e5" style="background: #4f46e5" title="Indigo"></button>
-            <button class="preset-color" data-color="#059669" style="background: #059669" title="Emerald"></button>
-            <button class="preset-color" data-color="#ca8a04" style="background: #ca8a04" title="Amber"></button>
+            <button class="preset-color selected" data-primary="#2c5f4f" style="background: #2c5f4f" title="Forest Green"></button>
+            <button class="preset-color" data-primary="#1e40af" style="background: #1e40af" title="Royal Blue"></button>
+            <button class="preset-color" data-primary="#7c3aed" style="background: #7c3aed" title="Purple"></button>
+            <button class="preset-color" data-primary="#b91c1c" style="background: #b91c1c" title="Crimson"></button>
+            <button class="preset-color" data-primary="#0891b2" style="background: #0891b2" title="Cyan"></button>
+            <button class="preset-color" data-primary="#4f46e5" style="background: #4f46e5" title="Indigo"></button>
+            <button class="preset-color" data-primary="#059669" style="background: #059669" title="Emerald"></button>
+            <button class="preset-color" data-primary="#ca8a04" style="background: #ca8a04" title="Amber"></button>
           </div>
 
           <!-- Theme Preview -->
@@ -88,9 +109,9 @@
             <div class="theme-preview-title">Preview</div>
             <div class="theme-preview-bar" id="theme-preview-bar"></div>
             <div class="theme-preview-buttons">
-              <button class="theme-preview-btn" id="preview-btn-primary" style="background: var(--primary); color: white">Primary</button>
-              <button class="theme-preview-btn" id="preview-btn-light" style="background: var(--primary-light); color: white">Light</button>
-              <button class="theme-preview-btn" id="preview-btn-accent" style="background: var(--accent); color: white">Accent</button>
+              <button class="theme-preview-btn" id="preview-btn-primary">Primary</button>
+              <button class="theme-preview-btn" id="preview-btn-light">Light</button>
+              <button class="theme-preview-btn" id="preview-btn-accent">Accent</button>
             </div>
           </div>
 
@@ -161,7 +182,7 @@
 
         <!-- Danger Zone Panel -->
         <div class="panel panel-full">
-          <h2 class="panel-title" style="color: var(--error)">
+          <h2 class="panel-title" style="color: var(--state-error)">
             <span class="panel-icon">⚠️</span>
             Danger Zone
           </h2>
