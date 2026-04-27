@@ -17,8 +17,8 @@
 
 body {
   font-family: "Work Sans", sans-serif;
-  background: linear-gradient(135deg, var(--bg) 0%, #f5f1e8 100%);
-  color: var(--text);
+  background: linear-gradient(135deg, var(--surface-page) 0%, #f5f1e8 100%);
+  color: var(--text-primary);
   line-height: 1.6;
   min-height: 100vh;
 }
@@ -40,7 +40,7 @@ header {
   text-align: center;
   margin-bottom: 2rem;
   padding-bottom: 1.5rem;
-  border-bottom: 2px solid var(--border);
+  border-bottom: 2px solid var(--border-default);
 }
 
 /* ----------------------------------------
@@ -50,14 +50,14 @@ h1 {
   font-family: "Crimson Pro", serif;
   font-size: 2.5rem;
   font-weight: 700;
-  color: var(--primary);
+  color: var(--brand-500);
   margin-bottom: 0.5rem;
   letter-spacing: -0.02em;
 }
 
 .subtitle {
   font-size: 1rem;
-  color: var(--text-light);
+  color: var(--text-secondary);
   font-weight: 300;
 }
 
@@ -65,21 +65,21 @@ h1 {
    Panels & Cards
    ---------------------------------------- */
 .panel {
-  background: var(--surface);
+  background: var(--surface-base);
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 4px 20px var(--shadow);
-  border: 1px solid var(--border);
+  box-shadow: 0 4px 20px var(--shadow-color);
+  border: 1px solid var(--border-default);
 }
 
 .panel-title {
   font-family: "Crimson Pro", serif;
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--primary);
+  color: var(--brand-500);
   margin-bottom: 1.5rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-default);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -90,7 +90,7 @@ h1 {
 }
 
 .panel-description {
-  color: var(--text-light);
+  color: var(--text-secondary);
   font-size: 0.95rem;
   margin-bottom: 1.5rem;
 }
@@ -109,7 +109,7 @@ h1 {
 label {
   display: block;
   font-weight: 500;
-  color: var(--text);
+  color: var(--text-primary);
   font-size: 0.9rem;
 }
 
@@ -118,20 +118,20 @@ select,
 textarea {
   width: 100%;
   padding: 0.75rem;
-  border: 2px solid var(--border);
+  border: 2px solid var(--border-default);
   border-radius: 8px;
   font-family: "Work Sans", sans-serif;
   font-size: 0.95rem;
   transition: all 0.2s ease;
-  background: var(--bg);
+  background: var(--surface-page);
 }
 
 input:focus,
 select:focus,
 textarea:focus {
   outline: none;
-  border-color: var(--primary);
-  background: var(--surface);
+  border-color: var(--brand-500);
+  background: var(--surface-base);
 }
 
 input[type="color"] {
@@ -144,18 +144,18 @@ input[type="color"] {
 
 input[type="file"] {
   padding: 0.75rem;
-  border: 2px dashed var(--border);
+  border: 2px dashed var(--border-default);
   cursor: pointer;
 }
 
 input[type="file"]:hover {
-  border-color: var(--primary);
-  background: var(--surface);
+  border-color: var(--brand-500);
+  background: var(--surface-base);
 }
 
 .form-hint {
   font-size: 0.85rem;
-  color: var(--text-light);
+  color: var(--text-secondary);
   margin-top: 0.35rem;
 }
 
@@ -188,18 +188,18 @@ input[type="file"]:hover {
 }
 
 .btn-primary {
-  background: var(--primary);
+  background: var(--brand-500);
   color: white;
 }
 
 .btn-primary:hover {
-  background: var(--primary-dark);
+  background: var(--brand-600);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(44, 95, 79, 0.3);
 }
 
 .btn-secondary {
-  background: var(--accent);
+  background: var(--accent-500);
   color: white;
 }
 
@@ -209,18 +209,18 @@ input[type="file"]:hover {
 }
 
 .btn-success {
-  background: var(--success);
+  background: var(--state-success);
   color: white;
 }
 
 .btn-success:hover {
-  background: var(--primary-light);
+  background: var(--brand-400);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(74, 139, 111, 0.3);
 }
 
 .btn-danger {
-  background: var(--error);
+  background: var(--state-error);
   color: white;
 }
 
@@ -230,23 +230,23 @@ input[type="file"]:hover {
 }
 
 .btn-cancel {
-  background: var(--text-light);
+  background: var(--text-secondary);
   color: white;
 }
 
 .btn-cancel:hover {
-  background: var(--text);
+  background: var(--text-primary);
 }
 
 .btn-outline {
   background: transparent;
-  border: 2px solid var(--border);
-  color: var(--text);
+  border: 2px solid var(--border-default);
+  color: var(--text-primary);
 }
 
 .btn-outline:hover {
-  border-color: var(--primary);
-  color: var(--primary);
+  border-color: var(--brand-500);
+  color: var(--brand-500);
 }
 
 .btn-icon {
@@ -279,7 +279,7 @@ input[type="file"]:hover {
 }
 
 .btn:disabled {
-  background: var(--text-light);
+  background: var(--text-secondary);
   cursor: not-allowed;
   transform: none;
 }
@@ -288,7 +288,7 @@ input[type="file"]:hover {
    Delete Button
    ---------------------------------------- */
 .delete-btn {
-  background: var(--error);
+  background: var(--state-error);
   color: white;
   border: none;
   padding: 0.4rem 0.75rem;
@@ -321,9 +321,9 @@ input[type="file"]:hover {
   align-items: center;
   padding: 0.75rem;
   margin-bottom: 0.5rem;
-  background: var(--bg);
+  background: var(--surface-page);
   border-radius: 6px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-default);
   transition: all 0.2s ease;
   will-change: transform;
   transform: translateZ(0);
@@ -332,13 +332,13 @@ input[type="file"]:hover {
 }
 
 .list-item:hover {
-  border-color: var(--primary);
+  border-color: var(--brand-500);
   transform: translateX(4px);
 }
 
 .item-name {
   font-weight: 500;
-  color: var(--primary);
+  color: var(--brand-500);
   flex: 1;
 }
 
@@ -352,14 +352,14 @@ input[type="file"]:hover {
   width: 24px;
   height: 24px;
   border-radius: 4px;
-  border: 2px solid var(--border);
+  border: 2px solid var(--border-default);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .color-indicator:hover {
   transform: scale(1.1);
-  border-color: var(--primary);
+  border-color: var(--brand-500);
 }
 
 /* ----------------------------------------
@@ -368,7 +368,7 @@ input[type="file"]:hover {
 .empty-state {
   text-align: center;
   padding: 2rem;
-  color: var(--text-light);
+  color: var(--text-secondary);
 }
 
 .empty-state-icon {
@@ -393,21 +393,21 @@ input[type="file"]:hover {
 .item-list::-webkit-scrollbar-track,
 .time-slot-list::-webkit-scrollbar-track,
 .account-list::-webkit-scrollbar-track {
-  background: var(--bg);
+  background: var(--surface-page);
   border-radius: 4px;
 }
 
 .item-list::-webkit-scrollbar-thumb,
 .time-slot-list::-webkit-scrollbar-thumb,
 .account-list::-webkit-scrollbar-thumb {
-  background: var(--primary);
+  background: var(--brand-500);
   border-radius: 4px;
 }
 
 .item-list::-webkit-scrollbar-thumb:hover,
 .time-slot-list::-webkit-scrollbar-thumb:hover,
 .account-list::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-dark);
+  background: var(--brand-600);
 }
 
 /* ----------------------------------------
@@ -428,12 +428,12 @@ input[type="file"]:hover {
 }
 
 .timetable-header {
-  background: var(--surface);
+  background: var(--surface-base);
   border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 4px 20px var(--shadow);
-  border: 1px solid var(--border);
+  box-shadow: 0 4px 20px var(--shadow-color);
+  border: 1px solid var(--border-default);
 }
 
 .timetable-header-top {
@@ -442,7 +442,7 @@ input[type="file"]:hover {
   align-items: center;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 2px solid var(--border);
+  border-bottom: 2px solid var(--border-default);
 }
 
 .timetable-actions {
@@ -460,7 +460,7 @@ input[type="file"]:hover {
 .action-group-label {
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--text-light);
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 0.25rem;
@@ -477,8 +477,8 @@ input[type="file"]:hover {
 
 .day-btn {
   padding: 0.75rem 2rem;
-  border: 2px solid var(--border);
-  background: var(--surface);
+  border: 2px solid var(--border-default);
+  background: var(--surface-base);
   border-radius: 8px;
   cursor: pointer;
   font-weight: 500;
@@ -488,14 +488,14 @@ input[type="file"]:hover {
 }
 
 .day-btn:hover {
-  border-color: var(--primary);
+  border-color: var(--brand-500);
   transform: translateY(-2px);
 }
 
 .day-btn.active {
-  background: var(--primary);
+  background: var(--brand-500);
   color: white;
-  border-color: var(--primary);
+  border-color: var(--brand-500);
 }
 
 /* View Controls (zoom / scroll / fullscreen) */
@@ -512,11 +512,11 @@ input[type="file"]:hover {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--surface-base);
+  border: 1px solid var(--border-default);
   border-radius: 8px;
   padding: 0.25rem;
-  box-shadow: 0 2px 6px var(--shadow);
+  box-shadow: 0 2px 6px var(--shadow-color);
 }
 
 .view-control-btn {
@@ -529,7 +529,7 @@ input[type="file"]:hover {
   background: transparent;
   border: none;
   border-radius: 6px;
-  color: var(--text);
+  color: var(--text-primary);
   font-family: "Work Sans", sans-serif;
   font-size: 1.05rem;
   font-weight: 600;
@@ -539,8 +539,8 @@ input[type="file"]:hover {
 }
 
 .view-control-btn:hover {
-  background: var(--bg);
-  color: var(--primary);
+  background: var(--surface-page);
+  color: var(--brand-500);
 }
 
 .view-control-btn:active {
@@ -551,7 +551,7 @@ input[type="file"]:hover {
   opacity: 0.4;
   cursor: not-allowed;
   background: transparent;
-  color: var(--text-light);
+  color: var(--text-secondary);
   transform: none;
 }
 
@@ -560,7 +560,7 @@ input[type="file"]:hover {
   text-align: center;
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--text);
+  color: var(--text-primary);
   cursor: pointer;
   user-select: none;
   padding: 0 0.25rem;
@@ -592,7 +592,7 @@ input[type="file"]:hover {
   z-index: 1000;
   margin: 0;
   padding: 1rem;
-  background: var(--bg);
+  background: var(--surface-page);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -623,11 +623,11 @@ body.timetable-fullscreen-active {
 
 /* Timetable Grid */
 .timetable-wrapper {
-  background: var(--surface);
+  background: var(--surface-base);
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 4px 20px var(--shadow);
-  border: 1px solid var(--border);
+  box-shadow: 0 4px 20px var(--shadow-color);
+  border: 1px solid var(--border-default);
   overflow: auto;
   scroll-behavior: smooth;
 }
@@ -646,18 +646,18 @@ body.timetable-fullscreen-active {
   table-layout: fixed;
 }
 
-.day-title.monday { background: var(--monday); }
-.day-title.tuesday { background: var(--tuesday); }
-.day-title.wednesday { background: var(--wednesday); }
-.day-title.thursday { background: var(--thursday); }
-.day-title.friday { background: var(--friday); }
+.day-title.monday { background: var(--day-monday); }
+.day-title.tuesday { background: var(--day-tuesday); }
+.day-title.wednesday { background: var(--day-wednesday); }
+.day-title.thursday { background: var(--day-thursday); }
+.day-title.friday { background: var(--day-friday); }
 
 .timetable {
   display: table;
   width: 100%;
   table-layout: fixed;
   border-collapse: collapse;
-  border: 2px solid var(--border);
+  border: 2px solid var(--border-default);
   border-radius: 8px;
   overflow: hidden;
   margin-bottom: 2rem;
@@ -665,7 +665,7 @@ body.timetable-fullscreen-active {
 
 .timetable-header-row {
   display: table-row;
-  background: var(--primary);
+  background: var(--brand-500);
   color: white;
 }
 
@@ -695,19 +695,19 @@ body.timetable-fullscreen-active {
 }
 
 .timetable-row:nth-child(even) {
-  background: var(--bg);
+  background: var(--surface-page);
 }
 
 .time-cell {
   display: table-cell;
   padding: 0.4rem;
   font-weight: 600;
-  color: var(--primary);
-  border: 1px solid var(--border);
+  color: var(--brand-500);
+  border: 1px solid var(--border-default);
   text-align: center;
   vertical-align: middle;
   width: 110px;
-  background: var(--surface);
+  background: var(--surface-base);
 }
 
 .time-range {
@@ -718,7 +718,7 @@ body.timetable-fullscreen-active {
 .roster-cell {
   display: table-cell;
   padding: 0.5rem;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-default);
   min-width: 140px;
   min-height: 70px;
   cursor: pointer;
@@ -790,14 +790,14 @@ body.timetable-fullscreen-active {
 .break-row .break-cell {
   display: table-cell;
   padding: 0.75rem 1rem;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-default);
   text-align: center;
   font-weight: 600;
   font-style: italic;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   font-size: 0.85rem;
-  color: var(--text-light);
+  color: var(--text-secondary);
   vertical-align: middle;
 }
 
@@ -813,7 +813,7 @@ body.timetable-fullscreen-active {
 
 .break-row--break .break-cell {
   background: var(--slot-break-bg);
-  color: var(--text-light);
+  color: var(--text-secondary);
 }
 
 .break-row .time-cell {
@@ -823,12 +823,12 @@ body.timetable-fullscreen-active {
 /* Time-slot editor: type selector */
 .slot-type-select {
   padding: 0.4rem 0.5rem;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-default);
   border-radius: 6px;
-  background: var(--surface);
+  background: var(--surface-base);
   font-family: inherit;
   font-size: 0.9rem;
-  color: var(--text);
+  color: var(--text-primary);
   cursor: pointer;
 }
 
@@ -843,18 +843,18 @@ body.timetable-fullscreen-active {
 }
 .review-item.slot-type-break {
   background: var(--slot-break-bg);
-  color: var(--text-light);
+  color: var(--text-secondary);
 }
 
 /* ----------------------------------------
    Counters Section
    ---------------------------------------- */
 .counters-section {
-  background: var(--surface);
+  background: var(--surface-base);
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 4px 20px var(--shadow);
-  border: 1px solid var(--border);
+  box-shadow: 0 4px 20px var(--shadow-color);
+  border: 1px solid var(--border-default);
   margin-top: 2rem;
 }
 
@@ -862,7 +862,7 @@ body.timetable-fullscreen-active {
   display: flex;
   gap: 1rem;
   margin-bottom: 1.5rem;
-  border-bottom: 2px solid var(--border);
+  border-bottom: 2px solid var(--border-default);
 }
 
 .counter-tab {
@@ -873,14 +873,14 @@ body.timetable-fullscreen-active {
   font-family: "Work Sans", sans-serif;
   font-size: 0.95rem;
   font-weight: 500;
-  color: var(--text-light);
+  color: var(--text-secondary);
   border-bottom: 3px solid transparent;
   transition: all 0.2s ease;
 }
 
 .counter-tab.active {
-  color: var(--primary);
-  border-bottom-color: var(--primary);
+  color: var(--brand-500);
+  border-bottom-color: var(--brand-500);
 }
 
 .counter-content {
@@ -899,9 +899,9 @@ body.timetable-fullscreen-active {
 
 .counter-item {
   padding: 1rem;
-  background: var(--bg);
+  background: var(--surface-page);
   border-radius: 8px;
-  border: 2px solid var(--border);
+  border: 2px solid var(--border-default);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -918,13 +918,13 @@ body.timetable-fullscreen-active {
   width: 20px;
   height: 20px;
   border-radius: 4px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-default);
 }
 
 .counter-value {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--primary);
+  color: var(--brand-500);
 }
 
 /* ----------------------------------------
@@ -949,7 +949,7 @@ body.timetable-fullscreen-active {
 }
 
 .modal-content {
-  background: var(--surface);
+  background: var(--surface-base);
   padding: 2rem;
   border-radius: 12px;
   max-width: 600px;
@@ -964,17 +964,17 @@ body.timetable-fullscreen-active {
 .modal-title {
   font-family: "Crimson Pro", serif;
   font-size: 1.75rem;
-  color: var(--primary);
+  color: var(--brand-500);
   margin-bottom: 1.5rem;
 }
 
 .modal-info {
-  background: var(--bg);
+  background: var(--surface-page);
   padding: 0.75rem;
   border-radius: 6px;
   margin-bottom: 1.5rem;
   font-size: 0.9rem;
-  color: var(--text);
+  color: var(--text-primary);
 }
 
 .modal-buttons {
@@ -995,7 +995,7 @@ body.timetable-fullscreen-active {
   -webkit-overflow-scrolling: touch;
   transform: translateZ(0);
   scrollbar-width: thin;
-  scrollbar-color: var(--primary) var(--bg);
+  scrollbar-color: var(--brand-500) var(--surface-page);
 }
 
 .time-slot-item {
@@ -1005,9 +1005,9 @@ body.timetable-fullscreen-active {
   align-items: center;
   padding: 0.75rem;
   margin-bottom: 0.5rem;
-  background: var(--bg);
+  background: var(--surface-page);
   border-radius: 6px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-default);
   will-change: transform;
   transform: translateZ(0);
   contain: layout style paint;
@@ -1030,11 +1030,11 @@ body.timetable-fullscreen-active {
 }
 
 .login-container {
-  background: var(--surface);
+  background: var(--surface-base);
   border-radius: 16px;
   padding: 3rem;
-  box-shadow: 0 10px 40px var(--shadow);
-  border: 1px solid var(--border);
+  box-shadow: 0 10px 40px var(--shadow-color);
+  border: 1px solid var(--border-default);
   max-width: 500px;
   width: 100%;
 }
@@ -1042,14 +1042,14 @@ body.timetable-fullscreen-active {
 .login-title {
   font-family: "Crimson Pro", serif;
   font-size: 2.5rem;
-  color: var(--primary);
+  color: var(--brand-500);
   margin-bottom: 0.5rem;
   text-align: center;
 }
 
 .login-subtitle {
   text-align: center;
-  color: var(--text-light);
+  color: var(--text-secondary);
   margin-bottom: 3rem;
   font-size: 1rem;
 }
@@ -1062,8 +1062,8 @@ body.timetable-fullscreen-active {
 
 .role-card {
   padding: 2rem;
-  background: var(--bg);
-  border: 3px solid var(--border);
+  background: var(--surface-page);
+  border: 3px solid var(--border-default);
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -1071,13 +1071,13 @@ body.timetable-fullscreen-active {
 }
 
 .role-card:hover {
-  border-color: var(--primary);
+  border-color: var(--brand-500);
   transform: translateY(-4px);
-  box-shadow: 0 8px 24px var(--shadow);
+  box-shadow: 0 8px 24px var(--shadow-color);
 }
 
 .role-card.selected {
-  border-color: var(--primary);
+  border-color: var(--brand-500);
   background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);
 }
 
@@ -1089,13 +1089,13 @@ body.timetable-fullscreen-active {
 .role-title {
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--primary);
+  color: var(--brand-500);
   margin-bottom: 0.5rem;
 }
 
 .role-description {
   font-size: 0.9rem;
-  color: var(--text-light);
+  color: var(--text-secondary);
 }
 
 .login-form {
@@ -1109,7 +1109,7 @@ body.timetable-fullscreen-active {
 .login-input {
   width: 100%;
   padding: 1rem;
-  border: 2px solid var(--border);
+  border: 2px solid var(--border-default);
   border-radius: 8px;
   font-size: 1rem;
   margin-bottom: 1rem;
@@ -1118,13 +1118,13 @@ body.timetable-fullscreen-active {
 
 .login-input:focus {
   outline: none;
-  border-color: var(--primary);
+  border-color: var(--brand-500);
 }
 
 .login-button {
   width: 100%;
   padding: 1rem 2rem;
-  background: var(--primary);
+  background: var(--brand-500);
   color: white;
   border: none;
   border-radius: 8px;
@@ -1138,13 +1138,13 @@ body.timetable-fullscreen-active {
 }
 
 .login-button:hover {
-  background: var(--primary-dark);
+  background: var(--brand-600);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(44, 95, 79, 0.3);
 }
 
 .login-button:disabled {
-  background: var(--text-light);
+  background: var(--text-secondary);
   cursor: not-allowed;
   transform: none;
 }
@@ -1165,13 +1165,13 @@ body.timetable-fullscreen-active {
 }
 
 .back-button {
-  background: var(--text-light);
+  background: var(--text-secondary);
   color: white;
   margin-top: 1rem;
 }
 
 .back-button:hover {
-  background: var(--text);
+  background: var(--text-primary);
 }
 
 /* ----------------------------------------
@@ -1181,11 +1181,11 @@ body.timetable-fullscreen-active {
   position: fixed;
   top: 1rem;
   right: 1rem;
-  background: var(--surface);
+  background: var(--surface-base);
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
-  box-shadow: 0 2px 8px var(--shadow);
-  border: 1px solid var(--border);
+  box-shadow: 0 2px 8px var(--shadow-color);
+  border: 1px solid var(--border-default);
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -1194,11 +1194,11 @@ body.timetable-fullscreen-active {
 
 .user-role {
   font-weight: 600;
-  color: var(--primary);
+  color: var(--brand-500);
 }
 
 .logout-btn {
-  background: var(--error);
+  background: var(--state-error);
   color: white;
   border: none;
   padding: 0.5rem 1rem;
@@ -1238,11 +1238,11 @@ body.timetable-fullscreen-active {
   position: fixed;
   bottom: 2rem;
   right: 2rem;
-  background: var(--surface);
+  background: var(--surface-base);
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
-  box-shadow: 0 4px 12px var(--shadow);
-  border: 2px solid var(--success);
+  box-shadow: 0 4px 12px var(--shadow-color);
+  border: 2px solid var(--state-success);
   display: none;
   align-items: center;
   gap: 0.5rem;
@@ -1264,15 +1264,15 @@ body.timetable-fullscreen-active {
 .status-message.success {
   display: block;
   background: rgba(74, 139, 111, 0.1);
-  color: var(--success);
-  border: 1px solid var(--success);
+  color: var(--state-success);
+  border: 1px solid var(--state-success);
 }
 
 .status-message.error {
   display: block;
   background: rgba(200, 72, 72, 0.1);
-  color: var(--error);
-  border: 1px solid var(--error);
+  color: var(--state-error);
+  border: 1px solid var(--state-error);
 }
 
 /* ----------------------------------------
@@ -1282,11 +1282,11 @@ body.timetable-fullscreen-active {
   text-align: center;
   margin-bottom: 3rem;
   padding-bottom: 2rem;
-  border-bottom: 2px solid var(--border);
+  border-bottom: 2px solid var(--border-default);
 }
 
 .page-header p {
-  color: var(--text-light);
+  color: var(--text-secondary);
   font-size: 1.1rem;
 }
 
@@ -1295,7 +1295,7 @@ body.timetable-fullscreen-active {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--primary);
+  color: var(--brand-500);
   text-decoration: none;
   font-weight: 500;
   margin-bottom: 1.5rem;
@@ -1303,7 +1303,7 @@ body.timetable-fullscreen-active {
 }
 
 .back-link:hover {
-  color: var(--primary-light);
+  color: var(--brand-400);
   transform: translateX(-4px);
 }
 
@@ -1321,7 +1321,7 @@ body.timetable-fullscreen-active {
   max-height: 250px;
   overflow-y: auto;
   margin-bottom: 1.5rem;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-default);
   border-radius: 8px;
   will-change: scroll-position;
   -webkit-overflow-scrolling: touch;
@@ -1333,8 +1333,8 @@ body.timetable-fullscreen-active {
   align-items: center;
   justify-content: space-between;
   padding: 0.875rem 1rem;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg);
+  border-bottom: 1px solid var(--border-default);
+  background: var(--surface-page);
   transition: all 0.2s ease;
   will-change: transform;
   transform: translateZ(0);
@@ -1346,7 +1346,7 @@ body.timetable-fullscreen-active {
 }
 
 .account-item:hover {
-  background: var(--surface);
+  background: var(--surface-base);
 }
 
 .account-info {
@@ -1356,16 +1356,16 @@ body.timetable-fullscreen-active {
 
 .account-email {
   font-weight: 500;
-  color: var(--text);
+  color: var(--text-primary);
 }
 
 .account-role {
   font-size: 0.85rem;
-  color: var(--text-light);
+  color: var(--text-secondary);
 }
 
 .account-role.admin {
-  color: var(--primary);
+  color: var(--brand-500);
   font-weight: 500;
 }
 
@@ -1376,7 +1376,7 @@ body.timetable-fullscreen-active {
   display: flex;
   gap: 0.25rem;
   margin-bottom: 1.5rem;
-  border-bottom: 2px solid var(--border);
+  border-bottom: 2px solid var(--border-default);
 }
 
 .tab-btn {
@@ -1386,7 +1386,7 @@ body.timetable-fullscreen-active {
   font-family: inherit;
   font-size: 0.95rem;
   font-weight: 500;
-  color: var(--text-light);
+  color: var(--text-secondary);
   cursor: pointer;
   border-bottom: 2px solid transparent;
   margin-bottom: -2px;
@@ -1394,12 +1394,12 @@ body.timetable-fullscreen-active {
 }
 
 .tab-btn:hover {
-  color: var(--primary);
+  color: var(--brand-500);
 }
 
 .tab-btn.active {
-  color: var(--primary);
-  border-bottom-color: var(--primary);
+  color: var(--brand-500);
+  border-bottom-color: var(--brand-500);
 }
 
 .tab-content {
@@ -1435,13 +1435,13 @@ body.timetable-fullscreen-active {
   width: 40px;
   height: 40px;
   border-radius: 8px;
-  border: 2px solid var(--border);
+  border: 2px solid var(--border-default);
 }
 
 .color-preview .color-hex {
   font-family: monospace;
   font-size: 0.9rem;
-  color: var(--text-light);
+  color: var(--text-secondary);
 }
 
 .preset-colors {
@@ -1462,32 +1462,32 @@ body.timetable-fullscreen-active {
 
 .preset-color:hover {
   transform: scale(1.1);
-  border-color: var(--text);
+  border-color: var(--text-primary);
 }
 
 .preset-color.selected {
-  border-color: var(--text);
-  box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--text);
+  border-color: var(--text-primary);
+  box-shadow: 0 0 0 2px var(--surface-base), 0 0 0 4px var(--text-primary);
 }
 
 .theme-preview {
   margin-top: 1.5rem;
   padding: 1.5rem;
   border-radius: 8px;
-  border: 2px solid var(--border);
-  background: var(--bg);
+  border: 2px solid var(--border-default);
+  background: var(--surface-page);
 }
 
 .theme-preview-title {
   font-weight: 600;
   margin-bottom: 1rem;
-  color: var(--text);
+  color: var(--text-primary);
 }
 
 .theme-preview-bar {
   height: 50px;
   border-radius: 8px;
-  background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 50%, var(--accent) 100%);
+  background: linear-gradient(90deg, var(--brand-500) 0%, var(--brand-400) 50%, var(--accent-500) 100%);
   margin-bottom: 1rem;
 }
 
@@ -1509,8 +1509,8 @@ body.timetable-fullscreen-active {
 .logo-preview-container {
   margin-top: 1rem;
   padding: 1.5rem;
-  background: var(--bg);
-  border: 2px dashed var(--border);
+  background: var(--surface-page);
+  border: 2px dashed var(--border-default);
   border-radius: 8px;
   text-align: center;
 }
@@ -1524,7 +1524,7 @@ body.timetable-fullscreen-active {
 }
 
 .logo-placeholder {
-  color: var(--text-light);
+  color: var(--text-secondary);
   font-size: 0.95rem;
 }
 
@@ -1540,7 +1540,7 @@ body.timetable-fullscreen-active {
    ---------------------------------------- */
 .warning-box {
   background: rgba(245, 158, 11, 0.1);
-  border: 1px solid var(--warning);
+  border: 1px solid var(--state-warning);
   border-radius: 8px;
   padding: 1rem;
   margin-bottom: 1rem;
@@ -1551,12 +1551,12 @@ body.timetable-fullscreen-active {
   align-items: center;
   gap: 0.5rem;
   font-weight: 600;
-  color: var(--warning);
+  color: var(--state-warning);
   margin-bottom: 0.5rem;
 }
 
 .warning-box p {
-  color: var(--text);
+  color: var(--text-primary);
   font-size: 0.9rem;
 }
 
@@ -1587,8 +1587,8 @@ body.timetable-fullscreen-active {
 .spinner {
   width: 40px;
   height: 40px;
-  border: 4px solid var(--border);
-  border-top-color: var(--primary);
+  border: 4px solid var(--border-default);
+  border-top-color: var(--brand-500);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin: 0 auto 1rem;
@@ -1596,7 +1596,7 @@ body.timetable-fullscreen-active {
 
 .divider {
   height: 1px;
-  background: var(--border);
+  background: var(--border-default);
   margin: 1.5rem 0;
 }
 
