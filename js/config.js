@@ -8,6 +8,12 @@ var accentMode         = 'auto';   // 'auto' | 'custom'
 var customAccent       = ThemeEngine.DEFAULTS.accent;
 var currentLogoDataUrl = null;
 
+// ── Background gradient state ──────────────────────────────────
+var BG_KEY      = 'timetable.config-bg';
+var BG_DEFAULTS = { start: '#fdfbf7', end: '#f5f1e8' };
+var bgStart     = BG_DEFAULTS.start;
+var bgEnd       = BG_DEFAULTS.end;
+
 // ── Auto-accent: golden-angle hue rotation (137.5°) ────────────
 function computeAutoAccent(primaryHex) {
   var hsl = ThemeEngine.hexToHsl(primaryHex);
@@ -78,6 +84,61 @@ function setAccentToggle(mode) {
   document.getElementById('accent-btn-custom').classList.toggle('active', mode === 'custom');
   var row = document.getElementById('accent-override-row');
   if (row) row.classList.toggle('visible', mode === 'custom');
+}
+
+// ── Background gradient ────────────────────────────────────────
+function applyBgPreview() {
+  var grad = 'linear-gradient(135deg, ' + bgStart + ' 0%, ' + bgEnd + ' 100%)';
+  document.body.style.background = grad;
+  var bar = document.getElementById('bg-gradient-preview');
+  if (bar) bar.style.background = grad;
+}
+
+function syncBgPresetSelected() {
+  document.querySelectorAll('.bg-preset').forEach(function (p) {
+    p.classList.toggle('selected', p.dataset.start === bgStart && p.dataset.end === bgEnd);
+  });
+}
+
+function loadBgIntoForm() {
+  try {
+    var raw = localStorage.getItem(BG_KEY);
+    if (raw) {
+      var saved = JSON.parse(raw);
+      bgStart = saved.start || BG_DEFAULTS.start;
+      bgEnd   = saved.end   || BG_DEFAULTS.end;
+      applyBgPreview();
+    }
+  } catch (e) { /* ignore */ }
+  document.getElementById('bg-start').value     = bgStart;
+  document.getElementById('bg-start-hex').textContent = bgStart;
+  document.getElementById('bg-end').value       = bgEnd;
+  document.getElementById('bg-end-hex').textContent   = bgEnd;
+  var bar = document.getElementById('bg-gradient-preview');
+  if (bar) bar.style.background =
+    'linear-gradient(135deg, ' + bgStart + ' 0%, ' + bgEnd + ' 100%)';
+  syncBgPresetSelected();
+}
+
+function handleSaveBg() {
+  localStorage.setItem(BG_KEY, JSON.stringify({ start: bgStart, end: bgEnd }));
+  showNotification('Background saved!');
+}
+
+function handleResetBg() {
+  bgStart = BG_DEFAULTS.start;
+  bgEnd   = BG_DEFAULTS.end;
+  localStorage.removeItem(BG_KEY);
+  document.body.style.background = '';
+  document.getElementById('bg-start').value     = bgStart;
+  document.getElementById('bg-start-hex').textContent = bgStart;
+  document.getElementById('bg-end').value       = bgEnd;
+  document.getElementById('bg-end-hex').textContent   = bgEnd;
+  var bar = document.getElementById('bg-gradient-preview');
+  if (bar) bar.style.background =
+    'linear-gradient(135deg, ' + bgStart + ' 0%, ' + bgEnd + ' 100%)';
+  syncBgPresetSelected();
+  showNotification('Background reset to default.');
 }
 
 // ── Load saved theme into form ─────────────────────────────────
@@ -234,6 +295,35 @@ function setupEventListeners() {
   document.getElementById('save-colors-btn').addEventListener('click', handleSaveColors);
   document.getElementById('reset-colors-btn').addEventListener('click', handleResetColors);
 
+  document.getElementById('bg-start').addEventListener('input', function (e) {
+    bgStart = e.target.value;
+    document.getElementById('bg-start-hex').textContent = bgStart;
+    syncBgPresetSelected();
+    applyBgPreview();
+  });
+  document.getElementById('bg-end').addEventListener('input', function (e) {
+    bgEnd = e.target.value;
+    document.getElementById('bg-end-hex').textContent = bgEnd;
+    syncBgPresetSelected();
+    applyBgPreview();
+  });
+  document.querySelectorAll('.bg-preset').forEach(function (preset) {
+    preset.style.background =
+      'linear-gradient(135deg, ' + preset.dataset.start + ' 0%, ' + preset.dataset.end + ' 100%)';
+    preset.addEventListener('click', function () {
+      bgStart = preset.dataset.start;
+      bgEnd   = preset.dataset.end;
+      document.getElementById('bg-start').value     = bgStart;
+      document.getElementById('bg-start-hex').textContent = bgStart;
+      document.getElementById('bg-end').value       = bgEnd;
+      document.getElementById('bg-end-hex').textContent   = bgEnd;
+      syncBgPresetSelected();
+      applyBgPreview();
+    });
+  });
+  document.getElementById('save-bg-btn').addEventListener('click', handleSaveBg);
+  document.getElementById('reset-bg-btn').addEventListener('click', handleResetBg);
+
   document.getElementById('logo-upload').addEventListener('change', handleLogoUpload);
   document.getElementById('save-logo-btn').addEventListener('click', handleSaveLogo);
   document.getElementById('remove-logo-btn').addEventListener('click', handleRemoveLogo);
@@ -245,6 +335,7 @@ function setupEventListeners() {
 window.addEventListener('load', function () {
   loadThemeIntoForm();
   loadLogoIntoForm();
+  loadBgIntoForm();
   setupEventListeners();
   applyLivePreview();
 });

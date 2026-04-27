@@ -121,6 +121,54 @@
           </div>
         </div>
 
+        <!-- Background Gradient Panel -->
+        <div class="panel">
+          <h2 class="panel-title">
+            <span class="panel-icon">🖼️</span>
+            Background Gradient
+          </h2>
+          <p class="panel-description">
+            Customize the background gradient of this configuration page.
+          </p>
+
+          <div class="color-picker-row">
+            <label for="bg-start">Gradient Start</label>
+            <div class="color-preview">
+              <input type="color" id="bg-start" value="#fdfbf7" />
+              <span class="color-hex" id="bg-start-hex">#fdfbf7</span>
+            </div>
+          </div>
+
+          <div class="color-picker-row">
+            <label for="bg-end">Gradient End</label>
+            <div class="color-preview">
+              <input type="color" id="bg-end" value="#f5f1e8" />
+              <span class="color-hex" id="bg-end-hex">#f5f1e8</span>
+            </div>
+          </div>
+
+          <div class="gradient-preview" id="bg-gradient-preview"></div>
+
+          <div class="divider"></div>
+          <label>Preset Gradients</label>
+          <div class="bg-preset-grid">
+            <button class="bg-preset" data-start="#fdfbf7" data-end="#f5f1e8" title="Parchment"></button>
+            <button class="bg-preset" data-start="#f0f4ff" data-end="#e4ecf8" title="Slate Blue"></button>
+            <button class="bg-preset" data-start="#f0fff7" data-end="#e4f5ec" title="Mint"></button>
+            <button class="bg-preset" data-start="#fff8f0" data-end="#f5e8dc" title="Warm Peach"></button>
+            <button class="bg-preset" data-start="#f8f0ff" data-end="#ede4f8" title="Lavender"></button>
+            <button class="bg-preset" data-start="#fff0f4" data-end="#f5e0e8" title="Rose"></button>
+            <button class="bg-preset" data-start="#0c1812" data-end="#152018" title="Forest Night"></button>
+            <button class="bg-preset" data-start="#0c1524" data-end="#0f1e36" title="Ocean Night"></button>
+            <button class="bg-preset" data-start="#1a0e28" data-end="#251540" title="Dusk Purple"></button>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn btn-primary" id="save-bg-btn">Save Background</button>
+            <button class="btn btn-secondary" id="reset-bg-btn">Reset to Default</button>
+          </div>
+        </div>
+
         <!-- Logo Management Panel -->
         <div class="panel panel-full">
           <h2 class="panel-title">
