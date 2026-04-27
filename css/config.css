@@ -2,6 +2,12 @@
    Only styles that don't exist in base.css belong here.
    ============================================================ */
 
+/* Preview buttons inherit their background from JS (setPreviewBtn),
+   but need a base style so they're visible before first applyLivePreview. */
+#preview-btn-primary { background: var(--brand-500); color: var(--text-on-brand); }
+#preview-btn-light   { background: var(--brand-400); color: var(--text-on-brand); }
+#preview-btn-accent  { background: var(--accent-500); color: var(--text-on-brand); }
+
 /* Active state for segmented toggle buttons (mode + accent toggles).
    base.css defines .view-control-btn but has no .active state. */
 .view-control-btn.active {
