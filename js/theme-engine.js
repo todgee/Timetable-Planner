@@ -225,11 +225,14 @@
 
   /* ── Background gradient ─────────────────────────────────── */
 
-  var BG_STORAGE_KEY = 'timetable.bg';
+  var BG_STORAGE_KEY     = 'timetable.bg';
+  var BG_STORAGE_KEY_OLD = 'timetable.config-bg'; // backwards compat
 
   function applyBg() {
+    if (!document.body) return;
     try {
-      var raw = localStorage.getItem(BG_STORAGE_KEY);
+      var raw = localStorage.getItem(BG_STORAGE_KEY)
+             || localStorage.getItem(BG_STORAGE_KEY_OLD);
       if (!raw) return;
       var saved = JSON.parse(raw);
       if (!saved || !saved.start || !saved.end) return;
@@ -259,16 +262,22 @@
   /* ── Auto-init ───────────────────────────────────────────── */
 
   /* Apply color tokens immediately (before first paint) — no DOM needed.
-     Logo and bg injection wait for DOMContentLoaded since they need the DOM. */
+     Logo and bg injection need the DOM — defer to DOMContentLoaded.
+     window.load is a second safety net that runs after all page scripts. */
   apply(get());
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () {
-      applyLogo();
-      applyBg();
-    });
+  function applyDom() {
+    applyLogo();
+    applyBg();
   }
-  /* else both already ran inside apply() above */
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', applyDom);
+  } else {
+    applyDom();
+  }
+
+  window.addEventListener('load', applyBg);
 
   /* ── Public API ──────────────────────────────────────────── */
 
