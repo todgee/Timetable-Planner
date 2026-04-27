@@ -36,17 +36,17 @@
 
 /* --- Print: restore light theme for readability ------------ */
 @media print {
-  body { background: white; }
+  body { background: var(--surface-base); }
   .view-bg { display: none; }
   .timetable-header,
   .timetable-wrapper {
-    background: white;
-    border-color: #e0e0e0;
+    background: var(--surface-base);
+    border-color: var(--border-default);
     box-shadow: none;
     backdrop-filter: none;
   }
-  .time-cell { background: white; color: #2c5f4f; }
-  header h1 { color: #2c5f4f; }
-  .day-btn { border-color: #ddd; color: #333; }
-  .day-btn.active { background: #2c5f4f; color: white; }
+  .time-cell { background: var(--surface-base); color: var(--brand-500); }
+  header h1 { color: var(--brand-500); }
+  .day-btn { border-color: var(--border-default); color: var(--text-primary); }
+  .day-btn.active { background: var(--brand-500); color: var(--surface-base); }
 }
