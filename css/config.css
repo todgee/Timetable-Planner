@@ -1,0 +1,67 @@
+/* === config.css — Phase 5 theme-picker additions ============
+   Only styles that don't exist in base.css belong here.
+   ============================================================ */
+
+/* Preview buttons inherit their background from JS (setPreviewBtn),
+   but need a base style so they're visible before first applyLivePreview. */
+#preview-btn-primary { background: var(--brand-500); color: var(--text-on-brand); }
+#preview-btn-light   { background: var(--brand-400); color: var(--text-on-brand); }
+#preview-btn-accent  { background: var(--accent-500); color: var(--text-on-brand); }
+
+/* Active state for segmented toggle buttons (mode + accent toggles).
+   base.css defines .view-control-btn but has no .active state. */
+.view-control-btn.active {
+  background: var(--brand-500);
+  color:      var(--text-on-brand);
+}
+
+[data-theme="dark"] .view-control-btn.active {
+  background: var(--brand-500);
+  color:      var(--text-on-brand);
+}
+
+/* ── Palette swatch strip ──────────────────────────────────── */
+.palette-swatches {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+.swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.swatch-color {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  border: 1px solid var(--border-default);
+}
+
+.swatch-label {
+  font-family: monospace;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ── Accent-override row (Custom accent picker) ────────────── */
+.accent-override-row {
+  display: none;
+  margin-top: 0.75rem;
+}
+
+.accent-override-row.visible {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.accent-override-row label {
+  flex: 1;
+  margin-bottom: 0;
+}

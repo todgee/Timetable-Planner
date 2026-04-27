@@ -241,6 +241,8 @@
     get:          get,
     reset:        reset,
     buildPalette: buildPalette,
+    hexToHsl:     hexToHsl,
+    hslToHex:     hslToHex,
     DEFAULTS:     Object.assign({}, DEFAULTS)
   };
 
