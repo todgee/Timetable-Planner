@@ -9,7 +9,6 @@ var customAccent       = ThemeEngine.DEFAULTS.accent;
 var currentLogoDataUrl = null;
 
 // ── Background gradient state ──────────────────────────────────
-var BG_KEY      = 'timetable.config-bg';
 var BG_DEFAULTS = { start: '#fdfbf7', end: '#f5f1e8' };
 var bgStart     = BG_DEFAULTS.start;
 var bgEnd       = BG_DEFAULTS.end;
@@ -101,15 +100,12 @@ function syncBgPresetSelected() {
 }
 
 function loadBgIntoForm() {
-  try {
-    var raw = localStorage.getItem(BG_KEY);
-    if (raw) {
-      var saved = JSON.parse(raw);
-      bgStart = saved.start || BG_DEFAULTS.start;
-      bgEnd   = saved.end   || BG_DEFAULTS.end;
-      applyBgPreview();
-    }
-  } catch (e) { /* ignore */ }
+  var saved = ThemeEngine.getBg();
+  if (saved) {
+    bgStart = saved.start || BG_DEFAULTS.start;
+    bgEnd   = saved.end   || BG_DEFAULTS.end;
+    applyBgPreview();
+  }
   document.getElementById('bg-start').value     = bgStart;
   document.getElementById('bg-start-hex').textContent = bgStart;
   document.getElementById('bg-end').value       = bgEnd;
@@ -121,15 +117,14 @@ function loadBgIntoForm() {
 }
 
 function handleSaveBg() {
-  localStorage.setItem(BG_KEY, JSON.stringify({ start: bgStart, end: bgEnd }));
+  ThemeEngine.saveBg({ start: bgStart, end: bgEnd });
   showNotification('Background saved!');
 }
 
 function handleResetBg() {
+  ThemeEngine.resetBg();
   bgStart = BG_DEFAULTS.start;
   bgEnd   = BG_DEFAULTS.end;
-  localStorage.removeItem(BG_KEY);
-  document.body.style.background = '';
   document.getElementById('bg-start').value     = bgStart;
   document.getElementById('bg-start-hex').textContent = bgStart;
   document.getElementById('bg-end').value       = bgEnd;
