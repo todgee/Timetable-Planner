@@ -1708,3 +1708,251 @@ body.timetable-fullscreen-active {
     grid-template-columns: 1fr;
   }
 }
+
+/* ── Dark mode component overrides ───────────────────────────
+   Applied when <html data-theme="dark"> is set by theme-engine.js
+   ──────────────────────────────────────────────────────────── */
+
+/* Background */
+[data-theme="dark"] body {
+  background: var(--surface-page);
+}
+
+/* Ambient orb containers — position/overflow are theme-neutral */
+.admin-bg,
+.view-bg,
+.setup-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+[data-theme="dark"] .view-bg::before,
+[data-theme="dark"] .admin-bg::before {
+  content: "";
+  position: absolute;
+  top: -20%;
+  left: -15%;
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(ellipse, var(--orb-green) 0%, transparent 70%);
+  animation: orbDrift1 13s ease-in-out infinite;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+[data-theme="dark"] .view-bg::after,
+[data-theme="dark"] .admin-bg::after {
+  content: "";
+  position: absolute;
+  bottom: -20%;
+  right: -10%;
+  width: 55%;
+  height: 55%;
+  background: radial-gradient(ellipse, var(--orb-gold) 0%, transparent 70%);
+  animation: orbDrift2 16s ease-in-out infinite;
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+@keyframes orbDrift1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%       { transform: translate(3%, 4%) scale(1.05); }
+}
+
+@keyframes orbDrift2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%       { transform: translate(-3%, -3%) scale(1.04); }
+}
+
+[data-theme="dark"] .container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Header */
+[data-theme="dark"] header h1        { color: var(--text-primary); }
+[data-theme="dark"] .subtitle        { color: var(--text-muted); }
+
+/* Timetable header panel */
+[data-theme="dark"] .timetable-header {
+  background: var(--surface-base);
+  border: 1px solid var(--border-default);
+  box-shadow: 0 8px 32px var(--shadow-overlay), inset 0 1px 0 var(--border-subtle);
+}
+
+[data-theme="dark"] .timetable-header-top { border-bottom-color: var(--border-subtle); }
+[data-theme="dark"] .panel-title {
+  color: var(--text-primary);
+  border-bottom-color: var(--border-subtle);
+}
+[data-theme="dark"] .action-group-label   { color: var(--text-disabled); }
+
+/* Day selector */
+[data-theme="dark"] .day-btn {
+  background: var(--fill-subtle);
+  border-color: var(--border-mid);
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .day-btn:hover {
+  background: var(--border-default);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+  transform: translateY(-2px);
+}
+
+[data-theme="dark"] .day-btn.active {
+  background: var(--brand-500);
+  border-color: var(--brand-500);
+  color: var(--text-on-brand);
+  box-shadow: 0 4px 16px var(--brand-glow);
+}
+
+/* View controls */
+[data-theme="dark"] .view-controls-group {
+  background: var(--fill-control);
+  border-color: var(--border-default);
+  box-shadow: none;
+}
+
+[data-theme="dark"] .view-control-btn               { color: var(--text-muted); }
+[data-theme="dark"] .view-control-btn:hover          { background: var(--border-default); color: var(--text-primary); }
+[data-theme="dark"] .view-control-btn:disabled       { color: var(--text-disabled); background: transparent; }
+[data-theme="dark"] .view-controls-zoom-value        { color: var(--text-secondary); }
+
+/* Timetable wrapper & table */
+[data-theme="dark"] .timetable-wrapper {
+  background: var(--surface-base);
+  border-color: var(--border-default);
+  box-shadow: 0 8px 32px var(--shadow-overlay);
+}
+
+[data-theme="dark"] .timetable                       { border-color: var(--border-mid); }
+[data-theme="dark"] .timetable-row:nth-child(even)   { background: var(--fill-stripe); }
+[data-theme="dark"] .time-cell {
+  background: var(--fill-subtle);
+  color: var(--text-secondary);
+  border-color: var(--border-default);
+}
+
+[data-theme="dark"] .roster-cell                     { border-color: var(--border-subtle); }
+[data-theme="dark"] .roster-cell:hover               { background: var(--fill-control); }
+
+/* Counters */
+[data-theme="dark"] .counters-section {
+  background: var(--surface-base);
+  border: 1px solid var(--border-default);
+  box-shadow: 0 8px 32px var(--shadow-overlay);
+}
+
+[data-theme="dark"] .counter-tabs                    { border-bottom-color: var(--border-default); }
+[data-theme="dark"] .counter-tab                     { color: var(--text-disabled); }
+[data-theme="dark"] .counter-tab:hover               { color: var(--text-secondary); }
+[data-theme="dark"] .counter-tab.active              { color: var(--text-primary); border-bottom-color: var(--accent-500); }
+[data-theme="dark"] .counter-item                    { background: var(--fill-subtle); border-color: var(--border-default); }
+[data-theme="dark"] .counter-item span               { color: var(--text-secondary); }
+[data-theme="dark"] .counter-value                   { color: var(--accent-500); }
+
+/* Modals */
+[data-theme="dark"] .modal                           { background: var(--surface-overlay); }
+
+[data-theme="dark"] .modal-content {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-mid);
+  box-shadow: 0 32px 80px var(--shadow-deep), inset 0 1px 0 var(--border-subtle);
+  position: relative;
+}
+
+[data-theme="dark"] .modal-close-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--border-strong);
+  background: var(--fill-input);
+  color: var(--text-secondary);
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+[data-theme="dark"] .modal-close-btn:hover {
+  background: var(--fill-hover);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .modal-title                     { color: var(--text-primary); }
+[data-theme="dark"] .modal-info {
+  background: var(--fill-control);
+  border: 1px solid var(--border-default);
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .modal-content h4                { color: var(--text-muted) !important; }
+[data-theme="dark"] .modal-content p                 { color: var(--text-muted) !important; }
+[data-theme="dark"] .modal-content label             { color: var(--text-muted); }
+
+[data-theme="dark"] .modal-content input,
+[data-theme="dark"] .modal-content select,
+[data-theme="dark"] .modal-content textarea {
+  background: var(--fill-input);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .modal-content input:focus,
+[data-theme="dark"] .modal-content select:focus,
+[data-theme="dark"] .modal-content textarea:focus {
+  border-color: var(--accent-500);
+  background: var(--border-mid);
+  box-shadow: 0 0 0 3px var(--accent-fill);
+}
+
+[data-theme="dark"] .modal-content input::placeholder,
+[data-theme="dark"] .modal-content textarea::placeholder { color: var(--text-disabled); }
+
+[data-theme="dark"] .modal-content select option {
+  background: var(--surface-option);
+  color: var(--text-on-brand);
+}
+
+/* List items */
+[data-theme="dark"] .list-item                       { background: var(--fill-subtle); border-color: var(--border-default); }
+[data-theme="dark"] .list-item:hover                 { background: var(--border-default); border-color: var(--border-strong); }
+[data-theme="dark"] .item-name                       { color: var(--text-primary); }
+[data-theme="dark"] .empty-state,
+[data-theme="dark"] .empty-state p                   { color: var(--text-disabled); }
+
+/* Time slot editor */
+[data-theme="dark"] .time-slot-item                  { background: var(--fill-subtle); border-color: var(--border-default); }
+[data-theme="dark"] .slot-type-select {
+  background: var(--fill-input);
+  border-color: var(--border-mid);
+  color: var(--text-secondary);
+}
+[data-theme="dark"] .slot-type-select option {
+  background: var(--surface-option);
+  color: var(--text-on-brand);
+}
+
+/* Sync indicator */
+[data-theme="dark"] .sync-indicator {
+  background: var(--surface-raised);
+  border-color: var(--state-success);
+  color: var(--text-secondary);
+  box-shadow: 0 4px 20px var(--shadow-overlay);
+}
+
+/* Loading spinner */
+[data-theme="dark"] .loading-spinner                 { background: var(--surface-raised); }
