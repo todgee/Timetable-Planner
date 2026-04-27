@@ -1,0 +1,241 @@
+/* ==========================================================
+   TOKENS.CSS — Single source of truth for all design tokens
+   Every color, fill, shadow, and surface value lives here.
+   No other CSS file may contain a raw hex or rgba literal.
+
+   HOW TO ADD A NEW PAGE
+   ─────────────────────
+   1. Link this file first: <link rel="stylesheet" href="css/tokens.css">
+   2. Link css/base.css for shared structure
+   3. Link your page CSS (use token names only — no raw hex/rgba)
+   4. Load js/theme-engine.js — it applies the saved theme on startup
+
+   TOKEN NAMING CONVENTION
+   ────────────────────────
+   --brand-*     User's primary color scale (set by theme-engine.js)
+   --accent-*    User's accent color scale  (set by theme-engine.js)
+   --surface-*   Background / panel surfaces
+   --text-*      Text colors
+   --border-*    Border colors
+   --fill-*      Translucent fill / hover backgrounds
+   --shadow-*    Box-shadow colors
+   --state-*     Semantic states (success, error, warning)
+   --day-*       Day-of-week indicator colors
+   --slot-*      Break / time-slot type colors
+   --orb-*       Ambient background gradient colors
+   ========================================================== */
+
+/* ── Light mode (default) ─────────────────────────────────── */
+:root {
+
+  /* Brand — primary action color scale
+     Updated at runtime by theme-engine.js when the user saves a theme */
+  --brand-500:      #2c5f4f;
+  --brand-400:      #3d7861;
+  --brand-600:      #1e4438;
+  --brand-fill:     rgba(44, 95, 79, 0.08);
+  --brand-fill-mid: rgba(44, 95, 79, 0.18);
+  --brand-glow:     rgba(44, 95, 79, 0.30);
+
+  /* Accent — secondary highlight color scale
+     Updated at runtime by theme-engine.js */
+  --accent-500:  #d4a574;
+  --accent-600:  #c49563;
+  --accent-fill: rgba(212, 165, 116, 0.12);
+  --accent-glow: rgba(212, 165, 116, 0.30);
+
+  /* Surfaces */
+  --surface-page:    #fdfbf7;
+  --surface-base:    #ffffff;
+  --surface-raised:  #f5f1e8;
+  --surface-input:   #fdfbf7;
+  --surface-option:  #f5f1e8;
+  --surface-overlay: rgba(0, 0, 0, 0.50);
+
+  /* Text */
+  --text-primary:   #2d2d2d;
+  --text-secondary: #6b6b6b;
+  --text-muted:     #9a9a9a;
+  --text-disabled:  #c0c0c0;
+  --text-on-brand:  #ffffff;
+
+  /* Borders */
+  --border-subtle:  #f0ebe3;
+  --border-default: #e8e3db;
+  --border-mid:     #d4ccc0;
+  --border-strong:  #bfb5a8;
+
+  /* Fills (translucent hover / control backgrounds) */
+  --fill-subtle:  #f8f5ef;
+  --fill-control: #f2ede6;
+  --fill-input:   #fdfbf7;
+  --fill-hover:   rgba(44, 95, 79, 0.05);
+
+  /* Shadows */
+  --shadow-color:   rgba(44, 95, 79, 0.08);
+  --shadow-overlay: rgba(0, 0, 0, 0.30);
+  --shadow-deep:    rgba(0, 0, 0, 0.50);
+
+  /* State */
+  --state-error:       #c84848;
+  --state-error-hover: #b83c3c;
+  --state-error-bg:    rgba(200, 72, 72, 0.10);
+  --state-success:     #4a8b6f;
+  --state-success-bg:  rgba(74, 139, 111, 0.10);
+  --state-warning:     #f59e0b;
+  --state-warning-bg:  rgba(245, 158, 11, 0.10);
+
+  /* Day-of-week colors */
+  --day-monday:    #4ade80;
+  --day-tuesday:   #60d5f5;
+  --day-wednesday: #f59e0b;
+  --day-thursday:  #a78bfa;
+  --day-friday:    #fb923c;
+
+  /* Break / slot-type palette */
+  --slot-recess-bg:   rgba(96, 213, 245, 0.18);
+  --slot-recess-text: #0b6e85;
+  --slot-lunch-bg:    rgba(212, 165, 116, 0.22);
+  --slot-lunch-text:  #8a5a20;
+  --slot-break-bg:    rgba(232, 227, 219, 0.55);
+  --slot-break-text:  #6b6b6b;
+
+  /* Orb / ambient background gradients */
+  --orb-green: rgba(44, 95, 79, 0.30);
+  --orb-gold:  rgba(212, 165, 116, 0.17);
+
+  /* ── Compatibility aliases ────────────────────────────────
+     These keep every existing CSS file working unchanged.
+     Phase 4 will replace usages with the new names above
+     and remove this block. */
+  --primary:       var(--brand-500);
+  --primary-light: var(--brand-400);
+  --primary-dark:  var(--brand-600);
+  --accent:        var(--accent-500);
+  --bg:            var(--surface-page);
+  --surface:       var(--surface-base);
+  --text:          var(--text-primary);
+  --text-light:    var(--text-secondary);
+  --border:        var(--border-default);
+  --shadow:        var(--shadow-color);
+  --error:         var(--state-error);
+  --success:       var(--state-success);
+  --warning:       var(--state-warning);
+  --monday:        var(--day-monday);
+  --tuesday:       var(--day-tuesday);
+  --wednesday:     var(--day-wednesday);
+  --thursday:      var(--day-thursday);
+  --friday:        var(--day-friday);
+
+  /* Old --dt-* dark-theme aliases (resolved from new tokens).
+     dark-theme.css still defines these in its own :root block
+     and will override these aliases — that is intentional while
+     dark-theme.css still exists. They are here so [data-theme="dark"]
+     consumers get the correct values via the new token system. */
+  --dt-bg:            var(--surface-page);
+  --dt-surface:       var(--surface-base);
+  --dt-surface-deep:  var(--surface-raised);
+  --dt-surface-float: var(--surface-raised);
+  --dt-option-bg:     var(--surface-option);
+  --dt-fill-subtle:   var(--fill-subtle);
+  --dt-fill-control:  var(--fill-control);
+  --dt-fill-input:    var(--fill-input);
+  --dt-border-faint:  var(--border-subtle);
+  --dt-border:        var(--border-default);
+  --dt-border-dim:    var(--border-default);
+  --dt-border-mid:    var(--border-mid);
+  --dt-border-soft:   var(--border-strong);
+  --dt-text-bright:   var(--text-primary);
+  --dt-text:          var(--text-primary);
+  --dt-text-body:     var(--text-secondary);
+  --dt-text-mid:      var(--text-secondary);
+  --dt-text-soft:     var(--text-muted);
+  --dt-text-muted:    var(--text-muted);
+  --dt-text-dim:      var(--text-disabled);
+  --dt-green:         var(--brand-400);
+  --dt-green-fill:    var(--brand-fill);
+  --dt-green-glow:    var(--brand-glow);
+  --dt-gold-glow:     var(--accent-fill);
+}
+
+/* ── Dark mode ────────────────────────────────────────────── */
+[data-theme="dark"] {
+
+  /* Surfaces */
+  --surface-page:    #0c1812;
+  --surface-base:    rgba(13, 24, 18, 0.90);
+  --surface-raised:  rgba(13, 24, 18, 0.97);
+  --surface-input:   rgba(255, 255, 255, 0.07);
+  --surface-option:  #152018;
+  --surface-overlay: rgba(0, 0, 0, 0.65);
+
+  /* Text */
+  --text-primary:   rgba(255, 255, 255, 0.88);
+  --text-secondary: rgba(255, 255, 255, 0.65);
+  --text-muted:     rgba(255, 255, 255, 0.45);
+  --text-disabled:  rgba(255, 255, 255, 0.22);
+  --text-on-brand:  #ffffff;
+
+  /* Borders */
+  --border-subtle:  rgba(255, 255, 255, 0.07);
+  --border-default: rgba(255, 255, 255, 0.08);
+  --border-mid:     rgba(255, 255, 255, 0.10);
+  --border-strong:  rgba(255, 255, 255, 0.12);
+
+  /* Fills */
+  --fill-subtle:  rgba(255, 255, 255, 0.04);
+  --fill-control: rgba(255, 255, 255, 0.05);
+  --fill-input:   rgba(255, 255, 255, 0.07);
+  --fill-hover:   rgba(255, 255, 255, 0.08);
+
+  /* Shadows */
+  --shadow-color:   rgba(0, 0, 0, 0.35);
+  --shadow-overlay: rgba(0, 0, 0, 0.40);
+  --shadow-deep:    rgba(0, 0, 0, 0.65);
+
+  /* Brand tints are richer against a dark background */
+  --brand-fill:     rgba(44, 95, 79, 0.25);
+  --brand-fill-mid: rgba(44, 95, 79, 0.35);
+  --brand-glow:     rgba(44, 95, 79, 0.40);
+  --accent-fill:    rgba(212, 165, 116, 0.15);
+  --accent-glow:    rgba(212, 165, 116, 0.30);
+
+  /* Break rows are more subdued in dark mode */
+  --slot-recess-bg:   rgba(96, 213, 245, 0.07);
+  --slot-recess-text: #60d5f5;
+  --slot-lunch-bg:    rgba(212, 165, 116, 0.09);
+  --slot-lunch-text:  var(--accent-500);
+  --slot-break-bg:    rgba(255, 255, 255, 0.03);
+  --slot-break-text:  rgba(255, 255, 255, 0.28);
+
+  /* Orbs are kept at similar intensities */
+  --orb-green: rgba(44, 95, 79, 0.30);
+  --orb-gold:  rgba(212, 165, 116, 0.17);
+
+  /* ── Dark-mode compatibility aliases ──────────────────────
+     New token names map back to --dt-* so existing CSS works */
+  --dt-bg:            var(--surface-page);
+  --dt-surface:       var(--surface-base);
+  --dt-surface-deep:  var(--surface-raised);
+  --dt-surface-float: var(--surface-raised);
+  --dt-option-bg:     var(--surface-option);
+  --dt-fill-subtle:   var(--fill-subtle);
+  --dt-fill-control:  var(--fill-control);
+  --dt-fill-input:    var(--fill-input);
+  --dt-border-faint:  var(--border-subtle);
+  --dt-border:        var(--border-default);
+  --dt-border-dim:    var(--border-default);
+  --dt-border-mid:    var(--border-mid);
+  --dt-border-soft:   var(--border-strong);
+  --dt-text-bright:   var(--text-primary);
+  --dt-text:          var(--text-primary);
+  --dt-text-body:     var(--text-secondary);
+  --dt-text-mid:      var(--text-secondary);
+  --dt-text-soft:     var(--text-muted);
+  --dt-text-muted:    var(--text-muted);
+  --dt-text-dim:      var(--text-disabled);
+  --dt-green:         var(--brand-400);
+  --dt-green-fill:    var(--brand-fill);
+  --dt-green-glow:    var(--brand-glow);
+  --dt-gold-glow:     var(--accent-fill);
+}
