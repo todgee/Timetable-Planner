@@ -147,8 +147,9 @@
     root.style.setProperty('--primary-dark',  brand['--brand-600']);
     root.style.setProperty('--accent',        accent);
 
-    /* 5. Apply logo if one is saved */
+    /* 5. Apply logo and background if saved */
     applyLogo();
+    applyBg();
   }
 
   /* ── Storage ─────────────────────────────────────────────── */
@@ -222,16 +223,52 @@
     return 'flex-start';
   }
 
+  /* ── Background gradient ─────────────────────────────────── */
+
+  var BG_STORAGE_KEY = 'timetable.bg';
+
+  function applyBg() {
+    try {
+      var raw = localStorage.getItem(BG_STORAGE_KEY);
+      if (!raw) return;
+      var saved = JSON.parse(raw);
+      if (!saved || !saved.start || !saved.end) return;
+      document.body.style.background =
+        'linear-gradient(135deg, ' + saved.start + ' 0%, ' + saved.end + ' 100%)';
+    } catch (e) {}
+  }
+
+  function saveBg(config) {
+    try {
+      localStorage.setItem(BG_STORAGE_KEY, JSON.stringify({ start: config.start, end: config.end }));
+    } catch (e) {}
+  }
+
+  function getBg() {
+    try {
+      var raw = localStorage.getItem(BG_STORAGE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+  }
+
+  function resetBg() {
+    localStorage.removeItem(BG_STORAGE_KEY);
+    if (document.body) document.body.style.background = '';
+  }
+
   /* ── Auto-init ───────────────────────────────────────────── */
 
   /* Apply color tokens immediately (before first paint) — no DOM needed.
-     Logo injection waits for DOMContentLoaded since it queries the DOM. */
+     Logo and bg injection wait for DOMContentLoaded since they need the DOM. */
   apply(get());
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', applyLogo);
+    document.addEventListener('DOMContentLoaded', function () {
+      applyLogo();
+      applyBg();
+    });
   }
-  /* else applyLogo() already ran inside apply() above */
+  /* else both already ran inside apply() above */
 
   /* ── Public API ──────────────────────────────────────────── */
 
@@ -243,6 +280,9 @@
     buildPalette: buildPalette,
     hexToHsl:     hexToHsl,
     hslToHex:     hslToHex,
+    saveBg:       saveBg,
+    getBg:        getBg,
+    resetBg:      resetBg,
     DEFAULTS:     Object.assign({}, DEFAULTS)
   };
 
