@@ -70,6 +70,7 @@
   --fill-control: #f2ede6;
   --fill-input:   #fdfbf7;
   --fill-hover:   rgba(44, 95, 79, 0.05);
+  --fill-stripe:  rgba(0, 0, 0, 0.02);
 
   /* Shadows */
   --shadow-color:   rgba(44, 95, 79, 0.08);
@@ -77,13 +78,25 @@
   --shadow-deep:    rgba(0, 0, 0, 0.50);
 
   /* State */
-  --state-error:       #c84848;
-  --state-error-hover: #b83c3c;
-  --state-error-bg:    rgba(200, 72, 72, 0.10);
-  --state-success:     #4a8b6f;
-  --state-success-bg:  rgba(74, 139, 111, 0.10);
-  --state-warning:     #f59e0b;
-  --state-warning-bg:  rgba(245, 158, 11, 0.10);
+  --state-error:              #c84848;
+  --state-error-hover:        #b83c3c;
+  --state-error-bg:           rgba(200, 72, 72, 0.10);
+  --state-error-border:       rgba(200, 72, 72, 0.30);
+  --state-error-bg-hover:     rgba(200, 72, 72, 0.20);
+  --state-error-border-hover: rgba(200, 72, 72, 0.40);
+  --state-error-light:        #ee8888;
+  --state-success:            #4a8b6f;
+  --state-success-bg:         rgba(74, 139, 111, 0.10);
+  --state-success-glow:       rgba(74, 139, 111, 0.30);
+  --state-warning:            #f59e0b;
+  --state-warning-bg:         rgba(245, 158, 11, 0.10);
+
+  /* Overlay / on-brand utilities */
+  --border-on-brand:    rgba(255, 255, 255, 0.20);
+  --overlay-btn:        rgba(255, 255, 255, 0.30);
+  --overlay-btn-hover:  rgba(255, 255, 255, 0.50);
+  --overlay-white:      rgba(255, 255, 255, 0.90);
+  --shadow-xs:          rgba(0, 0, 0, 0.10);
 
   /* Day-of-week colors */
   --day-monday:    #4ade80;
@@ -104,58 +117,6 @@
   --orb-green: rgba(44, 95, 79, 0.30);
   --orb-gold:  rgba(212, 165, 116, 0.17);
 
-  /* ── Compatibility aliases ────────────────────────────────
-     These keep every existing CSS file working unchanged.
-     Phase 4 will replace usages with the new names above
-     and remove this block. */
-  --primary:       var(--brand-500);
-  --primary-light: var(--brand-400);
-  --primary-dark:  var(--brand-600);
-  --accent:        var(--accent-500);
-  --bg:            var(--surface-page);
-  --surface:       var(--surface-base);
-  --text:          var(--text-primary);
-  --text-light:    var(--text-secondary);
-  --border:        var(--border-default);
-  --shadow:        var(--shadow-color);
-  --error:         var(--state-error);
-  --success:       var(--state-success);
-  --warning:       var(--state-warning);
-  --monday:        var(--day-monday);
-  --tuesday:       var(--day-tuesday);
-  --wednesday:     var(--day-wednesday);
-  --thursday:      var(--day-thursday);
-  --friday:        var(--day-friday);
-
-  /* Old --dt-* dark-theme aliases (resolved from new tokens).
-     dark-theme.css still defines these in its own :root block
-     and will override these aliases — that is intentional while
-     dark-theme.css still exists. They are here so [data-theme="dark"]
-     consumers get the correct values via the new token system. */
-  --dt-bg:            var(--surface-page);
-  --dt-surface:       var(--surface-base);
-  --dt-surface-deep:  var(--surface-raised);
-  --dt-surface-float: var(--surface-raised);
-  --dt-option-bg:     var(--surface-option);
-  --dt-fill-subtle:   var(--fill-subtle);
-  --dt-fill-control:  var(--fill-control);
-  --dt-fill-input:    var(--fill-input);
-  --dt-border-faint:  var(--border-subtle);
-  --dt-border:        var(--border-default);
-  --dt-border-dim:    var(--border-default);
-  --dt-border-mid:    var(--border-mid);
-  --dt-border-soft:   var(--border-strong);
-  --dt-text-bright:   var(--text-primary);
-  --dt-text:          var(--text-primary);
-  --dt-text-body:     var(--text-secondary);
-  --dt-text-mid:      var(--text-secondary);
-  --dt-text-soft:     var(--text-muted);
-  --dt-text-muted:    var(--text-muted);
-  --dt-text-dim:      var(--text-disabled);
-  --dt-green:         var(--brand-400);
-  --dt-green-fill:    var(--brand-fill);
-  --dt-green-glow:    var(--brand-glow);
-  --dt-gold-glow:     var(--accent-fill);
 }
 
 /* ── Dark mode ────────────────────────────────────────────── */
@@ -208,34 +169,14 @@
   --slot-break-bg:    rgba(255, 255, 255, 0.03);
   --slot-break-text:  rgba(255, 255, 255, 0.28);
 
+  /* Fills */
+  --fill-stripe:  rgba(255, 255, 255, 0.02);
+
+  /* Overlay / on-brand utilities */
+  --overlay-white: rgba(12, 24, 18, 0.92);
+
   /* Orbs are kept at similar intensities */
   --orb-green: rgba(44, 95, 79, 0.30);
   --orb-gold:  rgba(212, 165, 116, 0.17);
 
-  /* ── Dark-mode compatibility aliases ──────────────────────
-     New token names map back to --dt-* so existing CSS works */
-  --dt-bg:            var(--surface-page);
-  --dt-surface:       var(--surface-base);
-  --dt-surface-deep:  var(--surface-raised);
-  --dt-surface-float: var(--surface-raised);
-  --dt-option-bg:     var(--surface-option);
-  --dt-fill-subtle:   var(--fill-subtle);
-  --dt-fill-control:  var(--fill-control);
-  --dt-fill-input:    var(--fill-input);
-  --dt-border-faint:  var(--border-subtle);
-  --dt-border:        var(--border-default);
-  --dt-border-dim:    var(--border-default);
-  --dt-border-mid:    var(--border-mid);
-  --dt-border-soft:   var(--border-strong);
-  --dt-text-bright:   var(--text-primary);
-  --dt-text:          var(--text-primary);
-  --dt-text-body:     var(--text-secondary);
-  --dt-text-mid:      var(--text-secondary);
-  --dt-text-soft:     var(--text-muted);
-  --dt-text-muted:    var(--text-muted);
-  --dt-text-dim:      var(--text-disabled);
-  --dt-green:         var(--brand-400);
-  --dt-green-fill:    var(--brand-fill);
-  --dt-green-glow:    var(--brand-glow);
-  --dt-gold-glow:     var(--accent-fill);
 }
