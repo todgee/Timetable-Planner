@@ -238,7 +238,26 @@
       if (!saved || !saved.start || !saved.end) return;
       document.body.style.background =
         'linear-gradient(135deg, ' + saved.start + ' 0%, ' + saved.end + ' 100%)';
+      document.documentElement.style.setProperty(
+        '--surface-modal', computeModalSurface(saved.start, saved.end)
+      );
     } catch (e) {}
+  }
+
+  /* Derive a modal panel colour from the page gradient.
+     Dark gradient → lift lightness so the panel reads above the bg.
+     Light gradient → near-white with a faint tint. */
+  function computeModalSurface(startHex, endHex) {
+    var h1 = hexToHsl(startHex);
+    var h2 = hexToHsl(endHex);
+    var h  = (h1.h + h2.h) / 2;
+    var s  = (h1.s + h2.s) / 2;
+    var l  = (h1.l + h2.l) / 2;
+    if (l < 45) {
+      return hslToHex(h, clamp(s, 10, 60), clamp(l + 11, 12, 30));
+    } else {
+      return hslToHex(h, clamp(s * 0.15, 0, 8), 97);
+    }
   }
 
   function saveBg(config) {
@@ -257,6 +276,7 @@
   function resetBg() {
     localStorage.removeItem(BG_STORAGE_KEY);
     if (document.body) document.body.style.background = '';
+    document.documentElement.style.removeProperty('--surface-modal');
   }
 
   /* ── Auto-init ───────────────────────────────────────────── */
