@@ -3,37 +3,8 @@
    ============================================ */
 
 /* ----------------------------------------
-   CSS Variables
+   CSS Variables — defined in css/tokens.css
    ---------------------------------------- */
-:root {
-  --primary: #2c5f4f;
-  --primary-light: #3d7861;
-  --primary-dark: #1e4438;
-  --accent: #d4a574;
-  --bg: #fdfbf7;
-  --surface: #ffffff;
-  --text: #2d2d2d;
-  --text-light: #6b6b6b;
-  --border: #e8e3db;
-  --shadow: rgba(44, 95, 79, 0.08);
-  --error: #c84848;
-  --success: #4a8b6f;
-  --warning: #f59e0b;
-
-  /* Day colors */
-  --monday: #4ade80;
-  --tuesday: #60d5f5;
-  --wednesday: #f59e0b;
-  --thursday: #a78bfa;
-  --friday: #fb923c;
-
-  /* Break / slot-type palette (shared by timetable rows and review chips) */
-  --slot-recess-bg:   rgba(96, 213, 245, 0.18);
-  --slot-recess-text: #0b6e85;
-  --slot-lunch-bg:    rgba(212, 165, 116, 0.22);
-  --slot-lunch-text:  #8a5a20;
-  --slot-break-bg:    rgba(232, 227, 219, 0.55);
-}
 
 /* ----------------------------------------
    Reset & Base
