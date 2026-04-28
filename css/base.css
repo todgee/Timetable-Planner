@@ -949,7 +949,7 @@ body.timetable-fullscreen-active {
 }
 
 .modal-content {
-  background: var(--surface-modal, var(--surface-base));
+  background: var(--surface-modal);
   padding: 2rem;
   border-radius: 12px;
   max-width: 600px;
@@ -1860,7 +1860,7 @@ body.timetable-fullscreen-active {
 [data-theme="dark"] .modal                           { background: var(--surface-overlay); }
 
 [data-theme="dark"] .modal-content {
-  background: var(--surface-modal, var(--surface-raised));
+  background: var(--surface-modal);
   border: 1px solid var(--border-mid);
   box-shadow: 0 32px 80px var(--shadow-deep), inset 0 1px 0 var(--border-subtle);
   position: relative;
