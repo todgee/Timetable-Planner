@@ -6,6 +6,6 @@
    ========================================================== */
 
 const SUPABASE_URL = 'https://csqwfuvjbtkhestnfezt.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_uXML9SWQOZYTSIwAI80-iQ_9F83W8vb';
+const SUPABASE_KEY = 'sb_publishable_sGE1GsTukTyUzbobi4oLHg_jKvZLBYT';
 
 window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
