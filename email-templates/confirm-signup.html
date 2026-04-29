@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="format-detection" content="telephone=no">
+  <title>Confirm your account – Timetable Planner</title>
+
+  <!--
+    Supabase variables used in this template:
+      {{ .ConfirmationURL }}  — the full confirmation link
+      {{ .Email }}            — the recipient's email address
+  -->
+
+  <style type="text/css">
+    /* Normalise across clients that honour a <style> block */
+    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { -ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none; }
+    body { margin: 0 !important; padding: 0 !important; width: 100% !important; }
+
+    /* Mobile */
+    @media only screen and (max-width: 620px) {
+      .wrapper { width: 100% !important; padding: 0 16px !important; }
+      .card    { padding: 32px 24px !important; }
+      .btn     { display: block !important; width: 100% !important; }
+    }
+  </style>
+</head>
+<body style="margin:0;padding:0;background-color:#f0ebe1;font-family:Arial,Helvetica,sans-serif;">
+
+  <!-- Preview text (hidden, sets inbox snippet) -->
+  <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">
+    Confirm your Timetable Planner account to get started.&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;
+  </div>
+
+  <!-- Outer wrapper -->
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%"
+    style="background-color:#f0ebe1;">
+    <tr>
+      <td align="center" style="padding:40px 16px;">
+
+        <!-- ── Content card ─────────────────────────────── -->
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0"
+          class="wrapper" width="560"
+          style="max-width:560px;width:100%;">
+
+          <!-- Brand wordmark -->
+          <tr>
+            <td align="center" style="padding-bottom:24px;">
+              <span style="font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:400;color:#2a5c4e;letter-spacing:-0.01em;">
+                Timetable <strong style="font-weight:700;">Planner</strong>
+              </span>
+            </td>
+          </tr>
+
+          <!-- Card body -->
+          <tr>
+            <td class="card"
+              style="background-color:#fdfaf6;border-radius:16px;border:1px solid #ddd7cc;padding:48px 40px;
+                     box-shadow:0 4px 24px rgba(42,92,78,0.08);">
+
+              <!-- Decorative top bar -->
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td style="padding-bottom:32px;">
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="width:40px;height:4px;background-color:#2a5c4e;border-radius:2px;"></td>
+                        <td style="width:8px;"></td>
+                        <td style="width:16px;height:4px;background-color:#c9924e;border-radius:2px;"></td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Heading -->
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td style="padding-bottom:12px;">
+                    <h1 style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:30px;
+                               font-weight:700;color:#2a5c4e;letter-spacing:-0.02em;line-height:1.2;">
+                      Confirm your account
+                    </h1>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding-bottom:28px;">
+                    <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:16px;
+                               line-height:1.6;color:#4a5c54;">
+                      Thanks for signing up for Timetable Planner. Click the button below to
+                      verify your email address and activate your account.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- CTA button -->
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td style="padding-bottom:32px;">
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="border-radius:8px;background-color:#2a5c4e;">
+                          <a href="{{ .ConfirmationURL }}"
+                             class="btn"
+                             style="display:inline-block;padding:14px 32px;font-family:Arial,Helvetica,sans-serif;
+                                    font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;
+                                    border-radius:8px;letter-spacing:0.01em;mso-padding-alt:14px 32px;">
+                            Confirm my account
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Divider -->
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td style="padding-bottom:24px;border-top:1px solid #ede8e0;"></td>
+                </tr>
+              </table>
+
+              <!-- Fallback link -->
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td style="padding-bottom:8px;">
+                    <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:13px;
+                               color:#8a9a92;line-height:1.5;">
+                      If the button doesn't work, copy and paste this link into your browser:
+                    </p>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;
+                               color:#2a5c4e;word-break:break-all;line-height:1.5;">
+                      <a href="{{ .ConfirmationURL }}"
+                         style="color:#2a5c4e;text-decoration:underline;">
+                        {{ .ConfirmationURL }}
+                      </a>
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="padding-top:28px;">
+              <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;
+                         color:#8a9a92;line-height:1.6;text-align:center;">
+                This email was sent to
+                <span style="color:#4a5c54;font-weight:600;">{{ .Email }}</span>
+                because an account was created with this address.<br>
+                If you didn't sign up, you can safely ignore this email.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Bottom accent bar -->
+          <tr>
+            <td align="center" style="padding-top:24px;">
+              <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="width:16px;height:3px;background-color:#c9924e;border-radius:2px;"></td>
+                  <td style="width:8px;"></td>
+                  <td style="width:40px;height:3px;background-color:#2a5c4e;border-radius:2px;"></td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+        </table>
+        <!-- /content card -->
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
