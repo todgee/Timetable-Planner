@@ -148,8 +148,14 @@ document.getElementById('form-signin').addEventListener('submit', async e => {
 
   setLoading('form-signin', true);
 
+  const remember = document.getElementById('signin-remember').checked;
+
   try {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+      options: { persistSession: remember }
+    });
     if (error) throw error;
     redirectAfterSignIn();
   } catch (err) {
@@ -265,19 +271,32 @@ document.getElementById('form-signup').addEventListener('submit', async e => {
 
 function showConfirmationMessage(email) {
   const panel = document.getElementById('panel-signup');
-  panel.innerHTML = `
-    <div class="auth-confirm">
-      <div class="auth-confirm-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
-          <rect x="2" y="4" width="20" height="16" rx="3"/>
-          <polyline points="2,4 12,13 22,4"/>
-        </svg>
-      </div>
-      <h2>Check your email</h2>
-      <p>We've sent a confirmation link to <strong>${email}</strong>.<br>Click it to activate your account, then come back to sign in.</p>
-      <button class="btn btn-primary btn-auth" style="margin-top:1.5rem" onclick="switchTab('signin')">Back to Sign In</button>
-    </div>
-  `;
+
+  const wrap    = document.createElement('div');
+  wrap.className = 'auth-confirm';
+
+  const iconWrap = document.createElement('div');
+  iconWrap.className = 'auth-confirm-icon';
+  iconWrap.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48"><rect x="2" y="4" width="20" height="16" rx="3"/><polyline points="2,4 12,13 22,4"/></svg>';
+
+  const h2 = document.createElement('h2');
+  h2.textContent = 'Check your email';
+
+  const p = document.createElement('p');
+  p.appendChild(document.createTextNode("We've sent a confirmation link to "));
+  const strong = document.createElement('strong');
+  strong.textContent = email; // textContent — never parsed as HTML
+  p.appendChild(strong);
+  p.appendChild(document.createTextNode('. Click it to activate your account, then come back to sign in.'));
+
+  const btn = document.createElement('button');
+  btn.className = 'btn btn-primary btn-auth';
+  btn.style.marginTop = '1.5rem';
+  btn.textContent = 'Back to Sign In';
+  btn.onclick = () => switchTab('signin');
+
+  wrap.append(iconWrap, h2, p, btn);
+  panel.replaceChildren(wrap);
 }
 
 /* ── Forgot password modal ───────────────────────────────── */
@@ -330,20 +349,36 @@ document.getElementById('form-forgot').addEventListener('submit', async e => {
     });
     if (error) throw error;
 
-    // Replace form with success message
-    document.querySelector('.modal-body').innerHTML = `
-      <div class="auth-confirm" style="padding-top:0.5rem">
-        <div class="auth-confirm-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40">
-            <rect x="2" y="4" width="20" height="16" rx="3"/>
-            <polyline points="2,4 12,13 22,4"/>
-          </svg>
-        </div>
-        <h2 style="font-size:1.2rem">Reset link sent</h2>
-        <p>Check <strong>${email}</strong> for a password reset link.</p>
-        <button class="btn btn-primary btn-auth" style="margin-top:1.25rem" onclick="closeForgotPassword()">Done</button>
-      </div>
-    `;
+    // Replace form with success message — built with DOM API to avoid XSS
+    const modalBody = document.querySelector('.modal-body');
+
+    const wrap = document.createElement('div');
+    wrap.className = 'auth-confirm';
+    wrap.style.paddingTop = '0.5rem';
+
+    const iconWrap = document.createElement('div');
+    iconWrap.className = 'auth-confirm-icon';
+    iconWrap.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40"><rect x="2" y="4" width="20" height="16" rx="3"/><polyline points="2,4 12,13 22,4"/></svg>';
+
+    const h2 = document.createElement('h2');
+    h2.style.fontSize = '1.2rem';
+    h2.textContent = 'Reset link sent';
+
+    const p = document.createElement('p');
+    p.appendChild(document.createTextNode('Check '));
+    const strong = document.createElement('strong');
+    strong.textContent = email; // textContent — never parsed as HTML
+    p.appendChild(strong);
+    p.appendChild(document.createTextNode(' for a password reset link.'));
+
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-primary btn-auth';
+    btn.style.marginTop = '1.25rem';
+    btn.textContent = 'Done';
+    btn.onclick = closeForgotPassword;
+
+    wrap.append(iconWrap, h2, p, btn);
+    modalBody.replaceChildren(wrap);
   } catch (err) {
     showFormError('forgot-form-error', err.message || 'Could not send reset email. Please try again.');
     btn.classList.remove('loading');
