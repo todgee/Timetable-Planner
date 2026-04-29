@@ -652,6 +652,40 @@ select.invalid {
 
 /* ── Responsive ──────────────────────────────────────────── */
 
+/* ── Email confirmation / success state ──────────────────── */
+
+.auth-confirm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1rem 0 0.5rem;
+  gap: 0.5rem;
+}
+
+.auth-confirm-icon {
+  color: #2a5c4e;
+  margin-bottom: 0.5rem;
+  opacity: 0.85;
+}
+
+.auth-confirm h2 {
+  font-family: "Crimson Pro", "Georgia", serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #2a5c4e;
+  letter-spacing: -0.02em;
+}
+
+.auth-confirm p {
+  font-size: 0.9rem;
+  color: #4a5c54;
+  line-height: 1.6;
+  max-width: 320px;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+
 @media (max-width: 520px) {
   body {
     padding: 1rem;
