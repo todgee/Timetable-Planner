@@ -8,6 +8,11 @@
 
 document.getElementById('copyright-year').textContent = new Date().getFullYear();
 
+// Password visibility toggles
+document.querySelectorAll('.btn-show-password[data-target]').forEach(btn => {
+  btn.addEventListener('click', () => togglePassword(btn.dataset.target, btn));
+});
+
 /* ── State management ────────────────────────────────────── */
 
 function showState(id) {
