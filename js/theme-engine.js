@@ -238,9 +238,10 @@
       if (!saved || !saved.start || !saved.end) return;
       document.body.style.background =
         'linear-gradient(135deg, ' + saved.start + ' 0%, ' + saved.end + ' 100%)';
-      document.documentElement.style.setProperty(
-        '--surface-modal', computeModalSurface(saved.start, saved.end)
-      );
+      /* Use pre-computed modal colour stored at save-time; fall back to
+         runtime computation only for data written by older code. */
+      var modal = saved.modal || computeModalSurface(saved.start, saved.end);
+      document.documentElement.style.setProperty('--surface-modal', modal);
     } catch (e) {}
   }
 
@@ -262,7 +263,12 @@
 
   function saveBg(config) {
     try {
-      localStorage.setItem(BG_STORAGE_KEY, JSON.stringify({ start: config.start, end: config.end }));
+      var modal = computeModalSurface(config.start, config.end);
+      localStorage.setItem(BG_STORAGE_KEY, JSON.stringify({
+        start: config.start,
+        end:   config.end,
+        modal: modal
+      }));
     } catch (e) {}
   }
 
@@ -276,7 +282,7 @@
   function resetBg() {
     localStorage.removeItem(BG_STORAGE_KEY);
     if (document.body) document.body.style.background = '';
-    document.documentElement.style.removeProperty('--surface-modal');
+    document.documentElement.style.removeProperty('--surface-modal'); // CSS token default takes over
   }
 
   /* ── Auto-init ───────────────────────────────────────────── */
