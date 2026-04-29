@@ -115,15 +115,7 @@ function setLoading(formId, loading) {
 /* ── Post-login redirect ─────────────────────────────────── */
 
 function redirectAfterSignIn() {
-  const raw = localStorage.getItem('timetable.data');
-  try {
-    const data = raw ? JSON.parse(raw) : null;
-    if (data && (data.peopleList?.length || data.classList?.length)) {
-      window.location.href = 'admin.html';
-      return;
-    }
-  } catch (_) { /* fall through */ }
-  window.location.href = 'setup.html';
+  window.location.href = 'portal.html';
 }
 
 /* ── Sign In ─────────────────────────────────────────────── */
@@ -255,7 +247,7 @@ document.getElementById('form-signup').addEventListener('submit', async e => {
 
     if (data.session) {
       // Email confirmation disabled — user is signed in immediately
-      window.location.href = 'setup.html';
+      window.location.href = 'portal.html';
     } else {
       // Email confirmation enabled — tell user to check their inbox
       showConfirmationMessage(email);
