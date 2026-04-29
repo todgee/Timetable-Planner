@@ -15,10 +15,9 @@ create extension if not exists "uuid-ossp";
 -- ENUMS
 -- =============================================================
 
-create type member_role   as enum ('admin', 'viewer');
-create type slot_type     as enum ('class', 'recess', 'lunch', 'break');
-create type day_of_week   as enum ('monday', 'tuesday', 'wednesday', 'thursday', 'friday');
-create type invite_status as enum ('pending', 'accepted', 'expired');
+create type member_role as enum ('admin', 'viewer');
+create type slot_type   as enum ('class', 'recess', 'lunch', 'break');
+create type day_of_week as enum ('monday', 'tuesday', 'wednesday', 'thursday', 'friday');
 
 
 -- =============================================================
@@ -28,18 +27,151 @@ create type invite_status as enum ('pending', 'accepted', 'expired');
 -- =============================================================
 
 create table profiles (
-  id             uuid primary key references auth.users (id) on delete cascade,
-  first_name     text,
-  last_name      text,
-  full_name      text,
-  organisation   text,
-  role           text,                        -- teacher, principal, etc.
-  avatar_url     text,
-  created_at     timestamptz not null default now(),
-  updated_at     timestamptz not null default now()
+  id            uuid primary key references auth.users (id) on delete cascade,
+  first_name    text,
+  last_name     text,
+  full_name     text,
+  organisation  text,
+  role          text,           -- teacher, principal, etc.
+  avatar_url    text,
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz not null default now()
 );
 
--- Trigger: keep updated_at current
+
+-- =============================================================
+-- TIMETABLES
+-- Each timetable is a simple Mon–Fri weekly layout.
+-- Owned by one user; others access via timetable_members.
+-- =============================================================
+
+create table timetables (
+  id              uuid primary key default uuid_generate_v4(),
+  owner_id        uuid not null references profiles (id) on delete cascade,
+  name            text not null,
+  description     text,
+  setup_complete  boolean not null default false,
+  created_at      timestamptz not null default now(),
+  updated_at      timestamptz not null default now()
+);
+
+
+-- =============================================================
+-- TIMETABLE MEMBERS
+-- Controls who can access a timetable beyond the owner.
+--   admin  — can edit the timetable and manage members
+--   viewer — read-only access
+-- The owner is not stored here; ownership is checked via
+-- timetables.owner_id.
+-- =============================================================
+
+create table timetable_members (
+  id            uuid primary key default uuid_generate_v4(),
+  timetable_id  uuid not null references timetables (id) on delete cascade,
+  user_id       uuid not null references profiles (id) on delete cascade,
+  role          member_role not null default 'viewer',
+  invited_by    uuid references profiles (id) on delete set null,
+  created_at    timestamptz not null default now(),
+
+  unique (timetable_id, user_id)
+);
+
+
+-- =============================================================
+-- INVITATIONS
+-- An admin adds an email address to a timetable.
+-- When that person signs up, a trigger automatically converts
+-- the invitation into a timetable_members row.
+-- accepted_at is null while pending, set when auto-converted.
+-- =============================================================
+
+create table invitations (
+  id            uuid primary key default uuid_generate_v4(),
+  timetable_id  uuid not null references timetables (id) on delete cascade,
+  invited_by    uuid not null references profiles (id) on delete cascade,
+  email         text not null,
+  role          member_role not null default 'viewer',
+  accepted_at   timestamptz,
+  created_at    timestamptz not null default now(),
+
+  unique (timetable_id, email)
+);
+
+
+-- =============================================================
+-- PEOPLE
+-- Staff / individuals being scheduled in the timetable.
+-- These are scheduling subjects, not necessarily app users.
+-- =============================================================
+
+create table people (
+  id            uuid primary key default uuid_generate_v4(),
+  timetable_id  uuid not null references timetables (id) on delete cascade,
+  name          text not null,
+  sort_order    integer not null default 0,
+  created_at    timestamptz not null default now()
+);
+
+
+-- =============================================================
+-- CLASSES
+-- Subjects / activities with a display colour.
+-- =============================================================
+
+create table classes (
+  id            uuid primary key default uuid_generate_v4(),
+  timetable_id  uuid not null references timetables (id) on delete cascade,
+  name          text not null,
+  color         text not null default '#2a5c4e',
+  sort_order    integer not null default 0,
+  created_at    timestamptz not null default now()
+);
+
+
+-- =============================================================
+-- TIME SLOTS
+-- Ordered periods in the school day (class, recess, lunch, break).
+-- =============================================================
+
+create table time_slots (
+  id            uuid primary key default uuid_generate_v4(),
+  timetable_id  uuid not null references timetables (id) on delete cascade,
+  label         text,
+  start_time    time not null,
+  end_time      time not null,
+  type          slot_type not null default 'class',
+  sort_order    integer not null default 0,
+  created_at    timestamptz not null default now()
+);
+
+
+-- =============================================================
+-- ASSIGNMENTS
+-- One row = one person assigned to one class in one time slot
+-- on one day of the week.
+-- The unique constraint enforces that a person can only be in
+-- one class per slot per day (can't be in two places at once).
+-- =============================================================
+
+create table assignments (
+  id            uuid primary key default uuid_generate_v4(),
+  timetable_id  uuid not null references timetables (id) on delete cascade,
+  time_slot_id  uuid not null references time_slots (id) on delete cascade,
+  person_id     uuid not null references people (id) on delete cascade,
+  class_id      uuid not null references classes (id) on delete cascade,
+  day           day_of_week not null,
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz not null default now(),
+
+  unique (timetable_id, time_slot_id, person_id, day)
+);
+
+
+-- =============================================================
+-- TRIGGERS
+-- =============================================================
+
+-- Reusable updated_at function
 create or replace function handle_updated_at()
 returns trigger as $$
 begin
@@ -52,7 +184,15 @@ create trigger profiles_updated_at
   before update on profiles
   for each row execute function handle_updated_at();
 
--- Trigger: auto-create profile on signup using metadata from signUp()
+create trigger timetables_updated_at
+  before update on timetables
+  for each row execute function handle_updated_at();
+
+create trigger assignments_updated_at
+  before update on assignments
+  for each row execute function handle_updated_at();
+
+-- Auto-create profile from signup metadata
 create or replace function handle_new_user()
 returns trigger as $$
 begin
@@ -73,166 +213,63 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function handle_new_user();
 
+-- Auto-accept pending invitations when a matching user signs up.
+-- Finds any invitations for the new user's email and creates
+-- timetable_members rows, then marks the invitations as accepted.
+create or replace function accept_pending_invitations()
+returns trigger as $$
+begin
+  -- Create member rows for every pending invitation matching this email
+  insert into timetable_members (timetable_id, user_id, role, invited_by)
+  select
+    i.timetable_id,
+    new.id,
+    i.role,
+    i.invited_by
+  from invitations i
+  where lower(i.email)       = lower(new.email)
+    and i.accepted_at        is null
+  on conflict (timetable_id, user_id) do nothing;
 
--- =============================================================
--- TIMETABLES
--- Each timetable is owned by one user.
--- =============================================================
+  -- Mark those invitations as accepted
+  update invitations
+  set accepted_at = now()
+  where lower(email)  = lower(new.email)
+    and accepted_at   is null;
 
-create table timetables (
-  id              uuid primary key default uuid_generate_v4(),
-  owner_id        uuid not null references profiles (id) on delete cascade,
-  name            text not null,
-  description     text,
-  setup_complete  boolean not null default false,
-  created_at      timestamptz not null default now(),
-  updated_at      timestamptz not null default now()
-);
+  return new;
+end;
+$$ language plpgsql security definer;
 
-create trigger timetables_updated_at
-  before update on timetables
-  for each row execute function handle_updated_at();
-
-
--- =============================================================
--- TIMETABLE MEMBERS
--- Controls who can access a timetable and at what level.
--- The owner is NOT automatically a member row — ownership is
--- checked directly via timetables.owner_id.
--- =============================================================
-
-create table timetable_members (
-  id            uuid primary key default uuid_generate_v4(),
-  timetable_id  uuid not null references timetables (id) on delete cascade,
-  user_id       uuid not null references profiles (id) on delete cascade,
-  role          member_role not null default 'viewer',
-  invited_by    uuid references profiles (id) on delete set null,
-  created_at    timestamptz not null default now(),
-
-  unique (timetable_id, user_id)
-);
+-- Fires on auth.users so we have access to the email address
+create trigger on_auth_user_invitation_accept
+  after insert on auth.users
+  for each row execute function accept_pending_invitations();
 
 
 -- =============================================================
--- INVITATIONS
--- Allows inviting someone by email before they have an account.
--- On signup, accepted invitations are converted to member rows.
+-- RLS HELPER FUNCTIONS
 -- =============================================================
 
-create table invitations (
-  id            uuid primary key default uuid_generate_v4(),
-  timetable_id  uuid not null references timetables (id) on delete cascade,
-  invited_by    uuid not null references profiles (id) on delete cascade,
-  email         text not null,
-  role          member_role not null default 'viewer',
-  token         uuid not null unique default uuid_generate_v4(),
-  status        invite_status not null default 'pending',
-  expires_at    timestamptz not null default now() + interval '7 days',
-  accepted_at   timestamptz,
-  created_at    timestamptz not null default now(),
-
-  unique (timetable_id, email)
-);
-
-
--- =============================================================
--- PEOPLE
--- Staff / individuals being scheduled.
--- These are scheduling subjects, not necessarily app users.
--- =============================================================
-
-create table people (
-  id            uuid primary key default uuid_generate_v4(),
-  timetable_id  uuid not null references timetables (id) on delete cascade,
-  name          text not null,
-  sort_order    integer not null default 0,
-  created_at    timestamptz not null default now()
-);
-
-
--- =============================================================
--- CLASSES
--- Subject / class entries with their display colour.
--- =============================================================
-
-create table classes (
-  id            uuid primary key default uuid_generate_v4(),
-  timetable_id  uuid not null references timetables (id) on delete cascade,
-  name          text not null,
-  color         text not null default '#2a5c4e',  -- hex colour
-  sort_order    integer not null default 0,
-  created_at    timestamptz not null default now()
-);
-
-
--- =============================================================
--- TIME SLOTS
--- Ordered list of time periods in the school day.
--- =============================================================
-
-create table time_slots (
-  id            uuid primary key default uuid_generate_v4(),
-  timetable_id  uuid not null references timetables (id) on delete cascade,
-  label         text,                            -- optional custom label
-  start_time    time not null,
-  end_time      time not null,
-  type          slot_type not null default 'class',
-  sort_order    integer not null default 0,
-  created_at    timestamptz not null default now()
-);
-
-
--- =============================================================
--- ASSIGNMENTS
--- Maps a person to a class in a specific slot on a specific day.
--- One row = one person assigned to one class in one slot.
--- =============================================================
-
-create table assignments (
-  id            uuid primary key default uuid_generate_v4(),
-  timetable_id  uuid not null references timetables (id) on delete cascade,
-  time_slot_id  uuid not null references time_slots (id) on delete cascade,
-  person_id     uuid not null references people (id) on delete cascade,
-  class_id      uuid not null references classes (id) on delete cascade,
-  day           day_of_week not null,
-  created_at    timestamptz not null default now(),
-  updated_at    timestamptz not null default now(),
-
-  unique (timetable_id, time_slot_id, person_id, day)
-);
-
-create trigger assignments_updated_at
-  before update on assignments
-  for each row execute function handle_updated_at();
-
-
--- =============================================================
--- HELPER: is_timetable_member(timetable_id, user_id)
--- Returns true if the user owns or is a member of the timetable.
--- Used throughout RLS policies to avoid repetition.
--- =============================================================
-
+-- True if user owns or is a member of the timetable
 create or replace function is_timetable_member(t_id uuid, u_id uuid)
 returns boolean as $$
   select exists (
-    select 1 from timetables where id = t_id and owner_id = u_id
-    union
-    select 1 from timetable_members where timetable_id = t_id and user_id = u_id
+    select 1 from timetables
+      where id = t_id and owner_id = u_id
+    union all
+    select 1 from timetable_members
+      where timetable_id = t_id and user_id = u_id
   );
 $$ language sql security definer stable;
 
-
--- =============================================================
--- HELPER: is_timetable_admin(timetable_id, user_id)
--- Returns true if the user owns the timetable OR is an admin
--- member. Used to gate write operations.
--- =============================================================
-
+-- True if user owns the timetable OR is an admin member
 create or replace function is_timetable_admin(t_id uuid, u_id uuid)
 returns boolean as $$
   select exists (
-    select 1 from timetables where id = t_id and owner_id = u_id
-    union
+    select 1 from timetables
+      where id = t_id and owner_id = u_id
+    union all
     select 1 from timetable_members
       where timetable_id = t_id and user_id = u_id and role = 'admin'
   );
@@ -241,8 +278,8 @@ $$ language sql security definer stable;
 
 -- =============================================================
 -- ROW LEVEL SECURITY
--- Enable RLS on every table, then grant access via policies.
--- The anon role has no access — all queries require a session.
+-- RLS is enabled on every table.
+-- The anon role has zero access — a valid session is required.
 -- =============================================================
 
 alter table profiles           enable row level security;
@@ -257,18 +294,18 @@ alter table assignments        enable row level security;
 
 -- ── profiles ─────────────────────────────────────────────────
 
--- Users can read their own profile
 create policy "profiles: read own"
   on profiles for select
   using (auth.uid() = id);
 
--- Members can read profiles of people in shared timetables
--- (so you can show the inviter's name etc.)
+-- Can read profiles of people who share a timetable with you
+-- (so you can show names in the members list)
 create policy "profiles: read co-members"
   on profiles for select
   using (
     exists (
-      select 1 from timetable_members tm1
+      select 1
+      from timetable_members tm1
       join timetable_members tm2 on tm1.timetable_id = tm2.timetable_id
       where tm1.user_id = auth.uid()
         and tm2.user_id = profiles.id
@@ -317,7 +354,7 @@ create policy "members: update role if admin"
   on timetable_members for update
   using (is_timetable_admin(timetable_id, auth.uid()));
 
--- Admin can remove members; members can remove themselves
+-- Admin can remove anyone; members can remove themselves
 create policy "members: delete if admin or self"
   on timetable_members for delete
   using (
@@ -347,7 +384,7 @@ create policy "people: read if member"
   on people for select
   using (is_timetable_member(timetable_id, auth.uid()));
 
-create policy "people: write if admin"
+create policy "people: insert if admin"
   on people for insert
   with check (is_timetable_admin(timetable_id, auth.uid()));
 
