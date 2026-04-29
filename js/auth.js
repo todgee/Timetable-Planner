@@ -345,7 +345,7 @@ document.getElementById('form-forgot').addEventListener('submit', async e => {
 
   try {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth.html`
+      redirectTo: `${window.location.origin}/reset-password.html`
     });
     if (error) throw error;
 
