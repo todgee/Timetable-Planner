@@ -219,26 +219,33 @@ btnConfirm.addEventListener('click', async () => {
   inputName.classList.remove('invalid');
   createError.classList.remove('visible');
 
-  // Loading state
-  btnConfirm.disabled = true;
-  btnConfirm.classList.add('loading');
-
-  const { data, error } = await supabase
-    .from('timetables')
-    .insert({ owner_id: currentUser.id, name, description })
-    .select('id')
-    .single();
-
-  btnConfirm.disabled = false;
-  btnConfirm.classList.remove('loading');
-
-  if (error) {
-    createError.textContent = 'Something went wrong. Please try again.';
+  // Resolve user ID — currentUser may not be set yet if initPortal() is still in flight
+  const userId = currentUser?.id ?? (await supabase.auth.getSession()).data.session?.user?.id;
+  if (!userId) {
+    createError.textContent = 'Session error. Please refresh and try again.';
     createError.classList.add('visible');
     return;
   }
 
-  window.location.href = `setup.html?id=${data.id}`;
+  btnConfirm.disabled = true;
+  btnConfirm.classList.add('loading');
+
+  try {
+    const { data, error } = await supabase
+      .from('timetables')
+      .insert({ owner_id: userId, name, description })
+      .select('id')
+      .single();
+
+    if (error) throw error;
+
+    window.location.href = `setup.html?id=${data.id}`;
+  } catch {
+    btnConfirm.disabled = false;
+    btnConfirm.classList.remove('loading');
+    createError.textContent = 'Something went wrong. Please try again.';
+    createError.classList.add('visible');
+  }
 });
 
 // ── Sign out ──────────────────────────────────────────────
