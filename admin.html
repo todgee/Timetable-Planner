@@ -62,6 +62,10 @@
     <link rel="stylesheet" href="css/base.css" />
     <link rel="stylesheet" href="css/admin.css" />
 
+    <!-- Auth -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="js/supabase-client.js"></script>
+
     <!-- Export Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -72,7 +76,7 @@
     <script src="js/shared.js"></script>
     <script src="js/theme-engine.js"></script>
   </head>
-  <body>
+  <body style="visibility:hidden">
     <!-- Animated orb background -->
     <div class="admin-bg" aria-hidden="true"></div>
 
@@ -447,6 +451,9 @@
       renderDaySelector(document.getElementById('daySelector'));
       renderViewControls(document.getElementById('viewControls'));
     </script>
+
+    <!-- Auth guard -->
+    <script src="js/require-auth.js"></script>
 
     <!-- Admin JavaScript -->
     <script src="js/admin.js"></script>
