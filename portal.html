@@ -3,6 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' https://cdn.jsdelivr.net;
+    style-src 'self' https://fonts.googleapis.com 'unsafe-inline';
+    font-src https://fonts.gstatic.com;
+    connect-src 'self' https://*.supabase.co;
+    img-src 'self' data: blob:;
+    frame-ancestors 'none';
+    base-uri 'self';
+    form-action 'self';
+  ">
   <title>Portal – Timetable Planner</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -48,11 +59,41 @@
       text-transform: uppercase;
       padding: 0.35rem 0.9rem;
     }
+
+    .btn-signout {
+      margin-top: 1.5rem;
+      padding: 0.6rem 1.25rem;
+      font-family: "Work Sans", sans-serif;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #4a5c54;
+      background: none;
+      border: 1.5px solid #c8c1b4;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: border-color 0.18s, color 0.18s;
+    }
+
+    .btn-signout:hover {
+      border-color: #2a5c4e;
+      color: #2a5c4e;
+    }
   </style>
 </head>
 <body>
   <span class="badge">Work in Progress</span>
   <h1>Portal</h1>
   <p>This page is coming soon.</p>
+  <button class="btn-signout" id="btn-signout">Sign out</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/require-auth.js"></script>
+  <script>
+    document.getElementById('btn-signout').addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      window.location.replace('auth.html');
+    });
+  </script>
 </body>
 </html>
