@@ -249,6 +249,7 @@ btnConfirm.addEventListener('click', async () => {
   btnConfirm.classList.add('loading');
 
   try {
+    console.log('insert payload:', { owner_id: userId, name, description });
     const { data, error } = await supabase
       .from('timetables')
       .insert({ owner_id: userId, name, description })
