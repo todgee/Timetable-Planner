@@ -3,6 +3,29 @@
    Requires supabase-client.js to be loaded first.
    ========================================================== */
 
+/* ── Wire up all event listeners on load ─────────────────── */
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Tab buttons
+  document.getElementById('tab-signin').addEventListener('click', () => switchTab('signin'));
+  document.getElementById('tab-signup').addEventListener('click', () => switchTab('signup'));
+
+  // Switch-panel links
+  document.getElementById('link-to-signup').addEventListener('click', e => { e.preventDefault(); switchTab('signup'); });
+  document.getElementById('link-to-signin').addEventListener('click', e => { e.preventDefault(); switchTab('signin'); });
+
+  // Forgot password
+  document.getElementById('btn-forgot').addEventListener('click', showForgotPassword);
+
+  // Close modal button
+  document.getElementById('btn-close-modal').addEventListener('click', closeForgotPassword);
+
+  // Password visibility toggles — single delegated handler via data-target
+  document.querySelectorAll('.btn-show-password[data-target]').forEach(btn => {
+    btn.addEventListener('click', () => togglePassword(btn.dataset.target, btn));
+  });
+});
+
 /* ── Tab switching ───────────────────────────────────────── */
 
 function switchTab(tab) {

@@ -49,10 +49,10 @@
 
       <!-- Tab switcher -->
       <div class="auth-tabs" role="tablist">
-        <button class="auth-tab active" id="tab-signin" role="tab" aria-selected="true" aria-controls="panel-signin" onclick="switchTab('signin')">
+        <button class="auth-tab active" id="tab-signin" role="tab" aria-selected="true" aria-controls="panel-signin">
           Sign In
         </button>
-        <button class="auth-tab" id="tab-signup" role="tab" aria-selected="false" aria-controls="panel-signup" onclick="switchTab('signup')">
+        <button class="auth-tab" id="tab-signup" role="tab" aria-selected="false" aria-controls="panel-signup">
           Create Account
         </button>
       </div>
@@ -90,7 +90,7 @@
                 autocomplete="current-password"
                 required
               >
-              <button type="button" class="btn-show-password" aria-label="Toggle password visibility" onclick="togglePassword('signin-password', this)">
+              <button type="button" class="btn-show-password" data-target="signin-password" aria-label="Toggle password visibility">
                 <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
@@ -103,7 +103,7 @@
               <span class="checkbox-custom"></span>
               Remember me
             </label>
-            <a href="#" class="auth-link forgot-link" onclick="showForgotPassword(event)">Forgot password?</a>
+            <a href="#" class="auth-link forgot-link" id="btn-forgot">Forgot password?</a>
           </div>
 
           <div class="form-error" id="signin-form-error"></div>
@@ -117,7 +117,7 @@
 
         <p class="auth-switch">
           Don't have an account?
-          <a href="#" class="auth-link" onclick="switchTab('signup'); return false;">Create one</a>
+          <a href="#" class="auth-link" id="link-to-signup">Create one</a>
         </p>
       </div>
 
@@ -206,7 +206,7 @@
                 autocomplete="new-password"
                 required
               >
-              <button type="button" class="btn-show-password" aria-label="Toggle password visibility" onclick="togglePassword('signup-password', this)">
+              <button type="button" class="btn-show-password" data-target="signup-password" aria-label="Toggle password visibility">
                 <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
@@ -225,7 +225,7 @@
                 autocomplete="new-password"
                 required
               >
-              <button type="button" class="btn-show-password" aria-label="Toggle password visibility" onclick="togglePassword('signup-confirm', this)">
+              <button type="button" class="btn-show-password" data-target="signup-confirm" aria-label="Toggle password visibility">
                 <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </button>
             </div>
@@ -252,7 +252,7 @@
 
         <p class="auth-switch">
           Already have an account?
-          <a href="#" class="auth-link" onclick="switchTab('signin'); return false;">Sign in</a>
+          <a href="#" class="auth-link" id="link-to-signin">Sign in</a>
         </p>
       </div>
 
@@ -269,7 +269,7 @@
     <div class="modal-content auth-modal-content">
       <div class="modal-header">
         <h2 class="modal-title" id="forgot-title">Reset Password</h2>
-        <button class="btn-close-modal" aria-label="Close" onclick="closeForgotPassword()">&#x2715;</button>
+        <button class="btn-close-modal" id="btn-close-modal" aria-label="Close">&#x2715;</button>
       </div>
       <div class="modal-body">
         <p class="modal-desc">Enter your email address and we'll send you a link to reset your password.</p>
