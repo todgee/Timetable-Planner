@@ -1,0 +1,544 @@
+/* ==========================================================
+   AUTH.CSS — Sign In / Create Account page
+   ========================================================== */
+
+/* ── Page layout ─────────────────────────────────────────── */
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1.5rem;
+  overflow-x: hidden;
+}
+
+.auth-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.auth-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.6;
+}
+
+.auth-orb--green {
+  width: 520px;
+  height: 520px;
+  top: -160px;
+  left: -140px;
+  background: var(--orb-green);
+}
+
+.auth-orb--gold {
+  width: 420px;
+  height: 420px;
+  bottom: -120px;
+  right: -100px;
+  background: var(--orb-gold);
+}
+
+.auth-page {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+/* ── Brand wordmark ──────────────────────────────────────── */
+
+.auth-brand {
+  text-align: center;
+}
+
+.auth-brand-name {
+  font-family: "Crimson Pro", serif;
+  font-size: 1.6rem;
+  font-weight: 400;
+  color: var(--brand-500);
+  letter-spacing: -0.01em;
+}
+
+.auth-brand-name strong {
+  font-weight: 700;
+}
+
+/* ── Auth card ───────────────────────────────────────────── */
+
+.auth-card {
+  width: 100%;
+  background: var(--surface-base);
+  border-radius: 16px;
+  border: 1px solid var(--border-default);
+  box-shadow:
+    0 4px 24px var(--shadow-color),
+    0 1px 4px var(--shadow-xs);
+  overflow: hidden;
+}
+
+/* ── Tab switcher ────────────────────────────────────────── */
+
+.auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.auth-tab {
+  padding: 1rem 1.25rem;
+  background: none;
+  border: none;
+  font-family: "Work Sans", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+  position: relative;
+}
+
+.auth-tab::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--brand-500);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.auth-tab:hover {
+  color: var(--brand-500);
+  background: var(--fill-hover);
+}
+
+.auth-tab.active {
+  color: var(--brand-500);
+  font-weight: 600;
+}
+
+.auth-tab.active::after {
+  opacity: 1;
+}
+
+/* ── Auth panels ─────────────────────────────────────────── */
+
+.auth-panel {
+  display: none;
+  padding: 2rem;
+}
+
+.auth-panel.active {
+  display: block;
+}
+
+/* ── Panel header ────────────────────────────────────────── */
+
+.auth-header {
+  margin-bottom: 1.75rem;
+}
+
+.auth-header h1 {
+  font-size: 1.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.auth-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+/* ── Form elements ───────────────────────────────────────── */
+
+.auth-form .form-group {
+  margin-bottom: 1.1rem;
+}
+
+.auth-form label {
+  margin-bottom: 0.4rem;
+  font-size: 0.875rem;
+}
+
+.label-optional {
+  font-weight: 400;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.auth-form input,
+.auth-form select {
+  color: var(--text-primary);
+  background: var(--surface-input);
+  border-color: var(--border-default);
+}
+
+.auth-form input:focus,
+.auth-form select:focus {
+  border-color: var(--brand-500);
+  box-shadow: 0 0 0 3px var(--brand-fill);
+}
+
+/* Two-column row for first/last name */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+/* ── Password input wrapper ──────────────────────────────── */
+
+.input-password-wrap {
+  position: relative;
+}
+
+.input-password-wrap input {
+  padding-right: 2.75rem;
+}
+
+.btn-show-password {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 0.25rem;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.btn-show-password:hover {
+  color: var(--brand-500);
+}
+
+.btn-show-password .icon-eye {
+  width: 18px;
+  height: 18px;
+}
+
+/* ── Password strength indicator ─────────────────────────── */
+
+.password-strength {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  min-height: 1.2rem;
+}
+
+.strength-bars {
+  display: flex;
+  gap: 3px;
+}
+
+.strength-bar {
+  width: 28px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border-default);
+  transition: background 0.25s;
+}
+
+.strength-bar.filled-weak   { background: var(--state-error); }
+.strength-bar.filled-fair   { background: var(--state-warning); }
+.strength-bar.filled-good   { background: var(--accent-500); }
+.strength-bar.filled-strong { background: var(--state-success); }
+
+.strength-label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.strength-label.weak   { color: var(--state-error); }
+.strength-label.fair   { color: var(--state-warning); }
+.strength-label.good   { color: var(--accent-600); }
+.strength-label.strong { color: var(--state-success); }
+
+/* ── Meta row (remember me / forgot password) ─────────────── */
+
+.auth-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.1rem;
+}
+
+/* ── Custom checkbox ─────────────────────────────────────── */
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+  font-weight: 400;
+}
+
+.checkbox-label input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.checkbox-custom {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  border: 2px solid var(--border-mid);
+  border-radius: 4px;
+  background: var(--surface-input);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.checkbox-label input[type="checkbox"]:checked ~ .checkbox-custom {
+  background: var(--brand-500);
+  border-color: var(--brand-500);
+}
+
+.checkbox-label input[type="checkbox"]:checked ~ .checkbox-custom::after {
+  content: "";
+  width: 9px;
+  height: 5px;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: rotate(-45deg) translateY(-1px);
+}
+
+.checkbox-label input[type="checkbox"]:focus-visible ~ .checkbox-custom {
+  outline: 2px solid var(--brand-500);
+  outline-offset: 2px;
+}
+
+/* ── Links ───────────────────────────────────────────────── */
+
+.auth-link {
+  color: var(--brand-500);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: color 0.2s;
+}
+
+.auth-link:hover {
+  color: var(--brand-400);
+  text-decoration: underline;
+}
+
+.forgot-link {
+  margin-left: auto;
+}
+
+/* ── Submit button ───────────────────────────────────────── */
+
+.btn-auth {
+  width: 100%;
+  justify-content: center;
+  padding: 0.85rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.btn-auth .btn-spinner {
+  display: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+.btn-auth.loading .btn-label {
+  opacity: 0.6;
+}
+
+.btn-auth.loading .btn-spinner {
+  display: inline-block;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Error messages ──────────────────────────────────────── */
+
+.field-error {
+  display: block;
+  min-height: 1rem;
+  font-size: 0.8rem;
+  color: var(--state-error);
+  margin-top: 0.3rem;
+}
+
+.form-error {
+  font-size: 0.875rem;
+  color: var(--state-error);
+  background: var(--state-error-bg);
+  border: 1px solid var(--state-error-border);
+  border-radius: 8px;
+  padding: 0.65rem 0.85rem;
+  margin-bottom: 0.75rem;
+  display: none;
+}
+
+.form-error.visible {
+  display: block;
+}
+
+/* ── Invalid field highlight ─────────────────────────────── */
+
+.auth-form input.invalid,
+.auth-form select.invalid {
+  border-color: var(--state-error);
+  box-shadow: 0 0 0 3px var(--state-error-bg);
+}
+
+/* ── Switch prompt ───────────────────────────────────────── */
+
+.auth-switch {
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* ── Footer ──────────────────────────────────────────────── */
+
+.auth-footer {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ── Forgot password modal ───────────────────────────────── */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--surface-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  z-index: 100;
+  animation: fade-in 0.15s ease;
+}
+
+.modal-overlay[hidden] {
+  display: none;
+}
+
+.auth-modal-content {
+  width: 100%;
+  max-width: 420px;
+  background: var(--surface-modal);
+  border-radius: 14px;
+  border: 1px solid var(--border-default);
+  box-shadow: 0 8px 40px var(--shadow-overlay);
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.modal-title {
+  font-family: "Crimson Pro", serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--brand-500);
+  margin: 0;
+}
+
+.btn-close-modal {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.25rem 0.4rem;
+  border-radius: 4px;
+  line-height: 1;
+  transition: color 0.2s, background 0.2s;
+}
+
+.btn-close-modal:hover {
+  color: var(--text-primary);
+  background: var(--fill-control);
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.25rem;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+
+@media (max-width: 520px) {
+  .auth-page {
+    max-width: 100%;
+  }
+
+  .auth-panel {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-meta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .forgot-link {
+    margin-left: 0;
+  }
+}
