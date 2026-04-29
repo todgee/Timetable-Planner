@@ -1,6 +1,6 @@
 /* ==========================================================
    AUTH.JS — Sign In / Create Account page logic
-   All Supabase integration points are marked TODO:SUPABASE
+   Requires supabase-client.js to be loaded first.
    ========================================================== */
 
 /* ── Tab switching ───────────────────────────────────────── */
@@ -25,7 +25,7 @@ function togglePassword(inputId, btn) {
   const isHidden = input.type === 'password';
   input.type = isHidden ? 'text' : 'password';
   btn.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
-  btn.style.color = isHidden ? 'var(--brand-500)' : '';
+  btn.style.color = isHidden ? '#2a5c4e' : '';
 }
 
 /* ── Password strength ───────────────────────────────────── */
@@ -112,6 +112,12 @@ function setLoading(formId, loading) {
   btn.disabled = loading;
 }
 
+/* ── Post-login redirect ─────────────────────────────────── */
+
+function redirectAfterSignIn() {
+  window.location.href = 'portal.html';
+}
+
 /* ── Sign In ─────────────────────────────────────────────── */
 
 document.getElementById('form-signin').addEventListener('submit', async e => {
@@ -143,17 +149,14 @@ document.getElementById('form-signin').addEventListener('submit', async e => {
   setLoading('form-signin', true);
 
   try {
-    // TODO:SUPABASE — replace with:
-    // const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    // if (error) throw error;
-    // window.location.href = 'index.html';
-
-    await simulateDelay(800); // remove when Supabase is wired up
-    console.info('[auth] Sign-in payload ready:', { email });
-    showFormError('signin-form-error', 'Authentication is not yet connected. (Supabase coming soon)');
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    redirectAfterSignIn();
   } catch (err) {
-    showFormError('signin-form-error', err.message || 'Sign in failed. Please try again.');
-  } finally {
+    const msg = err.message?.toLowerCase().includes('invalid login')
+      ? 'Incorrect email or password.'
+      : (err.message || 'Sign in failed. Please try again.');
+    showFormError('signin-form-error', msg);
     setLoading('form-signin', false);
   }
 });
@@ -225,37 +228,57 @@ document.getElementById('form-signup').addEventListener('submit', async e => {
 
   setLoading('form-signup', true);
 
-  // Account payload — ready for Supabase
-  const accountData = {
-    email,
-    password,
-    options: {
-      data: {
-        first_name:   firstName,
-        last_name:    lastName,
-        full_name:    `${firstName} ${lastName}`,
-        organisation: organisation || null,
-        role:         role         || null,
-      }
-    }
-  };
-
   try {
-    // TODO:SUPABASE — replace with:
-    // const { data, error } = await supabase.auth.signUp(accountData);
-    // if (error) throw error;
-    // show a "check your email" confirmation message, or redirect
-    // window.location.href = 'index.html';
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          first_name:   firstName,
+          last_name:    lastName,
+          full_name:    `${firstName} ${lastName}`,
+          organisation: organisation || null,
+          role:         role         || null,
+        }
+      }
+    });
 
-    await simulateDelay(800); // remove when Supabase is wired up
-    console.info('[auth] Sign-up payload ready:', accountData);
-    showFormError('signup-form-error', 'Authentication is not yet connected. (Supabase coming soon)');
+    if (error) throw error;
+
+    if (data.session) {
+      // Email confirmation disabled — user is signed in immediately
+      window.location.href = 'portal.html';
+    } else {
+      // Email confirmation enabled — tell user to check their inbox
+      showConfirmationMessage(email);
+    }
   } catch (err) {
-    showFormError('signup-form-error', err.message || 'Account creation failed. Please try again.');
-  } finally {
+    const msg = err.message?.toLowerCase().includes('already registered')
+      ? 'An account with this email already exists.'
+      : (err.message || 'Account creation failed. Please try again.');
+    showFormError('signup-form-error', msg);
     setLoading('form-signup', false);
   }
 });
+
+/* ── Email confirmation notice ───────────────────────────── */
+
+function showConfirmationMessage(email) {
+  const panel = document.getElementById('panel-signup');
+  panel.innerHTML = `
+    <div class="auth-confirm">
+      <div class="auth-confirm-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
+          <rect x="2" y="4" width="20" height="16" rx="3"/>
+          <polyline points="2,4 12,13 22,4"/>
+        </svg>
+      </div>
+      <h2>Check your email</h2>
+      <p>We've sent a confirmation link to <strong>${email}</strong>.<br>Click it to activate your account, then come back to sign in.</p>
+      <button class="btn btn-primary btn-auth" style="margin-top:1.5rem" onclick="switchTab('signin')">Back to Sign In</button>
+    </div>
+  `;
+}
 
 /* ── Forgot password modal ───────────────────────────────── */
 
@@ -269,6 +292,7 @@ function closeForgotPassword() {
   document.getElementById('forgot-modal').hidden = true;
   clearFormError('forgot-form-error');
   clearFieldError('forgot-email-error');
+  clearInvalid('forgot-email');
   document.getElementById('form-forgot').reset();
 }
 
@@ -280,6 +304,7 @@ document.getElementById('form-forgot').addEventListener('submit', async e => {
   e.preventDefault();
   clearFieldError('forgot-email-error');
   clearFormError('forgot-form-error');
+  clearInvalid('forgot-email');
 
   const email = document.getElementById('forgot-email').value.trim();
 
@@ -300,18 +325,27 @@ document.getElementById('form-forgot').addEventListener('submit', async e => {
   btn.disabled = true;
 
   try {
-    // TODO:SUPABASE — replace with:
-    // const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    //   redirectTo: `${window.location.origin}/auth.html`
-    // });
-    // if (error) throw error;
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth.html`
+    });
+    if (error) throw error;
 
-    await simulateDelay(800); // remove when Supabase is wired up
-    console.info('[auth] Password reset payload ready:', { email });
-    showFormError('forgot-form-error', 'Reset links are not yet active. (Supabase coming soon)');
+    // Replace form with success message
+    document.querySelector('.modal-body').innerHTML = `
+      <div class="auth-confirm" style="padding-top:0.5rem">
+        <div class="auth-confirm-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40">
+            <rect x="2" y="4" width="20" height="16" rx="3"/>
+            <polyline points="2,4 12,13 22,4"/>
+          </svg>
+        </div>
+        <h2 style="font-size:1.2rem">Reset link sent</h2>
+        <p>Check <strong>${email}</strong> for a password reset link.</p>
+        <button class="btn btn-primary btn-auth" style="margin-top:1.25rem" onclick="closeForgotPassword()">Done</button>
+      </div>
+    `;
   } catch (err) {
     showFormError('forgot-form-error', err.message || 'Could not send reset email. Please try again.');
-  } finally {
     btn.classList.remove('loading');
     btn.disabled = false;
   }
@@ -354,12 +388,6 @@ attachBlurValidation('signup-confirm', 'signup-confirm-error', v => {
   const pw = document.getElementById('signup-password').value;
   return !v ? 'Please confirm your password.' : v !== pw ? 'Passwords do not match.' : '';
 });
-
-/* ── Utilities ───────────────────────────────────────────── */
-
-function simulateDelay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 /* ── Copyright year ──────────────────────────────────────── */
 
