@@ -258,7 +258,8 @@ btnConfirm.addEventListener('click', async () => {
     if (error) throw error;
 
     window.location.href = `setup.html?id=${data.id}`;
-  } catch {
+  } catch (err) {
+    console.error('Create timetable failed:', err);
     btnConfirm.disabled = false;
     btnConfirm.classList.remove('loading');
     createError.textContent = 'Something went wrong. Please try again.';
