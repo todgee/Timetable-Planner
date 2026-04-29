@@ -5,8 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!--
     frame-ancestors is intentionally omitted — it is ignored in <meta> CSP
-    and must be set as an HTTP response header instead. Set it on your
-    hosting platform (e.g. Netlify _headers, Vercel headers config).
+    and must be set as an HTTP response header instead.
   -->
   <meta http-equiv="Content-Security-Policy" content="
     default-src 'self';
@@ -19,76 +18,114 @@
     form-action 'self';
   ">
   <title>Portal – Timetable Planner</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2a5c4e">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
-      font-family: "Work Sans", sans-serif;
-      background: #f0ebe1;
-      color: #1e2622;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 1rem;
-      padding: 2rem;
-    }
-
-    h1 {
-      font-family: "Crimson Pro", serif;
-      font-size: 2.25rem;
-      font-weight: 700;
-      color: #2a5c4e;
-      letter-spacing: -0.02em;
-    }
-
-    p {
-      font-size: 1rem;
-      color: #4a5c54;
-    }
-
-    .badge {
-      display: inline-block;
-      background: rgba(42, 92, 78, 0.10);
-      color: #2a5c4e;
-      border: 1px solid rgba(42, 92, 78, 0.20);
-      border-radius: 999px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: 0.35rem 0.9rem;
-    }
-
-    .btn-signout {
-      margin-top: 1.5rem;
-      padding: 0.6rem 1.25rem;
-      font-family: "Work Sans", sans-serif;
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: #4a5c54;
-      background: none;
-      border: 1.5px solid #c8c1b4;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: border-color 0.18s, color 0.18s;
-    }
-
-    .btn-signout:hover {
-      border-color: #2a5c4e;
-      color: #2a5c4e;
-    }
-  </style>
+  <link rel="stylesheet" href="css/portal.css">
 </head>
 <body style="visibility:hidden">
-  <span class="badge">Work in Progress</span>
-  <h1>Portal</h1>
-  <p>This page is coming soon.</p>
-  <button class="btn-signout" id="btn-signout">Sign out</button>
+
+  <!-- Ambient background -->
+  <div class="portal-bg" aria-hidden="true">
+    <div class="portal-orb portal-orb--green"></div>
+    <div class="portal-orb portal-orb--gold"></div>
+  </div>
+
+  <!-- ── Header ──────────────────────────────────────────── -->
+  <header class="portal-header">
+    <a class="portal-brand" href="portal.html">Timetable <strong>Planner</strong></a>
+    <div class="portal-header-right">
+      <span class="portal-user-name" id="user-name"></span>
+      <div class="portal-avatar" id="user-avatar" aria-hidden="true"></div>
+      <button class="btn-signout" id="btn-signout">Sign out</button>
+    </div>
+  </header>
+
+  <!-- ── Main ────────────────────────────────────────────── -->
+  <main class="portal-main">
+
+    <!-- Hero -->
+    <section class="portal-hero">
+      <h1 class="portal-greeting" id="portal-greeting"></h1>
+      <button class="btn btn-primary portal-cta" id="btn-create">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Create New Timetable
+      </button>
+    </section>
+
+    <!-- My Timetables -->
+    <section class="portal-section">
+      <h2 class="portal-section-title">My Timetables</h2>
+      <div class="timetable-grid" id="grid-owned">
+        <p class="grid-loading">Loading…</p>
+      </div>
+    </section>
+
+    <!-- Shared with me — hidden until data confirms there are shared timetables -->
+    <section class="portal-section" id="section-shared" hidden>
+      <h2 class="portal-section-title">Shared with me</h2>
+      <div class="timetable-grid" id="grid-shared"></div>
+    </section>
+
+  </main>
+
+  <!-- ── Create Timetable Modal ──────────────────────────── -->
+  <div class="modal-overlay" id="modal-create" hidden role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="portal-modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-title">New Timetable</h2>
+        <button class="btn-close-modal" id="btn-modal-close" aria-label="Close">&#x2715;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-error" id="create-error" role="alert"></div>
+
+        <div class="form-group">
+          <label for="input-tt-name">Name</label>
+          <input
+            type="text"
+            id="input-tt-name"
+            placeholder="e.g. Term 2 — Year 3"
+            maxlength="120"
+            autocomplete="off"
+          >
+          <span class="field-error" id="error-tt-name" role="alert"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="input-tt-desc">
+            Description
+            <span class="label-optional">(optional)</span>
+          </label>
+          <textarea
+            id="input-tt-desc"
+            rows="3"
+            placeholder="A short description…"
+            maxlength="500"
+          ></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn btn-ghost" id="btn-modal-cancel">Cancel</button>
+          <button class="btn btn-primary" id="btn-modal-confirm">
+            <span class="btn-label">Create</span>
+            <span class="btn-spinner" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/supabase-client.js"></script>
