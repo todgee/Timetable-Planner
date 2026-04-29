@@ -22,7 +22,7 @@ async function initPortal() {
       .from('profiles')
       .select('first_name, last_name, full_name, avatar_url')
       .eq('id', user.id)
-      .single(),
+      .maybeSingle(),
 
     supabase
       .from('timetables')
@@ -36,7 +36,25 @@ async function initPortal() {
       .eq('user_id', user.id),
   ]);
 
-  const profile = profileResult.data;
+  // If no profile row exists (trigger may not have run at signup), create one now.
+  // timetables.owner_id is a FK to profiles.id — the insert will 403 without this row.
+  let profile = profileResult.data;
+  if (!profile) {
+    const meta = user.user_metadata || {};
+    const { data: created } = await supabase
+      .from('profiles')
+      .upsert({
+        id: user.id,
+        first_name: meta.first_name || null,
+        last_name:  meta.last_name  || null,
+        full_name:  meta.full_name  || null,
+        organisation: meta.organisation || null,
+        role: meta.role || null,
+      })
+      .select('first_name, last_name, full_name, avatar_url')
+      .maybeSingle();
+    profile = created;
+  }
 
   renderHeader(user, profile);
   renderGreeting(profile);
