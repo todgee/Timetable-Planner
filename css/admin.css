@@ -264,6 +264,20 @@
   padding: 0.3rem 0.5rem;
 }
 
+/* Always-light counters section — force same grey style as header button */
+.counters-section .filter-staff-btn {
+  background: transparent;
+  border-color: #ddd7cc;
+  color: #4a5c54;
+}
+
+.counters-section .filter-staff-btn:hover,
+.counters-section .filter-staff-btn.active {
+  background: rgba(42, 92, 78, 0.08);
+  border-color: var(--primary, #2a5c4e);
+  color: var(--primary, #2a5c4e);
+}
+
 /* ── Inline name editing ─────────────────────────────────── */
 
 .edit-name-btn {
