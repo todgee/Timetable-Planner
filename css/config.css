@@ -1,14 +1,6 @@
-/* === config.css — Phase 5 theme-picker additions ============
-   Only styles that don't exist in base.css belong here.
-   ============================================================ */
+/* === config.css — config page additions ====================== */
 
-/* Preview buttons inherit their background from JS (setPreviewBtn),
-   but need a base style so they're visible before first applyLivePreview. */
-#preview-btn-primary { background: var(--brand-500); color: var(--text-on-brand); }
-#preview-btn-light   { background: var(--brand-400); color: var(--text-on-brand); }
-#preview-btn-accent  { background: var(--accent-500); color: var(--text-on-brand); }
-
-/* Active state for segmented toggle buttons (mode + accent toggles).
+/* Active state for segmented toggle buttons (accent + bg-type toggles).
    base.css defines .view-control-btn but has no .active state. */
 .view-control-btn.active {
   background: var(--brand-500);
@@ -18,35 +10,6 @@
 [data-theme="dark"] .view-control-btn.active {
   background: var(--brand-500);
   color:      var(--text-on-brand);
-}
-
-/* ── Palette swatch strip ──────────────────────────────────── */
-.palette-swatches {
-  display: flex;
-  gap: 0.4rem;
-  flex-wrap: wrap;
-  margin-top: 0.75rem;
-}
-
-.swatch {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.25rem;
-}
-
-.swatch-color {
-  width: 36px;
-  height: 36px;
-  border-radius: 6px;
-  border: 1px solid var(--border-default);
-}
-
-.swatch-label {
-  font-family: monospace;
-  font-size: 0.65rem;
-  color: var(--text-muted);
-  text-align: center;
 }
 
 /* ── Accent-override row (Custom accent picker) ────────────── */
@@ -66,7 +29,7 @@
   margin-bottom: 0;
 }
 
-/* ── Background gradient panel ─────────────────────────────── */
+/* ── Background panel ──────────────────────────────────────── */
 .gradient-preview {
   height: 56px;
   border-radius: 8px;
@@ -81,7 +44,8 @@
   margin-top: 0.75rem;
 }
 
-.bg-preset {
+.bg-preset,
+.bg-solid-preset {
   height: 36px;
   border-radius: 8px;
   border: 2px solid var(--border-mid);
@@ -89,12 +53,14 @@
   transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.bg-preset:hover {
+.bg-preset:hover,
+.bg-solid-preset:hover {
   transform: scale(1.05);
   border-color: var(--text-primary);
 }
 
-.bg-preset.selected {
+.bg-preset.selected,
+.bg-solid-preset.selected {
   border-color: var(--text-primary);
   box-shadow: 0 0 0 2px var(--surface-base), 0 0 0 4px var(--text-primary);
 }

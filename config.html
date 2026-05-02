@@ -40,6 +40,7 @@
 
       <!-- Configuration Grid -->
       <div class="config-grid">
+
         <!-- Theme Customization Panel -->
         <div class="panel">
           <h2 class="panel-title">
@@ -49,15 +50,6 @@
           <p class="panel-description">
             Customize the color scheme to match your organization branding.
           </p>
-
-          <!-- Mode Toggle -->
-          <div class="color-picker-row">
-            <label>Color Mode</label>
-            <div class="view-controls-group">
-              <button class="view-control-btn" id="mode-btn-light" data-mode="light">☀️ Light</button>
-              <button class="view-control-btn" id="mode-btn-dark"  data-mode="dark">🌙 Dark</button>
-            </div>
-          </div>
 
           <!-- Primary Color Picker -->
           <div class="color-picker-row">
@@ -86,15 +78,6 @@
             </div>
           </div>
 
-          <!-- Palette Swatch Strip -->
-          <div class="palette-swatches" id="palette-swatches">
-            <div class="swatch"><div class="swatch-color" id="sw-brand-600"></div><span class="swatch-label">Dark</span></div>
-            <div class="swatch"><div class="swatch-color" id="sw-brand-500"></div><span class="swatch-label">Primary</span></div>
-            <div class="swatch"><div class="swatch-color" id="sw-brand-400"></div><span class="swatch-label">Light</span></div>
-            <div class="swatch" style="margin-left:0.5rem"><div class="swatch-color" id="sw-accent-600"></div><span class="swatch-label">Acc·Dark</span></div>
-            <div class="swatch"><div class="swatch-color" id="sw-accent-500"></div><span class="swatch-label">Accent</span></div>
-          </div>
-
           <!-- Preset Colors -->
           <div class="divider"></div>
           <label>Preset Color Schemes</label>
@@ -109,63 +92,89 @@
             <button class="preset-color" data-primary="#ca8a04" style="background: #ca8a04" title="Amber"></button>
           </div>
 
-          <!-- Theme Preview -->
-          <div class="theme-preview">
-            <div class="theme-preview-title">Preview</div>
-            <div class="theme-preview-bar" id="theme-preview-bar"></div>
-            <div class="theme-preview-buttons">
-              <button class="theme-preview-btn" id="preview-btn-primary">Primary</button>
-              <button class="theme-preview-btn" id="preview-btn-light">Light</button>
-              <button class="theme-preview-btn" id="preview-btn-accent">Accent</button>
-            </div>
-          </div>
-
           <div class="btn-group">
             <button class="btn btn-primary" id="save-colors-btn">Save Theme</button>
             <button class="btn btn-secondary" id="reset-colors-btn">Reset to Default</button>
           </div>
         </div>
 
-        <!-- Background Gradient Panel -->
+        <!-- Background Panel -->
         <div class="panel">
           <h2 class="panel-title">
             <span class="panel-icon">🖼️</span>
-            Background Gradient
+            Background
           </h2>
           <p class="panel-description">
-            Customize the background gradient of this configuration page.
+            Customize the page background with a gradient or solid colour.
           </p>
 
+          <!-- Background Type Toggle -->
           <div class="color-picker-row">
-            <label for="bg-start">Gradient Start</label>
-            <div class="color-preview">
-              <input type="color" id="bg-start" value="#fdfbf7" />
-              <span class="color-hex" id="bg-start-hex">#fdfbf7</span>
+            <label>Type</label>
+            <div class="view-controls-group">
+              <button class="view-control-btn active" id="bg-type-gradient">Gradient</button>
+              <button class="view-control-btn" id="bg-type-solid">Solid Colour</button>
             </div>
           </div>
 
-          <div class="color-picker-row">
-            <label for="bg-end">Gradient End</label>
-            <div class="color-preview">
-              <input type="color" id="bg-end" value="#f5f1e8" />
-              <span class="color-hex" id="bg-end-hex">#f5f1e8</span>
+          <!-- Gradient Section -->
+          <div id="bg-gradient-section">
+            <div class="color-picker-row">
+              <label for="bg-start">Start</label>
+              <div class="color-preview">
+                <input type="color" id="bg-start" value="#fdfbf7" />
+                <span class="color-hex" id="bg-start-hex">#fdfbf7</span>
+              </div>
+            </div>
+
+            <div class="color-picker-row">
+              <label for="bg-end">End</label>
+              <div class="color-preview">
+                <input type="color" id="bg-end" value="#f5f1e8" />
+                <span class="color-hex" id="bg-end-hex">#f5f1e8</span>
+              </div>
+            </div>
+
+            <div class="gradient-preview" id="bg-gradient-preview"></div>
+
+            <div class="divider"></div>
+            <label>Preset Gradients</label>
+            <div class="bg-preset-grid">
+              <button class="bg-preset" data-start="#fdfbf7" data-end="#f5f1e8" title="Parchment"></button>
+              <button class="bg-preset" data-start="#f0f4ff" data-end="#e4ecf8" title="Slate Blue"></button>
+              <button class="bg-preset" data-start="#f0fff7" data-end="#e4f5ec" title="Mint"></button>
+              <button class="bg-preset" data-start="#fff8f0" data-end="#f5e8dc" title="Warm Peach"></button>
+              <button class="bg-preset" data-start="#f8f0ff" data-end="#ede4f8" title="Lavender"></button>
+              <button class="bg-preset" data-start="#fff0f4" data-end="#f5e0e8" title="Rose"></button>
+              <button class="bg-preset" data-start="#0c1812" data-end="#152018" title="Forest Night"></button>
+              <button class="bg-preset" data-start="#0c1524" data-end="#0f1e36" title="Ocean Night"></button>
+              <button class="bg-preset" data-start="#1a0e28" data-end="#251540" title="Dusk Purple"></button>
             </div>
           </div>
 
-          <div class="gradient-preview" id="bg-gradient-preview"></div>
+          <!-- Solid Colour Section -->
+          <div id="bg-solid-section" style="display:none">
+            <div class="color-picker-row">
+              <label for="bg-solid-color">Colour</label>
+              <div class="color-preview">
+                <input type="color" id="bg-solid-color" value="#0c1812" />
+                <span class="color-hex" id="bg-solid-hex">#0c1812</span>
+              </div>
+            </div>
 
-          <div class="divider"></div>
-          <label>Preset Gradients</label>
-          <div class="bg-preset-grid">
-            <button class="bg-preset" data-start="#fdfbf7" data-end="#f5f1e8" title="Parchment"></button>
-            <button class="bg-preset" data-start="#f0f4ff" data-end="#e4ecf8" title="Slate Blue"></button>
-            <button class="bg-preset" data-start="#f0fff7" data-end="#e4f5ec" title="Mint"></button>
-            <button class="bg-preset" data-start="#fff8f0" data-end="#f5e8dc" title="Warm Peach"></button>
-            <button class="bg-preset" data-start="#f8f0ff" data-end="#ede4f8" title="Lavender"></button>
-            <button class="bg-preset" data-start="#fff0f4" data-end="#f5e0e8" title="Rose"></button>
-            <button class="bg-preset" data-start="#0c1812" data-end="#152018" title="Forest Night"></button>
-            <button class="bg-preset" data-start="#0c1524" data-end="#0f1e36" title="Ocean Night"></button>
-            <button class="bg-preset" data-start="#1a0e28" data-end="#251540" title="Dusk Purple"></button>
+            <div class="divider"></div>
+            <label>Preset Colours</label>
+            <div class="bg-preset-grid">
+              <button class="bg-solid-preset" data-color="#fdfbf7" style="background:#fdfbf7" title="Parchment White"></button>
+              <button class="bg-solid-preset" data-color="#f0f4ff" style="background:#f0f4ff" title="Pale Blue"></button>
+              <button class="bg-solid-preset" data-color="#f0fff7" style="background:#f0fff7" title="Pale Mint"></button>
+              <button class="bg-solid-preset" data-color="#1e1e2e" style="background:#1e1e2e" title="Charcoal"></button>
+              <button class="bg-solid-preset" data-color="#0c1812" style="background:#0c1812" title="Forest Night"></button>
+              <button class="bg-solid-preset" data-color="#0c1524" style="background:#0c1524" title="Ocean Night"></button>
+              <button class="bg-solid-preset" data-color="#1a0e28" style="background:#1a0e28" title="Dusk Purple"></button>
+              <button class="bg-solid-preset" data-color="#1a1a2e" style="background:#1a1a2e" title="Midnight Blue"></button>
+              <button class="bg-solid-preset" data-color="#2d1b0e" style="background:#2d1b0e" title="Dark Walnut"></button>
+            </div>
           </div>
 
           <div class="btn-group">
@@ -263,7 +272,6 @@
         <p>Please wait...</p>
       </div>
     </div>
-
 
     <!-- User mode: "Continue to Portal" footer (hidden by default, shown by JS) -->
     <div id="user-mode-continue" hidden style="

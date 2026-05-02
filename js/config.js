@@ -2,7 +2,6 @@
 'use strict';
 
 // ── State ──────────────────────────────────────────────────────
-var currentMode        = ThemeEngine.DEFAULTS.mode;
 var currentPrimary     = ThemeEngine.DEFAULTS.primary;
 var accentMode         = 'auto';
 var customAccent       = ThemeEngine.DEFAULTS.accent;
@@ -11,6 +10,8 @@ var currentLogoDataUrl = null;
 var BG_DEFAULTS = { start: '#fdfbf7', end: '#f5f1e8' };
 var bgStart     = BG_DEFAULTS.start;
 var bgEnd       = BG_DEFAULTS.end;
+var bgType      = 'gradient'; // 'gradient' | 'solid'
+var solidColor  = '#0c1812';
 
 // ── Supabase helpers ───────────────────────────────────────────
 
@@ -19,7 +20,6 @@ async function loadConfigFromSupabase() {
 }
 
 async function saveConfig(fields) {
-  // Logo fields are localStorage-only; only persist theme/bg fields to user_config
   const userFields = {};
   ['theme_primary', 'theme_accent', 'theme_mode', 'bg_start', 'bg_end'].forEach(function (k) {
     if (k in fields) userFields[k] = fields[k];
@@ -45,9 +45,7 @@ function resolvedAccent() {
 // ── Live preview ───────────────────────────────────────────────
 function applyLivePreview() {
   var accent = resolvedAccent();
-  ThemeEngine.apply({ primary: currentPrimary, accent: accent, mode: currentMode });
-  updateSwatches(currentPrimary, accent);
-  updatePreviewButtons(currentPrimary, accent);
+  ThemeEngine.apply({ primary: currentPrimary, accent: accent, mode: 'dark' });
   if (accentMode === 'auto') {
     var inp = document.getElementById('color-accent');
     var hex = document.getElementById('accent-hex');
@@ -56,42 +54,7 @@ function applyLivePreview() {
   }
 }
 
-// ── Palette swatches ───────────────────────────────────────────
-function updateSwatches(primary, accent) {
-  var bp = ThemeEngine.buildPalette(primary, currentMode, 'brand');
-  var ap = ThemeEngine.buildPalette(accent,  currentMode, 'accent');
-  setSwatchBg('sw-brand-600',  bp['--brand-600']);
-  setSwatchBg('sw-brand-500',  bp['--brand-500']);
-  setSwatchBg('sw-brand-400',  bp['--brand-400']);
-  setSwatchBg('sw-accent-600', ap['--accent-600']);
-  setSwatchBg('sw-accent-500', ap['--accent-500']);
-}
-
-function setSwatchBg(id, color) {
-  var el = document.getElementById(id);
-  if (el) el.style.background = color;
-}
-
-function updatePreviewButtons(primary, accent) {
-  var bp = ThemeEngine.buildPalette(primary, currentMode, 'brand');
-  var ap = ThemeEngine.buildPalette(accent,  currentMode, 'accent');
-  setPreviewBtn('preview-btn-primary', bp['--brand-500']);
-  setPreviewBtn('preview-btn-light',   bp['--brand-400']);
-  setPreviewBtn('preview-btn-accent',  ap['--accent-500']);
-}
-
-function setPreviewBtn(id, color) {
-  var el = document.getElementById(id);
-  if (el) { el.style.background = color; el.style.color = '#ffffff'; }
-}
-
-// ── Mode / accent toggles ──────────────────────────────────────
-function setModeToggle(mode) {
-  currentMode = mode;
-  document.getElementById('mode-btn-light').classList.toggle('active', mode === 'light');
-  document.getElementById('mode-btn-dark').classList.toggle('active',  mode === 'dark');
-}
-
+// ── Accent toggle ──────────────────────────────────────────────
 function setAccentToggle(mode) {
   accentMode = mode;
   document.getElementById('accent-btn-auto').classList.toggle('active',   mode === 'auto');
@@ -100,12 +63,25 @@ function setAccentToggle(mode) {
   if (row) row.classList.toggle('visible', mode === 'custom');
 }
 
-// ── Background gradient ────────────────────────────────────────
+// ── Background ─────────────────────────────────────────────────
+function setBgTypeToggle(type) {
+  bgType = type;
+  document.getElementById('bg-type-gradient').classList.toggle('active', type === 'gradient');
+  document.getElementById('bg-type-solid').classList.toggle('active',    type === 'solid');
+  document.getElementById('bg-gradient-section').style.display = type === 'gradient' ? '' : 'none';
+  document.getElementById('bg-solid-section').style.display    = type === 'solid'    ? '' : 'none';
+}
+
 function applyBgPreview() {
-  var grad = 'linear-gradient(135deg, ' + bgStart + ' 0%, ' + bgEnd + ' 100%)';
-  document.body.style.background = grad;
+  var bg;
+  if (bgType === 'solid') {
+    bg = solidColor;
+  } else {
+    bg = 'linear-gradient(135deg, ' + bgStart + ' 0%, ' + bgEnd + ' 100%)';
+  }
+  document.body.style.background = bg;
   var bar = document.getElementById('bg-gradient-preview');
-  if (bar) bar.style.background = grad;
+  if (bar) bar.style.background = bg;
 }
 
 function syncBgPresetSelected() {
@@ -114,29 +90,44 @@ function syncBgPresetSelected() {
   });
 }
 
+function syncSolidPresetSelected() {
+  document.querySelectorAll('.bg-solid-preset').forEach(function (p) {
+    p.classList.toggle('selected', p.dataset.color === solidColor);
+  });
+}
+
 function loadBgIntoForm(cfg) {
   bgStart = (cfg && cfg.bg_start) || BG_DEFAULTS.start;
   bgEnd   = (cfg && cfg.bg_end)   || BG_DEFAULTS.end;
-  document.getElementById('bg-start').value        = bgStart;
+
+  if (bgStart === bgEnd) {
+    solidColor = bgStart;
+    setBgTypeToggle('solid');
+  } else {
+    setBgTypeToggle('gradient');
+  }
+
+  document.getElementById('bg-start').value           = bgStart;
   document.getElementById('bg-start-hex').textContent = bgStart;
-  document.getElementById('bg-end').value          = bgEnd;
+  document.getElementById('bg-end').value             = bgEnd;
   document.getElementById('bg-end-hex').textContent   = bgEnd;
+  document.getElementById('bg-solid-color').value     = solidColor;
+  document.getElementById('bg-solid-hex').textContent = solidColor;
   applyBgPreview();
   syncBgPresetSelected();
+  syncSolidPresetSelected();
 }
 
 // ── Load saved config into form ────────────────────────────────
 function loadThemeIntoForm(cfg) {
-  currentMode    = (cfg && cfg.theme_mode)    || ThemeEngine.DEFAULTS.mode;
   currentPrimary = (cfg && cfg.theme_primary) || ThemeEngine.DEFAULTS.primary;
   customAccent   = (cfg && cfg.theme_accent)  || ThemeEngine.DEFAULTS.accent;
 
-  document.getElementById('color-primary').value    = currentPrimary;
+  document.getElementById('color-primary').value     = currentPrimary;
   document.getElementById('primary-hex').textContent = currentPrimary;
-  document.getElementById('color-accent').value     = customAccent;
+  document.getElementById('color-accent').value      = customAccent;
   document.getElementById('accent-hex').textContent  = customAccent;
 
-  setModeToggle(currentMode);
   setAccentToggle('auto');
 
   document.querySelectorAll('.preset-color').forEach(function (p) {
@@ -159,8 +150,8 @@ function loadLogoIntoForm(cfg) {
 async function handleSaveColors() {
   var accent = resolvedAccent();
   try {
-    await saveConfig({ theme_primary: currentPrimary, theme_accent: accent, theme_mode: currentMode });
-    ThemeEngine.save({ primary: currentPrimary, accent: accent, mode: currentMode });
+    await saveConfig({ theme_primary: currentPrimary, theme_accent: accent, theme_mode: 'dark' });
+    ThemeEngine.save({ primary: currentPrimary, accent: accent, mode: 'dark' });
     showNotification('Color theme saved!');
   } catch (err) {
     showNotification('Failed to save theme: ' + err.message, true);
@@ -173,7 +164,7 @@ async function handleResetColors() {
     await saveConfig({
       theme_primary: ThemeEngine.DEFAULTS.primary,
       theme_accent:  ThemeEngine.DEFAULTS.accent,
-      theme_mode:    ThemeEngine.DEFAULTS.mode,
+      theme_mode:    'dark',
     });
     ThemeEngine.reset();
     const cfg = await loadConfigFromSupabase();
@@ -186,9 +177,16 @@ async function handleResetColors() {
 }
 
 async function handleSaveBg() {
+  var start, end;
+  if (bgType === 'solid') {
+    start = end = solidColor;
+  } else {
+    start = bgStart;
+    end   = bgEnd;
+  }
   try {
-    await saveConfig({ bg_start: bgStart, bg_end: bgEnd });
-    ThemeEngine.saveBg({ start: bgStart, end: bgEnd });
+    await saveConfig({ bg_start: start, bg_end: end });
+    ThemeEngine.saveBg({ start: start, end: end });
     showNotification('Background saved!');
   } catch (err) {
     showNotification('Failed to save background: ' + err.message, true);
@@ -204,9 +202,10 @@ async function handleResetBg() {
   } catch (err) {
     showNotification('Failed to reset background: ' + err.message, true);
   }
-  document.getElementById('bg-start').value        = bgStart;
+  setBgTypeToggle('gradient');
+  document.getElementById('bg-start').value           = bgStart;
   document.getElementById('bg-start-hex').textContent = bgStart;
-  document.getElementById('bg-end').value          = bgEnd;
+  document.getElementById('bg-end').value             = bgEnd;
   document.getElementById('bg-end-hex').textContent   = bgEnd;
   applyBgPreview();
   syncBgPresetSelected();
@@ -286,38 +285,51 @@ function showStatus(elementId, message, type) {
 
 // ── Event listeners ────────────────────────────────────────────
 function setupEventListeners() {
+  // Primary colour
   document.getElementById('color-primary').addEventListener('input', function (e) {
     currentPrimary = e.target.value;
     document.getElementById('primary-hex').textContent = currentPrimary;
     applyLivePreview();
   });
 
+  // Accent colour
   document.getElementById('color-accent').addEventListener('input', function (e) {
     customAccent = e.target.value;
     document.getElementById('accent-hex').textContent = customAccent;
     applyLivePreview();
   });
 
-  document.getElementById('mode-btn-light').addEventListener('click', function () { setModeToggle('light'); applyLivePreview(); });
-  document.getElementById('mode-btn-dark').addEventListener('click',  function () { setModeToggle('dark');  applyLivePreview(); });
-
+  // Accent toggle
   document.getElementById('accent-btn-auto').addEventListener('click',   function () { setAccentToggle('auto');   applyLivePreview(); });
   document.getElementById('accent-btn-custom').addEventListener('click', function () { setAccentToggle('custom'); applyLivePreview(); });
 
+  // Preset colour chips
   document.querySelectorAll('.preset-color').forEach(function (preset) {
     preset.addEventListener('click', function () {
       document.querySelectorAll('.preset-color').forEach(function (p) { p.classList.remove('selected'); });
       preset.classList.add('selected');
       currentPrimary = preset.dataset.primary;
-      document.getElementById('color-primary').value    = currentPrimary;
+      document.getElementById('color-primary').value     = currentPrimary;
       document.getElementById('primary-hex').textContent = currentPrimary;
       applyLivePreview();
     });
   });
 
+  // Theme save / reset
   document.getElementById('save-colors-btn').addEventListener('click', handleSaveColors);
   document.getElementById('reset-colors-btn').addEventListener('click', handleResetColors);
 
+  // Background type toggle
+  document.getElementById('bg-type-gradient').addEventListener('click', function () {
+    setBgTypeToggle('gradient');
+    applyBgPreview();
+  });
+  document.getElementById('bg-type-solid').addEventListener('click', function () {
+    setBgTypeToggle('solid');
+    applyBgPreview();
+  });
+
+  // Gradient pickers
   document.getElementById('bg-start').addEventListener('input', function (e) {
     bgStart = e.target.value;
     document.getElementById('bg-start-hex').textContent = bgStart;
@@ -330,22 +342,46 @@ function setupEventListeners() {
     syncBgPresetSelected();
     applyBgPreview();
   });
+
+  // Gradient presets
   document.querySelectorAll('.bg-preset').forEach(function (preset) {
     preset.style.background = 'linear-gradient(135deg, ' + preset.dataset.start + ' 0%, ' + preset.dataset.end + ' 100%)';
     preset.addEventListener('click', function () {
       bgStart = preset.dataset.start;
       bgEnd   = preset.dataset.end;
-      document.getElementById('bg-start').value        = bgStart;
+      document.getElementById('bg-start').value           = bgStart;
       document.getElementById('bg-start-hex').textContent = bgStart;
-      document.getElementById('bg-end').value          = bgEnd;
+      document.getElementById('bg-end').value             = bgEnd;
       document.getElementById('bg-end-hex').textContent   = bgEnd;
       syncBgPresetSelected();
       applyBgPreview();
     });
   });
+
+  // Solid colour picker
+  document.getElementById('bg-solid-color').addEventListener('input', function (e) {
+    solidColor = e.target.value;
+    document.getElementById('bg-solid-hex').textContent = solidColor;
+    syncSolidPresetSelected();
+    applyBgPreview();
+  });
+
+  // Solid presets
+  document.querySelectorAll('.bg-solid-preset').forEach(function (preset) {
+    preset.addEventListener('click', function () {
+      solidColor = preset.dataset.color;
+      document.getElementById('bg-solid-color').value     = solidColor;
+      document.getElementById('bg-solid-hex').textContent = solidColor;
+      syncSolidPresetSelected();
+      applyBgPreview();
+    });
+  });
+
+  // Background save / reset
   document.getElementById('save-bg-btn').addEventListener('click', handleSaveBg);
   document.getElementById('reset-bg-btn').addEventListener('click', handleResetBg);
 
+  // Logo
   document.getElementById('logo-upload').addEventListener('change', handleLogoUpload);
   document.getElementById('save-logo-btn').addEventListener('click', handleSaveLogo);
   document.getElementById('remove-logo-btn').addEventListener('click', handleRemoveLogo);
@@ -357,18 +393,15 @@ function setupEventListeners() {
 window.addEventListener('load', async function () {
   await window.authReady;
 
-  // Update page chrome
   var backLink = document.querySelector('.back-link');
   if (backLink) {
     backLink.href        = 'portal.html';
     backLink.textContent = '← Back to Portal';
   }
 
-  // Hide timetable-specific danger zone (no longer relevant)
   var dangerPanel = document.getElementById('danger-zone-panel');
   if (dangerPanel) dangerPanel.hidden = true;
 
-  // Show "continue to portal" footer
   var continueBar = document.getElementById('user-mode-continue');
   if (continueBar) continueBar.hidden = false;
 
