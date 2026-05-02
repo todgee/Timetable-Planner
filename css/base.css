@@ -1956,3 +1956,159 @@ body.timetable-fullscreen-active {
 
 /* Loading spinner */
 [data-theme="dark"] .loading-spinner                 { background: var(--surface-raised); }
+
+/* ── App shell — shared sticky header used by admin / view / config ──
+   Always light (matches portal.html) regardless of page theme.
+   Hard-coded palette values keep it independent of CSS variable overrides.
+   ──────────────────────────────────────────────────────────────────── */
+
+.app-shell {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(253, 250, 246, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid #ddd7cc;
+}
+
+/* Force light appearance even in dark mode */
+[data-theme="dark"] .app-shell {
+  background: rgba(253, 250, 246, 0.96);
+  border-color: #ddd7cc;
+}
+
+.app-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  padding: 0 1.5rem;
+  height: 60px;
+  gap: 1.5rem;
+  /* reset base header element defaults */
+  text-align: left;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: 1px solid rgba(221, 215, 204, 0.7);
+}
+
+.app-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: "Crimson Pro", "Georgia", serif;
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: var(--brand-500, #2a5c4e);
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.app-brand strong { font-weight: 700; }
+
+.app-brand-icon {
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.app-header-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.app-timetable-name {
+  font-family: "Work Sans", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #4a5c54;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  padding: 0 0.5rem;
+}
+
+.app-header-end {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.app-save-indicator {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #8a9a92;
+  display: none;
+}
+
+.app-user-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #4a5c54;
+}
+
+.app-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--brand-500, #2a5c4e);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.app-header-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.38rem 0.75rem;
+  font-family: "Work Sans", sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #4a5c54;
+  text-decoration: none;
+  border-radius: 8px;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+
+.app-header-link:hover {
+  background: rgba(42, 92, 78, 0.08);
+  color: var(--brand-500, #2a5c4e);
+}
+
+.app-header-link--active {
+  background: rgba(42, 92, 78, 0.10);
+  color: var(--brand-500, #2a5c4e);
+  font-weight: 600;
+}
+
+.app-btn-signout {
+  padding: 0.4rem 0.875rem;
+  font-family: "Work Sans", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #4a5c54;
+  background: none;
+  border: 1.5px solid #c8c1b4;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: border-color 0.18s, color 0.18s;
+  white-space: nowrap;
+}
+
+.app-btn-signout:hover {
+  border-color: var(--brand-500, #2a5c4e);
+  color: var(--brand-500, #2a5c4e);
+}

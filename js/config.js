@@ -391,19 +391,21 @@ function setupEventListeners() {
 
 // ── Init ───────────────────────────────────────────────────────
 window.addEventListener('load', async function () {
-  await window.authReady;
+  var session = await window.authReady;
 
-  var backLink = document.querySelector('.back-link');
-  if (backLink) {
-    backLink.href        = 'portal.html';
-    backLink.textContent = '← Back to Portal';
+  // Populate header user info
+  if (session && session.user) {
+    var meta        = session.user.user_metadata || {};
+    var displayName = meta.full_name || meta.first_name || session.user.email;
+    var initial     = (meta.first_name || session.user.email || '?')[0].toUpperCase();
+    var nameEl   = document.getElementById('user-name');
+    var avatarEl = document.getElementById('user-avatar');
+    if (nameEl)   nameEl.textContent   = displayName;
+    if (avatarEl) avatarEl.textContent = initial;
   }
 
   var dangerPanel = document.getElementById('danger-zone-panel');
   if (dangerPanel) dangerPanel.hidden = true;
-
-  var continueBar = document.getElementById('user-mode-continue');
-  if (continueBar) continueBar.hidden = false;
 
   const cfg = await loadConfigFromSupabase();
   loadThemeIntoForm(cfg);

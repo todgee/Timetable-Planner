@@ -1,139 +1,233 @@
 /* ==========================================================
    ADMIN PAGE — component & layout styles
+   app-shell / app-header base styles live in base.css
    ========================================================== */
 
-/* ── Portal-style app header (shared by admin + view) ──────── */
+/* ── Editing toolbar bar ──────────────────────────────────── */
 
-.app-header {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  /* light mode glass */
-  background: rgba(253, 250, 246, 0.92);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--border-default);
-  /* override base.css "header" element defaults */
-  text-align: left;
+.app-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.35rem 1.5rem;
+  border-bottom: 1px solid rgba(221, 215, 204, 0.7);
+  flex-wrap: wrap;
+  min-height: 44px;
+}
+
+/* ── Day / filter / zoom controls bar ─────────────────────── */
+
+.app-controls-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 1.5rem;
+  min-height: 50px;
+  overflow-x: auto;
+}
+
+/* Compact day selector inside the bar */
+.app-controls-bar .day-selector {
   margin-bottom: 0;
-  padding-bottom: 0;
-  /* layout */
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  padding: 0 1.5rem;
-  height: 64px;
-  gap: 1.5rem;
+  gap: 0.3rem;
+  flex-wrap: nowrap;
 }
 
-[data-theme="dark"] .app-header {
-  background: rgba(13, 24, 18, 0.92);
+.app-controls-bar .day-btn {
+  padding: 0.32rem 0.72rem;
+  font-size: 0.83rem;
+  border-radius: 7px;
 }
 
-.app-brand {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: "Crimson Pro", "Georgia", serif;
-  font-size: 1.3rem;
-  font-weight: 400;
-  color: var(--brand-500);
-  letter-spacing: -0.01em;
-  text-decoration: none;
-  flex-shrink: 0;
+.app-controls-bar .view-controls {
+  margin-bottom: 0;
+  margin-left: auto;
 }
 
-.app-brand strong {
-  font-weight: 700;
+/* ── Light-context overrides (everything inside .app-shell) ── */
+/* The shell is always light; CSS variable tokens are themed dark,
+   so we scope explicit light-palette values here.                */
+
+.app-shell .toolbar-btn {
+  color: #4a5c54;
 }
 
-.app-brand-icon {
-  flex-shrink: 0;
-  opacity: 0.85;
+.app-shell .toolbar-btn:hover {
+  background: rgba(42, 92, 78, 0.08);
+  border-color: rgba(42, 92, 78, 0.18);
+  color: var(--brand-500, #2a5c4e);
 }
 
-.app-timetable-name {
-  font-family: "Work Sans", sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: center;
-  padding: 0 0.5rem;
+.app-shell .toolbar-btn--accent {
+  color: var(--brand-500, #2a5c4e);
 }
 
-.app-header-end {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-shrink: 0;
+.app-shell .toolbar-btn--accent:hover {
+  background: rgba(42, 92, 78, 0.10);
+  border-color: rgba(42, 92, 78, 0.22);
+  color: var(--brand-500, #2a5c4e);
 }
 
-.app-save-indicator {
-  font-size: 0.78rem;
-  font-weight: 500;
-  color: var(--text-muted);
-  display: none;
+.app-shell .toolbar-btn--danger:hover {
+  background: rgba(200, 72, 72, 0.10);
+  border-color: rgba(200, 72, 72, 0.30);
+  color: #c84848;
 }
 
-.app-avatar {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: var(--brand-500);
+.app-shell .toolbar-sep {
+  background: #ddd7cc;
+}
+
+.app-shell .toolbar-badge {
+  background: rgba(42, 92, 78, 0.14);
+  color: var(--brand-500, #2a5c4e);
+}
+
+.app-shell .day-btn {
+  background: transparent;
+  border-color: #ddd7cc;
+  color: #4a5c54;
+  transform: none;
+}
+
+.app-shell .day-btn:hover {
+  background: rgba(42, 92, 78, 0.08);
+  border-color: var(--brand-500, #2a5c4e);
+  color: var(--brand-500, #2a5c4e);
+  transform: none;
+}
+
+.app-shell .day-btn.active {
+  background: var(--brand-500, #2a5c4e);
+  border-color: var(--brand-500, #2a5c4e);
   color: #fff;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  display: flex;
+  box-shadow: none;
+}
+
+.app-shell .view-controls-group {
+  background: #fff;
+  border-color: #ddd7cc;
+  box-shadow: none;
+}
+
+.app-shell .view-control-btn {
+  color: #4a5c54;
+}
+
+.app-shell .view-control-btn:hover {
+  background: rgba(42, 92, 78, 0.08);
+  color: var(--brand-500, #2a5c4e);
+}
+
+.app-shell .view-control-btn:disabled {
+  color: #c8c1b4;
+  background: transparent;
+}
+
+.app-shell .view-controls-zoom-value {
+  color: #4a5c54;
+}
+
+.app-shell .filter-staff-btn {
+  background: transparent;
+  border-color: #ddd7cc;
+  color: #4a5c54;
+}
+
+.app-shell .filter-staff-btn:hover,
+.app-shell .filter-staff-btn.active {
+  background: rgba(42, 92, 78, 0.08);
+  border-color: var(--brand-500, #2a5c4e);
+  color: var(--brand-500, #2a5c4e);
+}
+
+/* ── Toolbar button base (theme-neutral) ─────────────────── */
+
+.toolbar-btn {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  user-select: none;
-}
-
-.app-header-link {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  text-decoration: none;
-  white-space: nowrap;
-  transition: color 0.15s;
-}
-
-.app-header-link:hover {
-  color: var(--brand-500);
-}
-
-.app-btn-signout {
-  padding: 0.4rem 0.875rem;
+  gap: 0.38rem;
+  padding: 0.38rem 0.75rem;
+  border-radius: 7px;
   font-family: "Work Sans", sans-serif;
   font-size: 0.8rem;
   font-weight: 500;
+  letter-spacing: 0.01em;
+  background: transparent;
+  border: 1px solid transparent;
   color: var(--text-secondary);
-  background: none;
-  border: 1.5px solid var(--border-strong);
-  border-radius: 7px;
   cursor: pointer;
-  transition: border-color 0.18s, color 0.18s;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
   white-space: nowrap;
+  text-decoration: none;
+  line-height: 1;
 }
 
-.app-btn-signout:hover {
-  border-color: var(--brand-500);
-  color: var(--brand-500);
+.toolbar-btn:hover {
+  background: var(--border-default);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
 }
 
-/* --- Auto-save indicator ----------------------------------- */
+.toolbar-btn--accent { color: var(--text-secondary); }
+
+.toolbar-btn--accent:hover {
+  background: var(--brand-fill);
+  border-color: var(--brand-glow);
+  color: var(--brand-400);
+}
+
+.toolbar-btn--danger:hover {
+  background: var(--state-error-bg-hover);
+  border-color: var(--state-error-border-hover);
+  color: var(--state-error-light);
+}
+
+.toolbar-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 9px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: var(--brand-glow);
+  color: var(--brand-400);
+  line-height: 1;
+}
+
+.toolbar-sep {
+  width: 1px;
+  height: 20px;
+  background: var(--border-mid);
+  margin: 0 0.25rem;
+  flex-shrink: 0;
+}
+
+.toolbar-sep--push {
+  flex: 1;
+  width: auto;
+  min-width: 0.5rem;
+  background: transparent;
+}
+
+@media (max-width: 640px) {
+  .toolbar-btn span:not(.toolbar-badge) { display: none; }
+  .toolbar-btn { padding: 0.4rem 0.55rem; font-size: 1rem; gap: 0; }
+  .toolbar-sep--push { display: none; }
+}
+
+/* ── Auto-save indicator ─────────────────────────────────── */
+
 #autoSaveIndicator {
-  margin-top: 0.5rem;
   font-size: 0.85rem;
   display: none;
 }
 
-/* --- Modal content variants -------------------------------- */
+/* ── Modal content variants ──────────────────────────────── */
+
 .modal-content--manager {
   max-width: 800px;
   max-height: 90vh;
@@ -148,46 +242,30 @@
   will-change: scroll-position;
 }
 
-/* --- Day + controls row ------------------------------------ */
-.day-controls-row {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-bottom: 1rem;
-}
+/* ── Filter Staff wrapper ────────────────────────────────── */
 
-.day-controls-row .day-selector {
-  margin-bottom: 0;
-  flex: 1;
-  min-width: 0;
-}
-
-.day-controls-row .view-controls {
-  margin-bottom: 0;
-  flex-shrink: 0;
-}
-
-/* --- Filter staff wrapper ---------------------------------- */
 #filterStaffWrapper {
   position: relative;
   flex-shrink: 0;
 }
 
-/* --- Counter tabs layout ----------------------------------- */
+/* ── Counter tabs layout ─────────────────────────────────── */
+
 .counter-tabs {
   display: flex;
   align-items: center;
 }
 
-/* --- Class filter wrapper ---------------------------------- */
+/* ── Class filter wrapper ────────────────────────────────── */
+
 #classFilterWrapper {
   margin-left: auto;
   position: relative;
   padding: 0.3rem 0.5rem;
 }
 
-/* --- Inline name editing ----------------------------------- */
+/* ── Inline name editing ─────────────────────────────────── */
+
 .edit-name-btn {
   background: transparent;
   border: 1px solid transparent;
@@ -223,9 +301,7 @@
   transition: background 0.15s;
 }
 
-.save-name-btn:hover {
-  background: var(--brand-fill-mid);
-}
+.save-name-btn:hover { background: var(--brand-fill-mid); }
 
 .item-edit-input {
   flex: 1;
@@ -246,7 +322,8 @@
   box-shadow: 0 0 0 2px var(--accent-fill);
 }
 
-/* --- Filter Staff dropdown --------------------------------- */
+/* ── Filter Staff dropdown ───────────────────────────────── */
+
 .filter-staff-btn {
   display: inline-flex;
   align-items: center;
@@ -325,9 +402,7 @@
   transition: background 0.12s;
 }
 
-.filter-person-item:hover {
-  background: var(--fill-control);
-}
+.filter-person-item:hover { background: var(--fill-control); }
 
 .filter-person-item input[type="checkbox"] {
   accent-color: var(--brand-400);
@@ -374,128 +449,34 @@
   transition: background 0.15s;
 }
 
-.filter-apply-btn:hover {
-  background: var(--brand-600);
-}
+.filter-apply-btn:hover { background: var(--brand-600); }
 
-.filter-dropdown--right {
-  left: auto;
-  right: 0;
-}
+.filter-dropdown--right { left: auto; right: 0; }
 
-.roster-cell.class-filtered-out {
-  opacity: 0.15;
-}
+.roster-cell.class-filtered-out { opacity: 0.15; }
 
-/* --- Fullscreen mode --------------------------------------- */
+/* ── Fullscreen mode ─────────────────────────────────────── */
+
 .timetable-section.timetable-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  margin: 0;
+  padding: 1rem;
   background: var(--surface-page);
-}
-
-/* --- Admin Toolbar ----------------------------------------- */
-.admin-toolbar {
   display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  flex-wrap: wrap;
-  margin-bottom: 1.25rem;
-  background: var(--fill-subtle);
-  border: 1px solid var(--border-subtle);
-  border-radius: 10px;
-  padding: 0.4rem 0.5rem;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.toolbar-group {
-  display: flex;
-  align-items: center;
-  gap: 0.2rem;
+.timetable-section.timetable-fullscreen .counters-section { display: none; }
+.timetable-section.timetable-fullscreen .day-selector     { margin-bottom: 0; }
+.timetable-section.timetable-fullscreen .view-controls    { margin-bottom: 0; }
+
+.timetable-section.timetable-fullscreen .timetable-wrapper {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
 }
 
-.toolbar-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.38rem;
-  padding: 0.38rem 0.75rem;
-  border-radius: 7px;
-  font-family: "Work Sans", sans-serif;
-  font-size: 0.8rem;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  background: transparent;
-  border: 1px solid transparent;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition:
-    background 0.15s,
-    color 0.15s,
-    border-color 0.15s;
-  white-space: nowrap;
-  text-decoration: none;
-  line-height: 1;
-}
-
-.toolbar-btn:hover {
-  background: var(--border-default);
-  border-color: var(--border-strong);
-  color: var(--text-primary);
-}
-
-.toolbar-btn--accent {
-  color: var(--text-secondary);
-}
-
-.toolbar-btn--accent:hover {
-  background: var(--brand-fill);
-  border-color: var(--brand-glow);
-  color: var(--brand-400);
-}
-
-.toolbar-btn--danger:hover {
-  background: var(--state-error-bg-hover);
-  border-color: var(--state-error-border-hover);
-  color: var(--state-error-light);
-}
-
-.toolbar-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 4px;
-  border-radius: 9px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  background: var(--brand-glow);
-  color: var(--brand-400);
-  line-height: 1;
-}
-
-.toolbar-sep {
-  width: 1px;
-  height: 20px;
-  background: var(--border-mid);
-  margin: 0 0.25rem;
-  flex-shrink: 0;
-}
-
-.toolbar-sep--push {
-  flex: 1;
-  width: auto;
-  min-width: 0.5rem;
-  background: transparent;
-}
-
-@media (max-width: 640px) {
-  .toolbar-btn span:not(.toolbar-badge) {
-    display: none;
-  }
-  .toolbar-btn {
-    padding: 0.4rem 0.55rem;
-    font-size: 1rem;
-    gap: 0;
-  }
-  .toolbar-sep--push {
-    display: none;
-  }
-}
+body.timetable-fullscreen-active { overflow: hidden; }

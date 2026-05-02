@@ -67,9 +67,12 @@ async function loadTimetableData() {
   const backLink = document.getElementById('back-to-admin');
   if (backLink) backLink.href = `admin.html?id=${timetableId}`;
 
-  const meta    = session.user.user_metadata || {};
-  const initial = (meta.first_name || session.user.email || '?')[0].toUpperCase();
+  const meta        = session.user.user_metadata || {};
+  const displayName = meta.full_name || meta.first_name || session.user.email;
+  const initial     = (meta.first_name || session.user.email || '?')[0].toUpperCase();
+  const nameEl   = document.getElementById('user-name');
   const avatarEl = document.getElementById('user-avatar');
+  if (nameEl)   nameEl.textContent   = displayName;
   if (avatarEl) avatarEl.textContent = initial;
 
   try {
