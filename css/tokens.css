@@ -177,8 +177,4 @@
   /* Overlay / on-brand utilities */
   --overlay-white: rgba(12, 24, 18, 0.92);
 
-  /* Orbs are kept at similar intensities */
-  --orb-green: rgba(44, 95, 79, 0.30);
-  --orb-gold:  rgba(212, 165, 116, 0.17);
-
 }

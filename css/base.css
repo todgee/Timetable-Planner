@@ -348,20 +348,6 @@ input[type="file"]:hover {
   gap: 0.5rem;
 }
 
-.color-indicator {
-  width: 24px;
-  height: 24px;
-  border-radius: 4px;
-  border: 2px solid var(--border-default);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.color-indicator:hover {
-  transform: scale(1.1);
-  border-color: var(--brand-500);
-}
-
 /* ----------------------------------------
    Empty State
    ---------------------------------------- */
@@ -408,16 +394,6 @@ input[type="file"]:hover {
 .time-slot-list::-webkit-scrollbar-thumb:hover,
 .account-list::-webkit-scrollbar-thumb:hover {
   background: var(--brand-600);
-}
-
-/* ----------------------------------------
-   Setup Section
-   ---------------------------------------- */
-.setup-section {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
 }
 
 /* ----------------------------------------
@@ -1632,25 +1608,11 @@ body.timetable-fullscreen-active {
   }
 }
 
-/* ----------------------------------------
-   View-Only Mode
-   ---------------------------------------- */
-.view-only-mode .roster-cell {
-  cursor: default !important;
-}
-
-.view-only-mode .roster-cell:hover {
-  background: inherit !important;
-}
 
 /* ----------------------------------------
    Responsive Design
    ---------------------------------------- */
 @media (max-width: 968px) {
-  .setup-section {
-    grid-template-columns: 1fr;
-  }
-
   h1 {
     font-size: 2rem;
   }
