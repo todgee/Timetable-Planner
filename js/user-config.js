@@ -44,7 +44,6 @@ window.userConfigReady = (async function () {
       var theme = {
         primary: data.theme_primary || ThemeEngine.DEFAULTS.primary,
         accent:  data.theme_accent  || ThemeEngine.DEFAULTS.accent,
-        mode:    data.theme_mode    || ThemeEngine.DEFAULTS.mode,
       };
       ThemeEngine.save(theme);
       ThemeEngine.apply(theme);

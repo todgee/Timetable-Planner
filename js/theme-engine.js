@@ -22,8 +22,7 @@
 
   var DEFAULTS = {
     primary: '#2c5f4f',
-    accent:  '#d4a574',
-    mode:    'dark'     // 'light' | 'dark'
+    accent:  '#d4a574'
   };
 
   /* ── Color math ──────────────────────────────────────────── */
@@ -89,34 +88,20 @@
   /* ── Palette generation ──────────────────────────────────── */
 
   /**
-   * From one hex + mode, compute all brand or accent CSS token values.
+   * From one hex, compute all brand or accent CSS token values.
    * Returns a plain { '--token-name': value } object ready for setProperty.
-   *
-   * Light mode:  400 is a soft hover tint;  fills are very light.
-   * Dark mode:   400 is a bright readable tint; fills are more opaque.
    */
-  function buildPalette(hex, mode, prefix) {
-    var isDark = mode === 'dark';
+  function buildPalette(hex, prefix) {
     var hsl = hexToHsl(hex);
     var h = hsl.h, s = hsl.s, l = hsl.l;
 
-    /* The "light" variant needs to be readable as text on dark surfaces,
-       so we push lightness much higher in dark mode. */
-    var l400 = isDark ? clamp(l + 38, 0, 88) : clamp(l + 10, 0, 90);
-    var l600 = isDark ? clamp(l - 10, 5, 95) : clamp(l -  8, 5, 95);
-
-    /* Fills use alpha so they blend correctly over any surface. */
-    var fillA     = isDark ? 0.25 : 0.08;
-    var fillMidA  = isDark ? 0.35 : 0.18;
-    var glowA     = isDark ? 0.40 : 0.30;
-
     var tokens = {};
     tokens['--' + prefix + '-500']      = hex;
-    tokens['--' + prefix + '-400']      = hslToHex(h, clamp(s, 0, 80), l400);
-    tokens['--' + prefix + '-600']      = hslToHex(h, clamp(s, 0, 100), l600);
-    tokens['--' + prefix + '-fill']     = alpha(hex, fillA);
-    tokens['--' + prefix + '-fill-mid'] = alpha(hex, fillMidA);
-    tokens['--' + prefix + '-glow']     = alpha(hex, glowA);
+    tokens['--' + prefix + '-400']      = hslToHex(h, clamp(s, 0, 80), clamp(l + 38, 0, 88));
+    tokens['--' + prefix + '-600']      = hslToHex(h, clamp(s, 0, 100), clamp(l - 10, 5, 95));
+    tokens['--' + prefix + '-fill']     = alpha(hex, 0.25);
+    tokens['--' + prefix + '-fill-mid'] = alpha(hex, 0.35);
+    tokens['--' + prefix + '-glow']     = alpha(hex, 0.40);
     return tokens;
   }
 
@@ -125,29 +110,25 @@
   function apply(config) {
     var primary = (config && config.primary) || DEFAULTS.primary;
     var accent  = (config && config.accent)  || DEFAULTS.accent;
-    var mode    = (config && config.mode)    || DEFAULTS.mode;
     var root    = document.documentElement;
 
-    /* 1. Set data-theme so [data-theme="dark"] CSS block activates */
-    root.setAttribute('data-theme', mode);
-
-    /* 2. Write brand tokens (inline style overrides tokens.css :root) */
-    var brand = buildPalette(primary, mode, 'brand');
+    /* 1. Write brand tokens (inline style overrides tokens.css :root) */
+    var brand = buildPalette(primary, 'brand');
     for (var bk in brand) root.style.setProperty(bk, brand[bk]);
 
-    /* 3. Write accent tokens */
-    var acc = buildPalette(accent, mode, 'accent');
+    /* 2. Write accent tokens */
+    var acc = buildPalette(accent, 'accent');
     /* accent-fill-mid isn't a separate token — drop it */
     delete acc['--accent-fill-mid'];
     for (var ak in acc) root.style.setProperty(ak, acc[ak]);
 
-    /* 4. Keep backwards-compatible aliases in sync */
+    /* 3. Keep backwards-compatible aliases in sync */
     root.style.setProperty('--primary',       primary);
     root.style.setProperty('--primary-light', brand['--brand-400']);
     root.style.setProperty('--primary-dark',  brand['--brand-600']);
     root.style.setProperty('--accent',        accent);
 
-    /* 5. Apply logo and background if saved */
+    /* 4. Apply logo and background if saved */
     applyLogo();
     applyBg();
   }
@@ -167,8 +148,7 @@
     try {
       var payload = {
         primary: config.primary || DEFAULTS.primary,
-        accent:  config.accent  || DEFAULTS.accent,
-        mode:    config.mode    || DEFAULTS.mode
+        accent:  config.accent  || DEFAULTS.accent
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
       return payload;
