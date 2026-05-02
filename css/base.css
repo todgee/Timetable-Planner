@@ -1966,15 +1966,17 @@ body.timetable-fullscreen-active {
   position: sticky;
   top: 0;
   z-index: 20;
-  background: rgba(253, 250, 246, 0.96);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: #fdfaf6;
   border-bottom: 1px solid #ddd7cc;
+  /* Promote to its own compositor layer so the sticky shell never
+     triggers repaints of content behind it. */
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 /* Force light appearance even in dark mode */
 [data-theme="dark"] .app-shell {
-  background: rgba(253, 250, 246, 0.96);
+  background: #fdfaf6;
   border-color: #ddd7cc;
 }
 
