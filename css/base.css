@@ -1777,6 +1777,34 @@ body.timetable-fullscreen-active {
   50%       { transform: translate(-3%, -3%) scale(1.04); }
 }
 
+/* ── Toolbar button — shared across admin / config ───────── */
+
+.toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  padding: 0.38rem 0.75rem;
+  border-radius: 7px;
+  font-family: "Work Sans", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s, border-color 0.1s;
+  white-space: nowrap;
+  text-decoration: none;
+  line-height: 1;
+}
+
+.toolbar-btn:hover {
+  background: var(--border-default);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
 /* ── App shell — shared sticky header used by admin / view / config ──
    Always light regardless of page theme.
    Hard-coded palette values keep it independent of CSS variable overrides.
@@ -1829,22 +1857,25 @@ body.timetable-fullscreen-active {
 }
 
 .app-page-title {
-  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
   border-top: 1px solid rgba(221, 215, 204, 0.7);
 }
 
-.app-page-title h1 {
+.app-page-title-text h1 {
   font-family: "Crimson Pro", serif;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: #2a3d35;
   margin: 0 0 0.1rem;
   letter-spacing: -0.01em;
 }
 
-.app-page-title p {
+.app-page-title-text p {
   font-family: "Work Sans", sans-serif;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   color: #6b7c74;
   margin: 0;
 }
