@@ -16,6 +16,18 @@ async function initPortal() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return;
 
+  // ── Onboarding: redirect new users to personalise their workspace ──
+  const { data: ucfg } = await supabase
+    .from('user_config')
+    .select('setup_complete')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  if (!ucfg || !ucfg.setup_complete) {
+    window.location.replace('config.html');
+    return;
+  }
+
   document.body.style.visibility = 'visible';
 
   // Display user name and avatar initial in the header
