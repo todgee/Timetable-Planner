@@ -369,7 +369,19 @@ window.addEventListener('load', async function () {
   var backLink = document.querySelector('.back-link');
   if (backLink) backLink.href = `admin.html?id=${timetableId}`;
 
-  await window.authReady;
+  const session = await window.authReady;
+
+  const { data: tt } = await supabase
+    .from('timetables')
+    .select('id')
+    .eq('id', timetableId)
+    .eq('owner_id', session.user.id)
+    .maybeSingle();
+
+  if (!tt) {
+    window.location.replace('portal.html');
+    return;
+  }
 
   const cfg = await loadConfigFromSupabase();
 

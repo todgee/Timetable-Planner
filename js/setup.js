@@ -34,12 +34,13 @@ let colorIndex = 0;
     return;
   }
 
-  await window.authReady;
+  const session = await window.authReady;
 
   const { data: tt } = await supabase
     .from('timetables')
     .select('setup_complete, name')
     .eq('id', timetableId)
+    .eq('owner_id', session.user.id)
     .single();
 
   if (tt?.setup_complete) {
