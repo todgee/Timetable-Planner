@@ -2,6 +2,8 @@
 // Admin Page JavaScript
 // ============================================
 
+const timetableId = new URLSearchParams(window.location.search).get('id');
+
 // Data variables
 let peopleList = [];
 let classList = [];
@@ -49,15 +51,37 @@ function isBreakSlot(slot) {
 }
 
 // ============================================
-// Bootstrap: load from localStorage, or send user to setup
+// Bootstrap: load from Supabase, fall back to portal
 // ============================================
-(function init() {
-  const data = loadTimetable();
-  if (!data || !data.setupComplete) {
-    window.location.replace("setup.html");
+(async function init() {
+  if (!timetableId) {
+    window.location.replace('portal.html');
     return;
   }
+
+  await window.authReady;
+
+  const { data: tt, error } = await supabase
+    .from('timetables')
+    .select('name, setup_complete, data')
+    .eq('id', timetableId)
+    .single();
+
+  if (error || !tt) {
+    console.error('Failed to load timetable:', error?.message);
+    window.location.replace('portal.html');
+    return;
+  }
+
+  if (!tt.setup_complete) {
+    window.location.replace(`setup.html?id=${timetableId}`);
+    return;
+  }
+
+  // Seed localStorage from Supabase so loadFromStorage() works unchanged
+  saveTimetable({ ...tt.data, setupComplete: true });
   loadFromStorage();
+  document.body.style.visibility = 'visible';
 })();
 
 // ============================================
@@ -1232,27 +1256,56 @@ function loadProject(event) {
   event.target.value = "";
 }
 
+let _supabaseSyncTimer = null;
+
 function autoSave() {
   try {
     saveTimetable({
       setupComplete: true,
-      peopleList: peopleList,
-      classList: classList,
-      classColors: classColors,
-      assignments: assignments,
-      timeSlots: timeSlots,
+      peopleList,
+      classList,
+      classColors,
+      assignments,
+      timeSlots,
     });
     showAutoSaveIndicator();
+
+    // Debounced sync to Supabase — 2 s after last change
+    clearTimeout(_supabaseSyncTimer);
+    _supabaseSyncTimer = setTimeout(syncToSupabase, 2000);
   } catch (error) {
     console.error("Auto-save failed:", error);
     showNotification("Auto-save failed. Please export a backup.", true);
   }
 }
 
-function resetAndSetup() {
+async function syncToSupabase() {
+  if (!timetableId) return;
+  const data = loadTimetable();
+  if (!data) return;
+
+  const { error } = await supabase
+    .from('timetables')
+    .update({ data })
+    .eq('id', timetableId);
+
+  if (error) console.error('Supabase sync failed:', error.message);
+}
+
+async function resetAndSetup() {
   if (!confirm("Reset and go back to setup? All timetable data will be deleted.")) return;
+
   localStorage.removeItem(STORAGE_KEYS.timetable);
-  window.location.href = "setup.html";
+
+  if (timetableId) {
+    await supabase
+      .from('timetables')
+      .update({ setup_complete: false, data: {} })
+      .eq('id', timetableId);
+    window.location.href = `setup.html?id=${timetableId}`;
+  } else {
+    window.location.href = 'portal.html';
+  }
 }
 
 function loadFromStorage() {

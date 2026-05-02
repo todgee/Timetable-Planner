@@ -2,6 +2,8 @@
 // Setup Wizard JavaScript
 // ============================================
 
+const timetableId = new URLSearchParams(window.location.search).get('id');
+
 let currentStep = 1;
 const totalSteps = 5;
 
@@ -23,18 +25,33 @@ const classColorPalette = [
 let colorIndex = 0;
 
 // ============================================
-// Init — skip setup if already complete
+// Init — redirect if no ID or already complete
 // ============================================
 
-(function init() {
-  const data = loadTimetable();
-  if (data?.setupComplete) {
-    window.location.replace('admin.html');
+(async function init() {
+  if (!timetableId) {
+    window.location.replace('portal.html');
     return;
   }
-  if (data?.name) {
-    document.title = `Setup – ${data.name}`;
+
+  await window.authReady;
+
+  const { data: tt } = await supabase
+    .from('timetables')
+    .select('setup_complete, name')
+    .eq('id', timetableId)
+    .single();
+
+  if (tt?.setup_complete) {
+    window.location.replace(`admin.html?id=${timetableId}`);
+    return;
   }
+
+  if (tt?.name) {
+    document.title = `Setup – ${tt.name}`;
+  }
+
+  document.body.style.visibility = 'visible';
 })();
 
 // ============================================
@@ -330,35 +347,46 @@ function populateReview() {
 }
 
 // ============================================
-// Finish Setup — save to localStorage
+// Finish Setup — save to Supabase
 // ============================================
 
-function finishSetup() {
-  const loadingEl = document.getElementById('setupLoading');
+async function finishSetup() {
+  const loadingEl  = document.getElementById('setupLoading');
   const loadingMsg = loadingEl.querySelector('p');
   loadingEl.classList.add('active');
   loadingMsg.textContent = 'Saving your timetable…';
 
-  const existing = loadTimetable() || {};
-
   const classColors = {};
   setupData.classes.forEach(cls => { classColors[cls.name] = cls.color; });
 
-  saveTimetable({
-    name: existing.name || null,
-    description: existing.description || null,
+  const data = {
+    version:    '1.0',
     setupComplete: true,
     peopleList: setupData.people,
-    classList: setupData.classes.map(c => c.name),
+    classList:  setupData.classes.map(c => c.name),
     classColors,
     assignments: { monday: {}, tuesday: {}, wednesday: {}, thursday: {}, friday: {} },
-    timeSlots: setupData.timeSlots,
-  });
+    timeSlots:  setupData.timeSlots,
+    updatedAt:  new Date().toISOString(),
+  };
 
-  loadingMsg.textContent = 'Setup complete! Redirecting…';
-  setTimeout(() => {
-    window.location.href = 'admin.html';
-  }, 800);
+  try {
+    const { error } = await supabase
+      .from('timetables')
+      .update({ setup_complete: true, data })
+      .eq('id', timetableId);
+
+    if (error) throw error;
+
+    loadingMsg.textContent = 'Setup complete! Redirecting…';
+    setTimeout(() => {
+      window.location.href = `admin.html?id=${timetableId}`;
+    }, 800);
+  } catch (err) {
+    console.error('Setup save failed:', err);
+    loadingEl.classList.remove('active');
+    alert('Something went wrong saving your setup. Please try again.');
+  }
 }
 
 // ============================================

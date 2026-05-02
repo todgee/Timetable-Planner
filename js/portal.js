@@ -1,27 +1,45 @@
 /* ==========================================================
-   PORTAL.JS — localStorage-backed timetable dashboard
+   PORTAL.JS — timetable dashboard, Supabase-backed
    ========================================================== */
 
 // ── Greeting ──────────────────────────────────────────────
 
-const hour = new Date().getHours();
+const hour     = new Date().getHours();
 const timePart = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
 document.getElementById('portal-greeting').textContent = `Good ${timePart}`;
 
-// ── Data loading ──────────────────────────────────────────
+// ── Init ──────────────────────────────────────────────────
 
-function initPortal() {
-  const data = loadTimetable();
-  renderOwned(data);
+async function initPortal() {
+  await window.authReady;
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+
+  document.body.style.visibility = 'visible';
+
+  const { data: timetables, error } = await supabase
+    .from('timetables')
+    .select('id, name, description, setup_complete, updated_at')
+    .eq('owner_id', user.id)
+    .order('updated_at', { ascending: false });
+
+  if (error) {
+    console.error('Failed to load timetables:', error.message);
+    renderGrid([]);
+    return;
+  }
+
+  renderGrid(timetables || []);
 }
 
-// ── Timetable section ─────────────────────────────────────
+// ── Render timetable grid ─────────────────────────────────
 
-function renderOwned(data) {
+function renderGrid(timetables) {
   const grid = document.getElementById('grid-owned');
   if (!grid) return;
 
-  if (!data || !data.setupComplete) {
+  if (timetables.length === 0) {
     grid.innerHTML = `
       <div class="empty-state">
         <div class="empty-icon" aria-hidden="true">
@@ -39,22 +57,32 @@ function renderOwned(data) {
     return;
   }
 
-  const updatedAt = data.updatedAt ? formatDate(data.updatedAt) : null;
-  const descHtml = data.description
-    ? `<p class="card-desc">${escapeHtml(data.description)}</p>`
-    : '';
+  grid.innerHTML = timetables.map(tt => buildCard(tt)).join('');
+}
 
-  grid.innerHTML = `
+function buildCard(tt) {
+  const descHtml = tt.description
+    ? `<p class="card-desc">${escapeHtml(tt.description)}</p>`
+    : '';
+  const dateHtml = tt.updated_at
+    ? `<span class="card-date">Updated ${formatDate(tt.updated_at)}</span>`
+    : '';
+  const href = tt.setup_complete
+    ? `admin.html?id=${tt.id}`
+    : `setup.html?id=${tt.id}`;
+  const label = tt.setup_complete ? 'Open' : 'Continue setup';
+
+  return `
     <div class="timetable-card">
       <div class="card-top">
         <div class="card-header-row">
-          <h3 class="card-name">${escapeHtml(data.name || 'My Timetable')}</h3>
+          <h3 class="card-name">${escapeHtml(tt.name)}</h3>
         </div>
         ${descHtml}
       </div>
       <div class="card-footer">
-        ${updatedAt ? `<span class="card-date">Updated ${updatedAt}</span>` : ''}
-        <a class="btn btn-sm btn-primary" href="admin.html">Open</a>
+        ${dateHtml}
+        <a class="btn btn-sm btn-primary" href="${href}">${label}</a>
       </div>
     </div>
   `;
@@ -65,9 +93,7 @@ function renderOwned(data) {
 function formatDate(dateStr) {
   if (!dateStr) return '—';
   return new Date(dateStr).toLocaleDateString('en-AU', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
+    day: 'numeric', month: 'short', year: 'numeric',
   });
 }
 
@@ -105,16 +131,14 @@ document.getElementById('btn-create').addEventListener('click', openModal);
 document.getElementById('btn-modal-close').addEventListener('click', closeModal);
 document.getElementById('btn-modal-cancel').addEventListener('click', closeModal);
 
-modal.addEventListener('click', e => {
-  if (e.target === modal) closeModal();
-});
+modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
 
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && !modal.hidden) closeModal();
 });
 
-btnConfirm.addEventListener('click', () => {
-  const name = inputName.value.trim();
+btnConfirm.addEventListener('click', async () => {
+  const name        = inputName.value.trim();
   const description = inputDesc.value.trim() || null;
 
   if (!name) {
@@ -127,20 +151,30 @@ btnConfirm.addEventListener('click', () => {
   inputName.classList.remove('invalid');
   createError.classList.remove('visible');
 
-  saveTimetable({
-    name,
-    description,
-    setupComplete: false,
-    peopleList: [],
-    classList: [],
-    classColors: {},
-    assignments: { monday: {}, tuesday: {}, wednesday: {}, thursday: {}, friday: {} },
-    timeSlots: [],
-  });
+  btnConfirm.disabled = true;
+  btnConfirm.classList.add('loading');
 
-  window.location.href = 'setup.html';
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    const { data: tt, error } = await supabase
+      .from('timetables')
+      .insert({ owner_id: user.id, name, description })
+      .select('id')
+      .single();
+
+    if (error) throw error;
+
+    window.location.href = `setup.html?id=${tt.id}`;
+  } catch (err) {
+    console.error('Create timetable failed:', err);
+    createError.textContent = 'Something went wrong. Please try again.';
+    createError.classList.add('visible');
+    btnConfirm.disabled = false;
+    btnConfirm.classList.remove('loading');
+  }
 });
 
-// ── Init ──────────────────────────────────────────────────
+// ── Start ─────────────────────────────────────────────────
 
 initPortal();
