@@ -59,12 +59,13 @@ function isBreakSlot(slot) {
     return;
   }
 
-  await window.authReady;
+  const session = await window.authReady;
 
   const { data: tt, error } = await supabase
     .from('timetables')
     .select('name, setup_complete')
     .eq('id', timetableId)
+    .eq('owner_id', session.user.id)
     .single();
 
   if (error || !tt) {

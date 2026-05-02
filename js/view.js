@@ -46,11 +46,23 @@ async function loadTimetableData() {
     return;
   }
 
-  await window.authReady;
+  const session = await window.authReady;
 
   // Fix back-to-editor link
   const backLink = document.querySelector('.view-header-nav a');
   if (backLink) backLink.href = `admin.html?id=${timetableId}`;
+
+  const { data: tt } = await supabase
+    .from('timetables')
+    .select('id')
+    .eq('id', timetableId)
+    .eq('owner_id', session.user.id)
+    .maybeSingle();
+
+  if (!tt) {
+    window.location.replace('portal.html');
+    return;
+  }
 
   try {
     const [{ data: td }, { data: cfg }] = await Promise.all([
