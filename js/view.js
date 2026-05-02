@@ -219,6 +219,11 @@ function toggleFilterDropdown() {
   } else {
     tempFilter = [...activeFilter];
     renderFilterDropdownList();
+    const btn = document.getElementById("filterStaffBtn");
+    const rect = btn.getBoundingClientRect();
+    dropdown.style.position = "fixed";
+    dropdown.style.top = (rect.bottom + 6) + "px";
+    dropdown.style.left = rect.left + "px";
     dropdown.style.display = "block";
   }
 }
