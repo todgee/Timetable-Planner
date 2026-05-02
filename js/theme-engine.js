@@ -238,16 +238,15 @@
       if (!saved || !saved.start || !saved.end) return;
       document.body.style.background =
         'linear-gradient(135deg, ' + saved.start + ' 0%, ' + saved.end + ' 100%)';
-      /* Use pre-computed modal colour stored at save-time; fall back to
-         runtime computation only for data written by older code. */
-      var modal = saved.modal || computeModalSurface(saved.start, saved.end);
+      var modal = computeModalSurface(saved.start, saved.end);
       document.documentElement.style.setProperty('--surface-modal', modal);
     } catch (e) {}
   }
 
   /* Derive a modal panel colour from the page gradient.
      Dark gradient → lift lightness so the panel reads above the bg.
-     Light gradient → near-white with a faint tint. */
+     Light/medium gradient → near-white with a colour tint that matches
+     the gradient hue, so custom colours don't produce a plain white modal. */
   function computeModalSurface(startHex, endHex) {
     var h1 = hexToHsl(startHex);
     var h2 = hexToHsl(endHex);
@@ -257,7 +256,7 @@
     if (l < 45) {
       return hslToHex(h, clamp(s, 10, 60), clamp(l + 11, 12, 30));
     } else {
-      return hslToHex(h, clamp(s * 0.15, 0, 8), 97);
+      return hslToHex(h, clamp(s * 0.35, 3, 22), 96);
     }
   }
 
