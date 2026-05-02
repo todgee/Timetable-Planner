@@ -21,7 +21,7 @@ async function loadConfigFromSupabase() {
 
 async function saveConfig(fields) {
   const userFields = {};
-  ['theme_primary', 'theme_accent', 'theme_mode', 'bg_start', 'bg_end'].forEach(function (k) {
+  ['theme_primary', 'theme_accent', 'bg_start', 'bg_end'].forEach(function (k) {
     if (k in fields) userFields[k] = fields[k];
   });
   if (Object.keys(userFields).length > 0) {
@@ -45,7 +45,7 @@ function resolvedAccent() {
 // ── Live preview ───────────────────────────────────────────────
 function applyLivePreview() {
   var accent = resolvedAccent();
-  ThemeEngine.apply({ primary: currentPrimary, accent: accent, mode: 'dark' });
+  ThemeEngine.apply({ primary: currentPrimary, accent: accent });
   if (accentMode === 'auto') {
     var inp = document.getElementById('color-accent');
     var hex = document.getElementById('accent-hex');
@@ -150,8 +150,8 @@ function loadLogoIntoForm(cfg) {
 async function handleSaveColors() {
   var accent = resolvedAccent();
   try {
-    await saveConfig({ theme_primary: currentPrimary, theme_accent: accent, theme_mode: 'dark' });
-    ThemeEngine.save({ primary: currentPrimary, accent: accent, mode: 'dark' });
+    await saveConfig({ theme_primary: currentPrimary, theme_accent: accent });
+    ThemeEngine.save({ primary: currentPrimary, accent: accent });
     showNotification('Color theme saved!');
   } catch (err) {
     showNotification('Failed to save theme: ' + err.message, true);
@@ -164,7 +164,6 @@ async function handleResetColors() {
     await saveConfig({
       theme_primary: ThemeEngine.DEFAULTS.primary,
       theme_accent:  ThemeEngine.DEFAULTS.accent,
-      theme_mode:    'dark',
     });
     ThemeEngine.reset();
     const cfg = await loadConfigFromSupabase();

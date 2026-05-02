@@ -30,6 +30,8 @@ body {
   max-width: 100%;
   margin: 0 auto;
   padding: 1.5rem;
+  position: relative;
+  z-index: 1;
 }
 
 .container--narrow {
@@ -57,7 +59,7 @@ h1 {
 
 .subtitle {
   font-size: 1rem;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   font-weight: 300;
 }
 
@@ -76,10 +78,10 @@ h1 {
   font-family: "Crimson Pro", serif;
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--brand-500);
+  color: var(--text-primary);
   margin-bottom: 1.5rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--border-default);
+  border-bottom: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -332,13 +334,13 @@ input[type="file"]:hover {
 }
 
 .list-item:hover {
-  border-color: var(--brand-500);
-  transform: translateX(4px);
+  background: var(--border-default);
+  border-color: var(--border-strong);
 }
 
 .item-name {
   font-weight: 500;
-  color: var(--brand-500);
+  color: var(--text-primary);
   flex: 1;
 }
 
@@ -348,27 +350,13 @@ input[type="file"]:hover {
   gap: 0.5rem;
 }
 
-.color-indicator {
-  width: 24px;
-  height: 24px;
-  border-radius: 4px;
-  border: 2px solid var(--border-default);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.color-indicator:hover {
-  transform: scale(1.1);
-  border-color: var(--brand-500);
-}
-
 /* ----------------------------------------
    Empty State
    ---------------------------------------- */
 .empty-state {
   text-align: center;
   padding: 2rem;
-  color: var(--text-secondary);
+  color: var(--text-disabled);
 }
 
 .empty-state-icon {
@@ -411,16 +399,6 @@ input[type="file"]:hover {
 }
 
 /* ----------------------------------------
-   Setup Section
-   ---------------------------------------- */
-.setup-section {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-/* ----------------------------------------
    Timetable
    ---------------------------------------- */
 .timetable-section {
@@ -432,7 +410,7 @@ input[type="file"]:hover {
   border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 4px 20px var(--shadow-color);
+  box-shadow: 0 8px 32px var(--shadow-overlay), inset 0 1px 0 var(--border-subtle);
   border: 1px solid var(--border-default);
 }
 
@@ -442,7 +420,7 @@ input[type="file"]:hover {
   align-items: center;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 2px solid var(--border-default);
+  border-bottom: 2px solid var(--border-subtle);
 }
 
 .timetable-actions {
@@ -460,7 +438,7 @@ input[type="file"]:hover {
 .action-group-label {
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--text-disabled);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 0.25rem;
@@ -477,18 +455,21 @@ input[type="file"]:hover {
 
 .day-btn {
   padding: 0.75rem 2rem;
-  border: 2px solid var(--border-default);
-  background: var(--surface-base);
+  border: 2px solid var(--border-mid);
+  background: var(--fill-subtle);
   border-radius: 8px;
   cursor: pointer;
   font-weight: 500;
+  color: var(--text-muted);
   transition: all 0.2s ease;
   font-family: "Work Sans", sans-serif;
   font-size: 0.95rem;
 }
 
 .day-btn:hover {
-  border-color: var(--brand-500);
+  background: var(--border-default);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
   transform: translateY(-2px);
 }
 
@@ -496,6 +477,7 @@ input[type="file"]:hover {
   background: var(--brand-500);
   color: var(--text-on-brand);
   border-color: var(--brand-500);
+  box-shadow: 0 4px 16px var(--brand-glow);
 }
 
 /* View Controls (zoom / scroll / fullscreen) */
@@ -512,11 +494,10 @@ input[type="file"]:hover {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  background: var(--surface-base);
+  background: var(--fill-control);
   border: 1px solid var(--border-default);
   border-radius: 8px;
   padding: 0.25rem;
-  box-shadow: 0 2px 6px var(--shadow-color);
 }
 
 .view-control-btn {
@@ -529,7 +510,7 @@ input[type="file"]:hover {
   background: transparent;
   border: none;
   border-radius: 6px;
-  color: var(--text-primary);
+  color: var(--text-muted);
   font-family: "Work Sans", sans-serif;
   font-size: 1.05rem;
   font-weight: 600;
@@ -539,8 +520,8 @@ input[type="file"]:hover {
 }
 
 .view-control-btn:hover {
-  background: var(--surface-page);
-  color: var(--brand-500);
+  background: var(--border-default);
+  color: var(--text-primary);
 }
 
 .view-control-btn:active {
@@ -551,7 +532,7 @@ input[type="file"]:hover {
   opacity: 0.4;
   cursor: not-allowed;
   background: transparent;
-  color: var(--text-secondary);
+  color: var(--text-disabled);
   transform: none;
 }
 
@@ -560,7 +541,7 @@ input[type="file"]:hover {
   text-align: center;
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-secondary);
   cursor: pointer;
   user-select: none;
   padding: 0 0.25rem;
@@ -657,7 +638,7 @@ body.timetable-fullscreen-active {
   width: 100%;
   table-layout: fixed;
   border-collapse: collapse;
-  border: 2px solid var(--border-default);
+  border: 2px solid var(--primary);
   border-radius: 8px;
   overflow: hidden;
   margin-bottom: 2rem;
@@ -704,7 +685,7 @@ body.timetable-fullscreen-active {
   padding: 0.4rem;
   font-weight: 600;
   color: var(--brand-500);
-  border: 1px solid var(--border-default);
+  border: 1px solid #ddd7cc;
   text-align: center;
   vertical-align: middle;
   width: 110px;
@@ -719,7 +700,7 @@ body.timetable-fullscreen-active {
 .roster-cell {
   display: table-cell;
   padding: 0.5rem;
-  border: 1px solid var(--border-default);
+  border: 1px solid #ddd7cc;
   min-width: 140px;
   min-height: 70px;
   cursor: pointer;
@@ -729,7 +710,7 @@ body.timetable-fullscreen-active {
 }
 
 .roster-cell:hover {
-  background: var(--fill-hover);
+  background: rgba(42, 92, 78, 0.06);
 }
 
 .roster-cell.has-content {
@@ -824,13 +805,18 @@ body.timetable-fullscreen-active {
 /* Time-slot editor: type selector */
 .slot-type-select {
   padding: 0.4rem 0.5rem;
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--border-mid);
   border-radius: 6px;
-  background: var(--surface-base);
+  background: var(--fill-input);
   font-family: inherit;
   font-size: 0.9rem;
-  color: var(--text-primary);
+  color: var(--text-secondary);
   cursor: pointer;
+}
+
+.slot-type-select option {
+  background: var(--surface-option);
+  color: var(--text-on-brand);
 }
 
 /* Review chip styling by type */
@@ -851,11 +837,11 @@ body.timetable-fullscreen-active {
    Counters Section
    ---------------------------------------- */
 .counters-section {
-  background: var(--surface-base);
+  background: #fdfaf6;
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 4px 20px var(--shadow-color);
-  border: 1px solid var(--border-default);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  border: 1px solid #ddd7cc;
   margin-top: 2rem;
 }
 
@@ -863,7 +849,7 @@ body.timetable-fullscreen-active {
   display: flex;
   gap: 1rem;
   margin-bottom: 1.5rem;
-  border-bottom: 2px solid var(--border-default);
+  border-bottom: 2px solid #ddd7cc;
 }
 
 .counter-tab {
@@ -874,14 +860,18 @@ body.timetable-fullscreen-active {
   font-family: "Work Sans", sans-serif;
   font-size: 0.95rem;
   font-weight: 500;
-  color: var(--text-secondary);
+  color: #888;
   border-bottom: 3px solid transparent;
   transition: all 0.2s ease;
 }
 
+.counter-tab:hover {
+  color: #555;
+}
+
 .counter-tab.active {
-  color: var(--brand-500);
-  border-bottom-color: var(--brand-500);
+  color: var(--primary);
+  border-bottom-color: var(--primary);
 }
 
 .counter-content {
@@ -900,9 +890,9 @@ body.timetable-fullscreen-active {
 
 .counter-item {
   padding: 1rem;
-  background: var(--surface-page);
+  background: rgba(44, 95, 79, 0.05);
   border-radius: 8px;
-  border: 2px solid var(--border-default);
+  border: 2px solid #ddd7cc;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -913,19 +903,20 @@ body.timetable-fullscreen-active {
   align-items: center;
   gap: 0.5rem;
   font-weight: 500;
+  color: #444;
 }
 
 .counter-color {
   width: 20px;
   height: 20px;
   border-radius: 4px;
-  border: 1px solid var(--border-default);
+  border: 1px solid #ddd7cc;
 }
 
 .counter-value {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--brand-500);
+  color: var(--primary);
 }
 
 /* ----------------------------------------
@@ -957,25 +948,82 @@ body.timetable-fullscreen-active {
   width: 90%;
   max-height: 80vh;
   overflow-y: auto;
-  box-shadow: 0 10px 40px var(--shadow-overlay);
+  border: 1px solid var(--border-mid);
+  box-shadow: 0 32px 80px var(--shadow-deep), inset 0 1px 0 var(--border-subtle);
+  position: relative;
   contain: paint;
   will-change: scroll-position;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--border-strong);
+  background: var(--fill-input);
+  color: var(--text-secondary);
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.modal-close-btn:hover {
+  background: var(--fill-hover);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
 }
 
 .modal-title {
   font-family: "Crimson Pro", serif;
   font-size: 1.75rem;
-  color: var(--brand-500);
+  color: var(--text-primary);
   margin-bottom: 1.5rem;
 }
 
 .modal-info {
-  background: var(--surface-page);
+  background: var(--fill-control);
+  border: 1px solid var(--border-default);
   padding: 0.75rem;
   border-radius: 6px;
   margin-bottom: 1.5rem;
   font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.modal-content h4   { color: var(--text-muted); }
+.modal-content p    { color: var(--text-muted); }
+.modal-content label { color: var(--text-muted); }
+
+.modal-content input,
+.modal-content select,
+.modal-content textarea {
+  background: var(--fill-input);
+  border-color: var(--border-strong);
   color: var(--text-primary);
+}
+
+.modal-content input:focus,
+.modal-content select:focus,
+.modal-content textarea:focus {
+  border-color: var(--accent-500);
+  background: var(--border-mid);
+  box-shadow: 0 0 0 3px var(--accent-fill);
+}
+
+.modal-content input::placeholder,
+.modal-content textarea::placeholder { color: var(--text-disabled); }
+
+.modal-content select option {
+  background: var(--surface-option);
+  color: var(--text-on-brand);
 }
 
 .modal-buttons {
@@ -1239,11 +1287,12 @@ body.timetable-fullscreen-active {
   position: fixed;
   bottom: 2rem;
   right: 2rem;
-  background: var(--surface-base);
+  background: var(--surface-raised);
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
-  box-shadow: 0 4px 12px var(--shadow-color);
+  box-shadow: 0 4px 20px var(--shadow-overlay);
   border: 2px solid var(--state-success);
+  color: var(--text-secondary);
   display: none;
   align-items: center;
   gap: 0.5rem;
@@ -1274,21 +1323,6 @@ body.timetable-fullscreen-active {
   background: var(--state-error-bg);
   color: var(--state-error);
   border: 1px solid var(--state-error);
-}
-
-/* ----------------------------------------
-   Config Page - Page Header
-   ---------------------------------------- */
-.page-header {
-  text-align: center;
-  margin-bottom: 3rem;
-  padding-bottom: 2rem;
-  border-bottom: 2px solid var(--border-default);
-}
-
-.page-header p {
-  color: var(--text-secondary);
-  font-size: 1.1rem;
 }
 
 /* Back Link */
@@ -1632,25 +1666,11 @@ body.timetable-fullscreen-active {
   }
 }
 
-/* ----------------------------------------
-   View-Only Mode
-   ---------------------------------------- */
-.view-only-mode .roster-cell {
-  cursor: default !important;
-}
-
-.view-only-mode .roster-cell:hover {
-  background: inherit !important;
-}
 
 /* ----------------------------------------
    Responsive Design
    ---------------------------------------- */
 @media (max-width: 968px) {
-  .setup-section {
-    grid-template-columns: 1fr;
-  }
-
   h1 {
     font-size: 2rem;
   }
@@ -1688,10 +1708,6 @@ body.timetable-fullscreen-active {
     padding: 1rem;
   }
 
-  .page-header h1 {
-    font-size: 2rem;
-  }
-
   .config-grid {
     grid-template-columns: 1fr;
   }
@@ -1710,14 +1726,7 @@ body.timetable-fullscreen-active {
   }
 }
 
-/* ── Dark mode component overrides ───────────────────────────
-   Applied when <html data-theme="dark"> is set by theme-engine.js
-   ──────────────────────────────────────────────────────────── */
-
-/* Background */
-[data-theme="dark"] body {
-  background: var(--surface-page);
-}
+/* ── Ambient orb background ───────────────────────────────── */
 
 /* Ambient orb containers — position/overflow are theme-neutral */
 .admin-bg,
@@ -1730,8 +1739,8 @@ body.timetable-fullscreen-active {
   pointer-events: none;
 }
 
-[data-theme="dark"] .view-bg::before,
-[data-theme="dark"] .admin-bg::before {
+.view-bg::before,
+.admin-bg::before {
   content: "";
   position: absolute;
   top: -20%;
@@ -1744,8 +1753,8 @@ body.timetable-fullscreen-active {
   transform: translateZ(0);
 }
 
-[data-theme="dark"] .view-bg::after,
-[data-theme="dark"] .admin-bg::after {
+.view-bg::after,
+.admin-bg::after {
   content: "";
   position: absolute;
   bottom: -20%;
@@ -1768,198 +1777,36 @@ body.timetable-fullscreen-active {
   50%       { transform: translate(-3%, -3%) scale(1.04); }
 }
 
-[data-theme="dark"] .container {
-  position: relative;
-  z-index: 1;
+/* ── Toolbar button — shared across admin / config ───────── */
+
+.toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  padding: 0.38rem 0.75rem;
+  border-radius: 7px;
+  font-family: "Work Sans", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s, border-color 0.1s;
+  white-space: nowrap;
+  text-decoration: none;
+  line-height: 1;
 }
 
-/* Header */
-[data-theme="dark"] header h1        { color: var(--text-primary); }
-[data-theme="dark"] .subtitle        { color: var(--text-muted); }
-
-/* Timetable header panel */
-[data-theme="dark"] .timetable-header {
-  background: var(--surface-base);
-  border: 1px solid var(--border-default);
-  box-shadow: 0 8px 32px var(--shadow-overlay), inset 0 1px 0 var(--border-subtle);
-}
-
-[data-theme="dark"] .timetable-header-top { border-bottom-color: var(--border-subtle); }
-[data-theme="dark"] .panel-title {
-  color: var(--text-primary);
-  border-bottom-color: var(--border-subtle);
-}
-[data-theme="dark"] .action-group-label   { color: var(--text-disabled); }
-
-/* Day selector */
-[data-theme="dark"] .day-btn {
-  background: var(--fill-subtle);
-  border-color: var(--border-mid);
-  color: var(--text-muted);
-}
-
-[data-theme="dark"] .day-btn:hover {
+.toolbar-btn:hover {
   background: var(--border-default);
   border-color: var(--border-strong);
   color: var(--text-primary);
-  transform: translateY(-2px);
 }
-
-[data-theme="dark"] .day-btn.active {
-  background: var(--brand-500);
-  border-color: var(--brand-500);
-  color: var(--text-on-brand);
-  box-shadow: 0 4px 16px var(--brand-glow);
-}
-
-/* View controls */
-[data-theme="dark"] .view-controls-group {
-  background: var(--fill-control);
-  border-color: var(--border-default);
-  box-shadow: none;
-}
-
-[data-theme="dark"] .view-control-btn               { color: var(--text-muted); }
-[data-theme="dark"] .view-control-btn:hover          { background: var(--border-default); color: var(--text-primary); }
-[data-theme="dark"] .view-control-btn:disabled       { color: var(--text-disabled); background: transparent; }
-[data-theme="dark"] .view-controls-zoom-value        { color: var(--text-secondary); }
-
-/* Timetable wrapper & table */
-[data-theme="dark"] .timetable-wrapper {
-  background: #fdfaf6;
-  border-color: #ddd7cc;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-}
-
-[data-theme="dark"] .timetable                       { border-color: var(--border-mid); }
-[data-theme="dark"] .timetable-row:nth-child(even)   { background: rgba(42, 92, 78, 0.04); }
-[data-theme="dark"] .time-cell {
-  background: #fdfaf6;
-  color: var(--brand-500);
-  border-color: #ddd7cc;
-}
-
-[data-theme="dark"] .roster-cell                     { border-color: #ddd7cc; }
-[data-theme="dark"] .roster-cell:hover               { background: rgba(42, 92, 78, 0.06); }
-
-/* Counters */
-[data-theme="dark"] .counters-section {
-  background: var(--surface-base);
-  border: 1px solid var(--border-default);
-  box-shadow: 0 8px 32px var(--shadow-overlay);
-}
-
-[data-theme="dark"] .counter-tabs                    { border-bottom-color: var(--border-default); }
-[data-theme="dark"] .counter-tab                     { color: var(--text-disabled); }
-[data-theme="dark"] .counter-tab:hover               { color: var(--text-secondary); }
-[data-theme="dark"] .counter-tab.active              { color: var(--text-primary); border-bottom-color: var(--accent-500); }
-[data-theme="dark"] .counter-item                    { background: var(--fill-subtle); border-color: var(--border-default); }
-[data-theme="dark"] .counter-item span               { color: var(--text-secondary); }
-[data-theme="dark"] .counter-value                   { color: var(--accent-500); }
-
-/* Modals */
-[data-theme="dark"] .modal                           { background: var(--surface-overlay); }
-
-[data-theme="dark"] .modal-content {
-  background: var(--surface-modal);
-  border: 1px solid var(--border-mid);
-  box-shadow: 0 32px 80px var(--shadow-deep), inset 0 1px 0 var(--border-subtle);
-  position: relative;
-}
-
-[data-theme="dark"] .modal-close-btn {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  border: 1px solid var(--border-strong);
-  background: var(--fill-input);
-  color: var(--text-secondary);
-  font-size: 1rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-[data-theme="dark"] .modal-close-btn:hover {
-  background: var(--fill-hover);
-  border-color: var(--border-strong);
-  color: var(--text-primary);
-}
-
-[data-theme="dark"] .modal-title                     { color: var(--text-primary); }
-[data-theme="dark"] .modal-info {
-  background: var(--fill-control);
-  border: 1px solid var(--border-default);
-  color: var(--text-muted);
-}
-
-[data-theme="dark"] .modal-content h4                { color: var(--text-muted) !important; }
-[data-theme="dark"] .modal-content p                 { color: var(--text-muted) !important; }
-[data-theme="dark"] .modal-content label             { color: var(--text-muted); }
-
-[data-theme="dark"] .modal-content input,
-[data-theme="dark"] .modal-content select,
-[data-theme="dark"] .modal-content textarea {
-  background: var(--fill-input);
-  border-color: var(--border-strong);
-  color: var(--text-primary);
-}
-
-[data-theme="dark"] .modal-content input:focus,
-[data-theme="dark"] .modal-content select:focus,
-[data-theme="dark"] .modal-content textarea:focus {
-  border-color: var(--accent-500);
-  background: var(--border-mid);
-  box-shadow: 0 0 0 3px var(--accent-fill);
-}
-
-[data-theme="dark"] .modal-content input::placeholder,
-[data-theme="dark"] .modal-content textarea::placeholder { color: var(--text-disabled); }
-
-[data-theme="dark"] .modal-content select option {
-  background: var(--surface-option);
-  color: var(--text-on-brand);
-}
-
-/* List items */
-[data-theme="dark"] .list-item                       { background: var(--fill-subtle); border-color: var(--border-default); }
-[data-theme="dark"] .list-item:hover                 { background: var(--border-default); border-color: var(--border-strong); }
-[data-theme="dark"] .item-name                       { color: var(--text-primary); }
-[data-theme="dark"] .empty-state,
-[data-theme="dark"] .empty-state p                   { color: var(--text-disabled); }
-
-/* Time slot editor */
-[data-theme="dark"] .time-slot-item                  { background: var(--fill-subtle); border-color: var(--border-default); }
-[data-theme="dark"] .slot-type-select {
-  background: var(--fill-input);
-  border-color: var(--border-mid);
-  color: var(--text-secondary);
-}
-[data-theme="dark"] .slot-type-select option {
-  background: var(--surface-option);
-  color: var(--text-on-brand);
-}
-
-/* Sync indicator */
-[data-theme="dark"] .sync-indicator {
-  background: var(--surface-raised);
-  border-color: var(--state-success);
-  color: var(--text-secondary);
-  box-shadow: 0 4px 20px var(--shadow-overlay);
-}
-
-/* Loading spinner */
-[data-theme="dark"] .loading-spinner                 { background: var(--surface-raised); }
 
 /* ── App shell — shared sticky header used by admin / view / config ──
-   Always light (matches portal.html) regardless of page theme.
+   Always light regardless of page theme.
    Hard-coded palette values keep it independent of CSS variable overrides.
    ──────────────────────────────────────────────────────────────────── */
 
@@ -1973,12 +1820,6 @@ body.timetable-fullscreen-active {
      triggers repaints of content behind it. */
   transform: translateZ(0);
   will-change: transform;
-}
-
-/* Force light appearance even in dark mode */
-[data-theme="dark"] .app-shell {
-  background: #fdfaf6;
-  border-color: #ddd7cc;
 }
 
 .app-header {
@@ -2013,6 +1854,30 @@ body.timetable-fullscreen-active {
 .app-brand-icon {
   flex-shrink: 0;
   opacity: 0.85;
+}
+
+.app-page-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  border-top: 1px solid rgba(221, 215, 204, 0.7);
+}
+
+.app-page-title-text h1 {
+  font-family: "Crimson Pro", serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #2a3d35;
+  margin: 0 0 0.1rem;
+  letter-spacing: -0.01em;
+}
+
+.app-page-title-text p {
+  font-family: "Work Sans", sans-serif;
+  font-size: 0.82rem;
+  color: #6b7c74;
+  margin: 0;
 }
 
 .app-header-center {

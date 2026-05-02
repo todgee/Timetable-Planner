@@ -25,7 +25,6 @@
    --orb-*       Ambient background gradient colors
    ========================================================== */
 
-/* ── Light mode (default) ─────────────────────────────────── */
 :root {
 
   /* Brand — primary action color scale
@@ -33,95 +32,16 @@
   --brand-500:      #2c5f4f;
   --brand-400:      #3d7861;
   --brand-600:      #1e4438;
-  --brand-fill:     rgba(44, 95, 79, 0.08);
-  --brand-fill-mid: rgba(44, 95, 79, 0.18);
-  --brand-glow:     rgba(44, 95, 79, 0.30);
+  --brand-fill:     rgba(44, 95, 79, 0.25);
+  --brand-fill-mid: rgba(44, 95, 79, 0.35);
+  --brand-glow:     rgba(44, 95, 79, 0.40);
 
   /* Accent — secondary highlight color scale
      Updated at runtime by theme-engine.js */
   --accent-500:  #d4a574;
   --accent-600:  #c49563;
-  --accent-fill: rgba(212, 165, 116, 0.12);
+  --accent-fill: rgba(212, 165, 116, 0.15);
   --accent-glow: rgba(212, 165, 116, 0.30);
-
-  /* Surfaces */
-  --surface-page:    #fdfbf7;
-  --surface-base:    #ffffff;
-  --surface-raised:  #f5f1e8;
-  --surface-input:   #fdfbf7;
-  --surface-option:  #f5f1e8;
-  --surface-overlay: rgba(0, 0, 0, 0.50);
-  --surface-modal:   var(--surface-base);
-
-  /* Text */
-  --text-primary:   #2d2d2d;
-  --text-secondary: #6b6b6b;
-  --text-muted:     #9a9a9a;
-  --text-disabled:  #c0c0c0;
-  --text-on-brand:  #ffffff;
-
-  /* Borders */
-  --border-subtle:  #f0ebe3;
-  --border-default: #e8e3db;
-  --border-mid:     #d4ccc0;
-  --border-strong:  #bfb5a8;
-
-  /* Fills (translucent hover / control backgrounds) */
-  --fill-subtle:  #f8f5ef;
-  --fill-control: #f2ede6;
-  --fill-input:   #fdfbf7;
-  --fill-hover:   rgba(44, 95, 79, 0.05);
-  --fill-stripe:  rgba(0, 0, 0, 0.02);
-
-  /* Shadows */
-  --shadow-color:   rgba(44, 95, 79, 0.08);
-  --shadow-overlay: rgba(0, 0, 0, 0.30);
-  --shadow-deep:    rgba(0, 0, 0, 0.50);
-
-  /* State */
-  --state-error:              #c84848;
-  --state-error-hover:        #b83c3c;
-  --state-error-bg:           rgba(200, 72, 72, 0.10);
-  --state-error-border:       rgba(200, 72, 72, 0.30);
-  --state-error-bg-hover:     rgba(200, 72, 72, 0.20);
-  --state-error-border-hover: rgba(200, 72, 72, 0.40);
-  --state-error-light:        #ee8888;
-  --state-success:            #4a8b6f;
-  --state-success-bg:         rgba(74, 139, 111, 0.10);
-  --state-success-glow:       rgba(74, 139, 111, 0.30);
-  --state-warning:            #f59e0b;
-  --state-warning-bg:         rgba(245, 158, 11, 0.10);
-
-  /* Overlay / on-brand utilities */
-  --border-on-brand:    rgba(255, 255, 255, 0.20);
-  --overlay-btn:        rgba(255, 255, 255, 0.30);
-  --overlay-btn-hover:  rgba(255, 255, 255, 0.50);
-  --overlay-white:      rgba(255, 255, 255, 0.90);
-  --shadow-xs:          rgba(0, 0, 0, 0.10);
-
-  /* Day-of-week colors */
-  --day-monday:    #4ade80;
-  --day-tuesday:   #60d5f5;
-  --day-wednesday: #f59e0b;
-  --day-thursday:  #a78bfa;
-  --day-friday:    #fb923c;
-
-  /* Break / slot-type palette */
-  --slot-recess-bg:   rgba(96, 213, 245, 0.18);
-  --slot-recess-text: #0b6e85;
-  --slot-lunch-bg:    rgba(212, 165, 116, 0.22);
-  --slot-lunch-text:  #8a5a20;
-  --slot-break-bg:    rgba(232, 227, 219, 0.55);
-  --slot-break-text:  #6b6b6b;
-
-  /* Orb / ambient background gradients */
-  --orb-green: rgba(44, 95, 79, 0.30);
-  --orb-gold:  rgba(212, 165, 116, 0.17);
-
-}
-
-/* ── Dark mode ────────────────────────────────────────────── */
-[data-theme="dark"] {
 
   /* Surfaces */
   --surface-page:    #0c1812;
@@ -145,25 +65,47 @@
   --border-mid:     rgba(255, 255, 255, 0.10);
   --border-strong:  rgba(255, 255, 255, 0.12);
 
-  /* Fills */
+  /* Fills (translucent hover / control backgrounds) */
   --fill-subtle:  rgba(255, 255, 255, 0.04);
   --fill-control: rgba(255, 255, 255, 0.05);
   --fill-input:   rgba(255, 255, 255, 0.07);
   --fill-hover:   rgba(255, 255, 255, 0.08);
+  --fill-stripe:  rgba(255, 255, 255, 0.02);
 
   /* Shadows */
   --shadow-color:   rgba(0, 0, 0, 0.35);
   --shadow-overlay: rgba(0, 0, 0, 0.40);
   --shadow-deep:    rgba(0, 0, 0, 0.65);
 
-  /* Brand tints are richer against a dark background */
-  --brand-fill:     rgba(44, 95, 79, 0.25);
-  --brand-fill-mid: rgba(44, 95, 79, 0.35);
-  --brand-glow:     rgba(44, 95, 79, 0.40);
-  --accent-fill:    rgba(212, 165, 116, 0.15);
-  --accent-glow:    rgba(212, 165, 116, 0.30);
+  /* State */
+  --state-error:              #c84848;
+  --state-error-hover:        #b83c3c;
+  --state-error-bg:           rgba(200, 72, 72, 0.10);
+  --state-error-border:       rgba(200, 72, 72, 0.30);
+  --state-error-bg-hover:     rgba(200, 72, 72, 0.20);
+  --state-error-border-hover: rgba(200, 72, 72, 0.40);
+  --state-error-light:        #ee8888;
+  --state-success:            #4a8b6f;
+  --state-success-bg:         rgba(74, 139, 111, 0.10);
+  --state-success-glow:       rgba(74, 139, 111, 0.30);
+  --state-warning:            #f59e0b;
+  --state-warning-bg:         rgba(245, 158, 11, 0.10);
 
-  /* Break rows are more subdued in dark mode */
+  /* Overlay / on-brand utilities */
+  --border-on-brand:    rgba(255, 255, 255, 0.20);
+  --overlay-btn:        rgba(255, 255, 255, 0.30);
+  --overlay-btn-hover:  rgba(255, 255, 255, 0.50);
+  --overlay-white:      rgba(12, 24, 18, 0.92);
+  --shadow-xs:          rgba(0, 0, 0, 0.10);
+
+  /* Day-of-week colors */
+  --day-monday:    #4ade80;
+  --day-tuesday:   #60d5f5;
+  --day-wednesday: #f59e0b;
+  --day-thursday:  #a78bfa;
+  --day-friday:    #fb923c;
+
+  /* Break / slot-type palette */
   --slot-recess-bg:   rgba(96, 213, 245, 0.07);
   --slot-recess-text: #60d5f5;
   --slot-lunch-bg:    rgba(212, 165, 116, 0.09);
@@ -171,13 +113,7 @@
   --slot-break-bg:    rgba(255, 255, 255, 0.03);
   --slot-break-text:  rgba(255, 255, 255, 0.28);
 
-  /* Fills */
-  --fill-stripe:  rgba(255, 255, 255, 0.02);
-
-  /* Overlay / on-brand utilities */
-  --overlay-white: rgba(12, 24, 18, 0.92);
-
-  /* Orbs are kept at similar intensities */
+  /* Orb / ambient background gradients */
   --orb-green: rgba(44, 95, 79, 0.30);
   --orb-gold:  rgba(212, 165, 116, 0.17);
 

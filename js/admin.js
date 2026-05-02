@@ -499,7 +499,7 @@ function openEditTimeSlots() {
     };
 
     const removeBtn = document.createElement("button");
-    removeBtn.className = "btn btn-secondary btn-small delete-btn";
+    removeBtn.className = "btn btn-danger btn-small";
     removeBtn.textContent = "Remove";
     removeBtn.onclick = function () {
       removeTimeSlot(index);
@@ -832,6 +832,11 @@ function toggleFilterDropdown() {
   } else {
     tempFilter = [...activeFilter];
     renderFilterDropdownList();
+    const btn = document.getElementById("filterStaffBtn");
+    const rect = btn.getBoundingClientRect();
+    dropdown.style.position = "fixed";
+    dropdown.style.top = (rect.bottom + 6) + "px";
+    dropdown.style.left = rect.left + "px";
     dropdown.style.display = "block";
   }
 }
