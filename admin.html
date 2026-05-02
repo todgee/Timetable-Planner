@@ -11,7 +11,6 @@
     <meta name="apple-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Timetable" />
-    <meta name="description" content="Professional timetable and roster scheduling application for schools and organizations" />
 
     <!-- iOS Icons -->
     <link rel="apple-touch-icon" href="icons/icon-152x152.png" />
@@ -51,145 +50,148 @@
     <!-- Animated orb background -->
     <div class="admin-bg" aria-hidden="true"></div>
 
-    <!-- ── App header ──────────────────────────────────────── -->
-    <header class="app-header">
-      <a class="app-brand" href="portal.html">
-        <svg class="app-brand-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-             aria-hidden="true">
-          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-          <line x1="16" y1="2" x2="16" y2="6"/>
-          <line x1="8"  y1="2" x2="8"  y2="6"/>
-          <line x1="3"  y1="10" x2="21" y2="10"/>
-        </svg>
-        Timetable <strong>Planner</strong>
-      </a>
+    <!-- ── App shell: brand header + toolbar + controls (all sticky, light) ── -->
+    <div class="app-shell">
 
-      <span class="app-timetable-name" id="page-title"></span>
+      <!-- Brand header -->
+      <header class="app-header">
+        <a class="app-brand" href="portal.html">
+          <svg class="app-brand-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+               aria-hidden="true">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8"  y1="2" x2="8"  y2="6"/>
+            <line x1="3"  y1="10" x2="21" y2="10"/>
+          </svg>
+          Timetable <strong>Planner</strong>
+        </a>
 
-      <div class="app-header-end">
-        <span class="app-save-indicator" id="autoSaveIndicator">Auto-saved</span>
-        <div class="app-avatar" id="user-avatar" aria-hidden="true"></div>
-        <button class="app-btn-signout" onclick="window.signOut()">Sign out</button>
+        <span class="app-timetable-name" id="page-title"></span>
+
+        <div class="app-header-end">
+          <span class="app-save-indicator" id="autoSaveIndicator">Auto-saved</span>
+          <span class="app-user-name" id="user-name"></span>
+          <div class="app-avatar" id="user-avatar" aria-hidden="true"></div>
+          <button class="app-btn-signout" onclick="window.signOut()">Sign out</button>
+        </div>
+      </header>
+
+      <!-- Editing toolbar -->
+      <div class="app-toolbar" role="toolbar" aria-label="Timetable tools">
+        <div class="toolbar-group">
+          <button class="toolbar-btn toolbar-btn--accent" onclick="openPeopleManager()">
+            👥 <span>People</span><span class="toolbar-badge" id="peopleCount">0</span>
+          </button>
+          <button class="toolbar-btn toolbar-btn--accent" onclick="openClassesManager()">
+            📚 <span>Classes</span><span class="toolbar-badge" id="classesCount">0</span>
+          </button>
+          <button class="toolbar-btn" id="editTimeSlotsBtn" onclick="openEditTimeSlots()" style="display: none">
+            ⏱ <span>Time Slots</span>
+          </button>
+        </div>
+        <div class="toolbar-sep"></div>
+        <div class="toolbar-group">
+          <a class="toolbar-btn" href="view.html">👁 <span>View</span></a>
+        </div>
+        <div class="toolbar-sep"></div>
+        <div class="toolbar-group">
+          <button class="toolbar-btn" onclick="exportSchedule()">↑ <span>Export</span></button>
+          <button class="toolbar-btn" onclick="saveProject()">💾 <span>Save</span></button>
+          <label class="toolbar-btn" style="cursor: pointer">
+            📂 <span>Load</span>
+            <input type="file" accept=".json" onchange="loadProject(event)" style="display: none" />
+          </label>
+        </div>
+        <div class="toolbar-sep toolbar-sep--push"></div>
+        <div class="toolbar-group">
+          <a class="toolbar-btn" href="config.html">⚙️ <span>Settings</span></a>
+          <button class="toolbar-btn toolbar-btn--danger" onclick="resetAndSetup()">↺ <span>Reset</span></button>
+        </div>
       </div>
-    </header>
 
+      <!-- Day selector + filter + zoom controls -->
+      <div class="app-controls-bar">
+        <div id="filterStaffWrapper"></div>
+        <div class="day-selector" id="daySelector"></div>
+        <div class="view-controls" id="viewControls"></div>
+      </div>
+
+    </div><!-- /.app-shell -->
+
+    <!-- ── People Manager Modal ─────────────────────────────── -->
+    <div class="modal" id="peopleManagerModal">
+      <div class="modal-content modal-content--manager">
+        <h3 class="modal-title">Manage People</h3>
+        <button class="modal-close-btn" onclick="closePeopleManager()" aria-label="Close">&#x2715;</button>
+
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="peopleInput">Add People (one per line or comma-separated)</label>
+            <textarea
+              id="peopleInput"
+              rows="4"
+              placeholder="Single: John Smith&#10;Multiple: Jane Doe, Bob Wilson, Sarah Chen"
+              style="width: 100%"
+            ></textarea>
+            <button class="btn btn-primary" onclick="addPeople()" style="margin-top: 0.5rem; width: 100%">
+              Add People
+            </button>
+          </div>
+
+          <div style="margin-top: 2rem">
+            <h4 style="color: var(--primary); margin-bottom: 1rem">
+              Current People (<span id="peopleCountInModal">0</span>)
+            </h4>
+            <div class="item-list" id="peopleList" style="max-height: 400px; overflow-y: auto">
+              <div class="empty-state">
+                <div class="empty-state-icon">👤</div>
+                <p>No people added yet</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Classes Manager Modal ────────────────────────────── -->
+    <div class="modal" id="classesManagerModal">
+      <div class="modal-content modal-content--manager">
+        <h3 class="modal-title">Manage Classes</h3>
+        <button class="modal-close-btn" onclick="closeClassesManager()" aria-label="Close">&#x2715;</button>
+
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="classesInput">Add Classes (one per line or comma-separated)</label>
+            <textarea
+              id="classesInput"
+              rows="4"
+              placeholder="Single: Mathematics&#10;Multiple: English, Science, History"
+              style="width: 100%"
+            ></textarea>
+            <button class="btn btn-primary" onclick="addClasses()" style="margin-top: 0.5rem; width: 100%">
+              Add Classes
+            </button>
+          </div>
+
+          <div style="margin-top: 2rem">
+            <h4 style="color: var(--primary); margin-bottom: 1rem">
+              Current Classes (<span id="classesCountInModal">0</span>)
+            </h4>
+            <div class="item-list" id="classList" style="max-height: 400px; overflow-y: auto">
+              <div class="empty-state">
+                <div class="empty-state-icon">📖</div>
+                <p>No classes added yet</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Timetable ─────────────────────────────────────────── -->
     <div class="container">
-
-      <!-- People Manager Modal -->
-      <div class="modal" id="peopleManagerModal">
-        <div class="modal-content modal-content--manager">
-          <h3 class="modal-title">Manage People</h3>
-          <button class="modal-close-btn" onclick="closePeopleManager()" aria-label="Close">&#x2715;</button>
-
-          <div class="modal-body">
-            <div class="form-group">
-              <label for="peopleInput">Add People (one per line or comma-separated)</label>
-              <textarea
-                id="peopleInput"
-                rows="4"
-                placeholder="Single: John Smith&#10;Multiple: Jane Doe, Bob Wilson, Sarah Chen"
-                style="width: 100%"
-              ></textarea>
-              <button class="btn btn-primary" onclick="addPeople()" style="margin-top: 0.5rem; width: 100%">
-                Add People
-              </button>
-            </div>
-
-            <div style="margin-top: 2rem">
-              <h4 style="color: var(--primary); margin-bottom: 1rem">
-                Current People (<span id="peopleCountInModal">0</span>)
-              </h4>
-              <div class="item-list" id="peopleList" style="max-height: 400px; overflow-y: auto">
-                <div class="empty-state">
-                  <div class="empty-state-icon">👤</div>
-                  <p>No people added yet</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Classes Manager Modal -->
-      <div class="modal" id="classesManagerModal">
-        <div class="modal-content modal-content--manager">
-          <h3 class="modal-title">Manage Classes</h3>
-          <button class="modal-close-btn" onclick="closeClassesManager()" aria-label="Close">&#x2715;</button>
-
-          <div class="modal-body">
-            <div class="form-group">
-              <label for="classesInput">Add Classes (one per line or comma-separated)</label>
-              <textarea
-                id="classesInput"
-                rows="4"
-                placeholder="Single: Mathematics&#10;Multiple: English, Science, History"
-                style="width: 100%"
-              ></textarea>
-              <button class="btn btn-primary" onclick="addClasses()" style="margin-top: 0.5rem; width: 100%">
-                Add Classes
-              </button>
-            </div>
-
-            <div style="margin-top: 2rem">
-              <h4 style="color: var(--primary); margin-bottom: 1rem">
-                Current Classes (<span id="classesCountInModal">0</span>)
-              </h4>
-              <div class="item-list" id="classList" style="max-height: 400px; overflow-y: auto">
-                <div class="empty-state">
-                  <div class="empty-state-icon">📖</div>
-                  <p>No classes added yet</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Timetable Section -->
       <div class="timetable-section">
-        <div class="timetable-header">
-
-          <div class="admin-toolbar">
-            <div class="toolbar-group">
-              <button class="toolbar-btn toolbar-btn--accent" onclick="openPeopleManager()">
-                👥 <span>People</span><span class="toolbar-badge" id="peopleCount">0</span>
-              </button>
-              <button class="toolbar-btn toolbar-btn--accent" onclick="openClassesManager()">
-                📚 <span>Classes</span><span class="toolbar-badge" id="classesCount">0</span>
-              </button>
-            </div>
-            <div class="toolbar-sep"></div>
-            <div class="toolbar-group">
-              <button class="toolbar-btn" id="editTimeSlotsBtn" onclick="openEditTimeSlots()" style="display: none">
-                ⏱ <span>Time Slots</span>
-              </button>
-              <a class="toolbar-btn" href="view.html">👁 <span>View</span></a>
-            </div>
-            <div class="toolbar-sep"></div>
-            <div class="toolbar-group">
-              <button class="toolbar-btn" onclick="exportSchedule()">↑ <span>Export</span></button>
-              <button class="toolbar-btn" onclick="saveProject()">💾 <span>Save</span></button>
-              <button class="toolbar-btn" style="cursor: pointer; align-self: center">
-                📂 <span>Load</span>
-                <input type="file" accept=".json" onchange="loadProject(event)" style="display: none" />
-              </button>
-            </div>
-            <div class="toolbar-sep toolbar-sep--push"></div>
-            <div class="toolbar-group">
-              <a class="toolbar-btn" href="config.html">⚙️ <span>Settings</span></a>
-              <button class="toolbar-btn toolbar-btn--danger" onclick="resetAndSetup()">↺ <span>Reset</span></button>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Day Selector + View Controls row -->
-        <div class="day-controls-row">
-          <div id="filterStaffWrapper"></div>
-          <div class="day-selector" id="daySelector"></div>
-          <div class="view-controls" id="viewControls"></div>
-        </div>
 
         <div class="timetable-wrapper" id="timetableWrapper">
           <div class="timetable-zoom" id="timetableZoom">
@@ -240,7 +242,7 @@
       </div>
     </div>
 
-    <!-- Assignment Modal -->
+    <!-- ── Assignment Modal ──────────────────────────────────── -->
     <div class="modal" id="assignmentModal">
       <div class="modal-content">
         <h3 class="modal-title">Assign Class</h3>
@@ -271,7 +273,7 @@
       </div>
     </div>
 
-    <!-- Edit Time Slots Modal -->
+    <!-- ── Edit Time Slots Modal ─────────────────────────────── -->
     <div class="modal" id="editTimeSlotsModal">
       <div class="modal-content">
         <h3 class="modal-title">Edit Time Slots</h3>
@@ -290,13 +292,13 @@
       </div>
     </div>
 
-    <!-- Export Modal -->
+    <!-- ── Export Modal ──────────────────────────────────────── -->
     <div class="modal" id="exportModal">
       <div class="modal-content">
         <h3 class="modal-title">Export Timetable</h3>
         <button class="modal-close-btn" onclick="closeExportModal()" aria-label="Close">&#x2715;</button>
 
-        <p style="margin-bottom: 1.5rem; color: var(--text-light)">
+        <p style="margin-bottom: 1.5rem; color: var(--text-secondary)">
           Choose your export format. Each format includes all 5 days.
         </p>
 
