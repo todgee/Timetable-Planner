@@ -627,7 +627,7 @@ body.timetable-fullscreen-active {
   border-radius: 12px;
   padding: 1.5rem;
   box-shadow: 0 4px 20px var(--shadow-color);
-  border: 2px solid var(--primary);
+  border: 1px solid var(--border-default);
   overflow: auto;
   scroll-behavior: smooth;
 }
@@ -657,7 +657,7 @@ body.timetable-fullscreen-active {
   width: 100%;
   table-layout: fixed;
   border-collapse: collapse;
-  border: 2px solid var(--border-default);
+  border: 2px solid var(--primary);
   border-radius: 8px;
   overflow: hidden;
   margin-bottom: 2rem;
@@ -1827,6 +1827,7 @@ body.timetable-fullscreen-active {
 /* Timetable wrapper & table */
 [data-theme="dark"] .timetable-wrapper {
   background: #fdfaf6;
+  border-color: #ddd7cc;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
 }
 
