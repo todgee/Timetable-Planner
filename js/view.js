@@ -1,6 +1,8 @@
 // ============================================
-// View Page JavaScript (ESO Staff - Read Only)
+// View Page JavaScript (Read Only)
 // ============================================
+
+const timetableId = new URLSearchParams(window.location.search).get('id');
 
 // Data variables
 let peopleList = [];
@@ -36,32 +38,56 @@ function escapeHtml(str) {
 }
 
 // ============================================
-// Load Timetable Data from localStorage
+// Load Timetable Data from Supabase
 // ============================================
-function loadTimetableData() {
+async function loadTimetableData() {
+  if (!timetableId) {
+    window.location.replace('portal.html');
+    return;
+  }
+
+  await window.authReady;
+
+  // Fix back-to-editor link
+  const backLink = document.querySelector('.view-header-nav a');
+  if (backLink) backLink.href = `admin.html?id=${timetableId}`;
+
   try {
-    const data = loadTimetable();
+    const [{ data: td }, { data: cfg }] = await Promise.all([
+      supabase.from('timetable_data').select('*').eq('timetable_id', timetableId).maybeSingle(),
+      supabase.from('timetable_config').select('*').eq('timetable_id', timetableId).maybeSingle(),
+    ]);
 
-    if (data) {
-      peopleList = data.peopleList || [];
-      classList = data.classList || [];
-      classColors = data.classColors || {};
+    // Apply theme from config
+    if (cfg) {
+      ThemeEngine.apply({ primary: cfg.theme_primary, accent: cfg.theme_accent, mode: cfg.theme_mode });
+      if (cfg.bg_start && cfg.bg_end) {
+        document.body.style.background =
+          `linear-gradient(135deg, ${cfg.bg_start} 0%, ${cfg.bg_end} 100%)`;
+      }
+    }
+
+    document.body.style.visibility = 'visible';
+
+    if (td) {
+      peopleList = td.people    || [];
+      classList  = td.classes   || [];
+      classColors = td.class_colors || {};
       assignments = {
-        monday: data.assignments?.monday || {},
-        tuesday: data.assignments?.tuesday || {},
-        wednesday: data.assignments?.wednesday || {},
-        thursday: data.assignments?.thursday || {},
-        friday: data.assignments?.friday || {},
+        monday:    td.assignments?.monday    || {},
+        tuesday:   td.assignments?.tuesday   || {},
+        wednesday: td.assignments?.wednesday || {},
+        thursday:  td.assignments?.thursday  || {},
+        friday:    td.assignments?.friday    || {},
       };
-      timeSlots = (data.timeSlots || []).map((s) => ({
+      timeSlots = (td.time_slots || []).map((s) => ({
         start: s.start,
-        end: s.end,
-        type: s.type || "class",
+        end:   s.end,
+        type:  s.type || 'class',
       }));
-
       renderTimetable();
     } else {
-      document.getElementById("timetableContainer").innerHTML = `
+      document.getElementById('timetableContainer').innerHTML = `
         <div class="empty-state" style="padding: 4rem 2rem;">
           <div class="empty-state-icon">📋</div>
           <p>No timetable data available yet.</p>
@@ -69,8 +95,9 @@ function loadTimetableData() {
       `;
     }
   } catch (error) {
-    console.error("Error loading timetable:", error);
-    showNotification("Error loading timetable. Please try again.", true);
+    console.error('Error loading timetable:', error);
+    showNotification('Error loading timetable. Please try again.', true);
+    document.body.style.visibility = 'visible';
   }
 }
 

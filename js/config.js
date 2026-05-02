@@ -1,19 +1,40 @@
-// config.js — Phase 5 theme picker
+// config.js — theme / logo picker, Supabase-backed
 'use strict';
+
+const timetableId = new URLSearchParams(window.location.search).get('id');
 
 // ── State ──────────────────────────────────────────────────────
 var currentMode        = ThemeEngine.DEFAULTS.mode;
 var currentPrimary     = ThemeEngine.DEFAULTS.primary;
-var accentMode         = 'auto';   // 'auto' | 'custom'
+var accentMode         = 'auto';
 var customAccent       = ThemeEngine.DEFAULTS.accent;
 var currentLogoDataUrl = null;
 
-// ── Background gradient state ──────────────────────────────────
 var BG_DEFAULTS = { start: '#fdfbf7', end: '#f5f1e8' };
 var bgStart     = BG_DEFAULTS.start;
 var bgEnd       = BG_DEFAULTS.end;
 
-// ── Auto-accent: golden-angle hue rotation (137.5°) ────────────
+// ── Supabase helpers ───────────────────────────────────────────
+
+async function loadConfigFromSupabase() {
+  if (!timetableId) return null;
+  const { data } = await supabase
+    .from('timetable_config')
+    .select('*')
+    .eq('timetable_id', timetableId)
+    .maybeSingle();
+  return data;
+}
+
+async function saveConfig(fields) {
+  if (!timetableId) return;
+  const { error } = await supabase
+    .from('timetable_config')
+    .upsert({ timetable_id: timetableId, ...fields }, { onConflict: 'timetable_id' });
+  if (error) throw error;
+}
+
+// ── Auto-accent ────────────────────────────────────────────────
 function computeAutoAccent(primaryHex) {
   var hsl = ThemeEngine.hexToHsl(primaryHex);
   var h   = (hsl.h + 137.5) % 360;
@@ -26,7 +47,7 @@ function resolvedAccent() {
   return accentMode === 'auto' ? computeAutoAccent(currentPrimary) : customAccent;
 }
 
-// ── Live full-page preview ─────────────────────────────────────
+// ── Live preview ───────────────────────────────────────────────
 function applyLivePreview() {
   var accent = resolvedAccent();
   ThemeEngine.apply({ primary: currentPrimary, accent: accent, mode: currentMode });
@@ -40,7 +61,7 @@ function applyLivePreview() {
   }
 }
 
-// ── Palette swatch strip ───────────────────────────────────────
+// ── Palette swatches ───────────────────────────────────────────
 function updateSwatches(primary, accent) {
   var bp = ThemeEngine.buildPalette(primary, currentMode, 'brand');
   var ap = ThemeEngine.buildPalette(accent,  currentMode, 'accent');
@@ -56,7 +77,6 @@ function setSwatchBg(id, color) {
   if (el) el.style.background = color;
 }
 
-// ── Preview buttons ────────────────────────────────────────────
 function updatePreviewButtons(primary, accent) {
   var bp = ThemeEngine.buildPalette(primary, currentMode, 'brand');
   var ap = ThemeEngine.buildPalette(accent,  currentMode, 'accent');
@@ -70,7 +90,7 @@ function setPreviewBtn(id, color) {
   if (el) { el.style.background = color; el.style.color = '#ffffff'; }
 }
 
-// ── Toggle helpers ─────────────────────────────────────────────
+// ── Mode / accent toggles ──────────────────────────────────────
 function setModeToggle(mode) {
   currentMode = mode;
   document.getElementById('mode-btn-light').classList.toggle('active', mode === 'light');
@@ -99,54 +119,27 @@ function syncBgPresetSelected() {
   });
 }
 
-function loadBgIntoForm() {
-  var saved = ThemeEngine.getBg();
-  if (saved) {
-    bgStart = saved.start || BG_DEFAULTS.start;
-    bgEnd   = saved.end   || BG_DEFAULTS.end;
-    applyBgPreview();
-  }
-  document.getElementById('bg-start').value     = bgStart;
+function loadBgIntoForm(cfg) {
+  bgStart = (cfg && cfg.bg_start) || BG_DEFAULTS.start;
+  bgEnd   = (cfg && cfg.bg_end)   || BG_DEFAULTS.end;
+  document.getElementById('bg-start').value        = bgStart;
   document.getElementById('bg-start-hex').textContent = bgStart;
-  document.getElementById('bg-end').value       = bgEnd;
+  document.getElementById('bg-end').value          = bgEnd;
   document.getElementById('bg-end-hex').textContent   = bgEnd;
-  var bar = document.getElementById('bg-gradient-preview');
-  if (bar) bar.style.background =
-    'linear-gradient(135deg, ' + bgStart + ' 0%, ' + bgEnd + ' 100%)';
+  applyBgPreview();
   syncBgPresetSelected();
 }
 
-function handleSaveBg() {
-  ThemeEngine.saveBg({ start: bgStart, end: bgEnd });
-  showNotification('Background saved!');
-}
+// ── Load saved config into form ────────────────────────────────
+function loadThemeIntoForm(cfg) {
+  currentMode    = (cfg && cfg.theme_mode)    || ThemeEngine.DEFAULTS.mode;
+  currentPrimary = (cfg && cfg.theme_primary) || ThemeEngine.DEFAULTS.primary;
+  customAccent   = (cfg && cfg.theme_accent)  || ThemeEngine.DEFAULTS.accent;
 
-function handleResetBg() {
-  ThemeEngine.resetBg();
-  bgStart = BG_DEFAULTS.start;
-  bgEnd   = BG_DEFAULTS.end;
-  document.getElementById('bg-start').value     = bgStart;
-  document.getElementById('bg-start-hex').textContent = bgStart;
-  document.getElementById('bg-end').value       = bgEnd;
-  document.getElementById('bg-end-hex').textContent   = bgEnd;
-  var bar = document.getElementById('bg-gradient-preview');
-  if (bar) bar.style.background =
-    'linear-gradient(135deg, ' + bgStart + ' 0%, ' + bgEnd + ' 100%)';
-  syncBgPresetSelected();
-  showNotification('Background reset to default.');
-}
-
-// ── Load saved theme into form ─────────────────────────────────
-function loadThemeIntoForm() {
-  var theme      = ThemeEngine.get();
-  currentMode    = theme.mode    || ThemeEngine.DEFAULTS.mode;
-  currentPrimary = theme.primary || ThemeEngine.DEFAULTS.primary;
-  customAccent   = theme.accent  || ThemeEngine.DEFAULTS.accent;
-
-  document.getElementById('color-primary').value     = currentPrimary;
-  document.getElementById('primary-hex').textContent  = currentPrimary;
-  document.getElementById('color-accent').value      = customAccent;
-  document.getElementById('accent-hex').textContent   = customAccent;
+  document.getElementById('color-primary').value    = currentPrimary;
+  document.getElementById('primary-hex').textContent = currentPrimary;
+  document.getElementById('color-accent').value     = customAccent;
+  document.getElementById('accent-hex').textContent  = customAccent;
 
   setModeToggle(currentMode);
   setAccentToggle('auto');
@@ -156,36 +149,76 @@ function loadThemeIntoForm() {
   });
 }
 
-// ── Save & Reset ───────────────────────────────────────────────
-function handleSaveColors() {
+function loadLogoIntoForm(cfg) {
+  if (!cfg || !cfg.logo_url) return;
+  document.getElementById('logo-position').value = cfg.logo_position || 'header-left';
+  document.getElementById('logo-size').value     = cfg.logo_size     || 'medium';
+  var preview = document.getElementById('logo-preview');
+  preview.src = cfg.logo_url;
+  preview.style.display = 'block';
+  document.getElementById('logo-placeholder').style.display = 'none';
+  currentLogoDataUrl = cfg.logo_url;
+}
+
+// ── Save handlers ──────────────────────────────────────────────
+async function handleSaveColors() {
   var accent = resolvedAccent();
-  ThemeEngine.save({ primary: currentPrimary, accent: accent, mode: currentMode });
-  showNotification('Color theme saved!');
-}
-
-function handleResetColors() {
-  if (!confirm('Reset colors to default theme?')) return;
-  ThemeEngine.reset();
-  loadThemeIntoForm();
-  applyLivePreview();
-  showNotification('Colors reset to default.');
-}
-
-// ── Logo management ────────────────────────────────────────────
-function loadLogoIntoForm() {
-  var logoSettings = loadLogo();
-  if (!logoSettings) return;
-  document.getElementById('logo-position').value = logoSettings.position || 'header-left';
-  document.getElementById('logo-size').value     = logoSettings.size     || 'medium';
-  if (logoSettings.url) {
-    var preview = document.getElementById('logo-preview');
-    preview.src = logoSettings.url;
-    preview.style.display = 'block';
-    document.getElementById('logo-placeholder').style.display = 'none';
-    currentLogoDataUrl = logoSettings.url;
+  try {
+    await saveConfig({ theme_primary: currentPrimary, theme_accent: accent, theme_mode: currentMode });
+    ThemeEngine.save({ primary: currentPrimary, accent: accent, mode: currentMode });
+    showNotification('Color theme saved!');
+  } catch (err) {
+    showNotification('Failed to save theme: ' + err.message, true);
   }
 }
 
+async function handleResetColors() {
+  if (!confirm('Reset colors to default theme?')) return;
+  try {
+    await saveConfig({
+      theme_primary: ThemeEngine.DEFAULTS.primary,
+      theme_accent:  ThemeEngine.DEFAULTS.accent,
+      theme_mode:    ThemeEngine.DEFAULTS.mode,
+    });
+    ThemeEngine.reset();
+    const cfg = await loadConfigFromSupabase();
+    loadThemeIntoForm(cfg);
+    applyLivePreview();
+    showNotification('Colors reset to default.');
+  } catch (err) {
+    showNotification('Failed to reset theme: ' + err.message, true);
+  }
+}
+
+async function handleSaveBg() {
+  try {
+    await saveConfig({ bg_start: bgStart, bg_end: bgEnd });
+    ThemeEngine.saveBg({ start: bgStart, end: bgEnd });
+    showNotification('Background saved!');
+  } catch (err) {
+    showNotification('Failed to save background: ' + err.message, true);
+  }
+}
+
+async function handleResetBg() {
+  bgStart = BG_DEFAULTS.start;
+  bgEnd   = BG_DEFAULTS.end;
+  try {
+    await saveConfig({ bg_start: bgStart, bg_end: bgEnd });
+    ThemeEngine.resetBg();
+  } catch (err) {
+    showNotification('Failed to reset background: ' + err.message, true);
+  }
+  document.getElementById('bg-start').value        = bgStart;
+  document.getElementById('bg-start-hex').textContent = bgStart;
+  document.getElementById('bg-end').value          = bgEnd;
+  document.getElementById('bg-end-hex').textContent   = bgEnd;
+  applyBgPreview();
+  syncBgPresetSelected();
+  showNotification('Background reset to default.');
+}
+
+// ── Logo handlers ──────────────────────────────────────────────
 async function handleLogoUpload(e) {
   var file = e.target.files[0];
   if (!file) return;
@@ -207,29 +240,35 @@ async function handleLogoUpload(e) {
   }
 }
 
-function handleSaveLogo() {
+async function handleSaveLogo() {
   var position = document.getElementById('logo-position').value;
   var size     = document.getElementById('logo-size').value;
   try {
-    saveLogo({ url: currentLogoDataUrl || '', position: position, size: size });
+    await saveConfig({ logo_url: currentLogoDataUrl || null, logo_position: position, logo_size: size });
+    saveLogo({ url: currentLogoDataUrl || '', position, size });
     showNotification('Logo settings saved!');
   } catch (err) {
-    if (err.name === 'QuotaExceededError') {
-      showNotification('Image too large for browser storage. Try a smaller file.', true);
+    if (err.message && err.message.includes('too large')) {
+      showNotification('Image too large for storage. Try a smaller file.', true);
     } else {
-      showNotification('Error saving logo settings', true);
+      showNotification('Failed to save logo: ' + err.message, true);
     }
   }
 }
 
-function handleRemoveLogo() {
+async function handleRemoveLogo() {
   if (!confirm('Remove the organization logo?')) return;
-  deleteLogo();
-  currentLogoDataUrl = null;
-  document.getElementById('logo-upload').value = '';
-  document.getElementById('logo-preview').style.display = 'none';
-  document.getElementById('logo-placeholder').style.display = 'block';
-  showNotification('Logo removed successfully!');
+  try {
+    await saveConfig({ logo_url: null, logo_position: 'header-left', logo_size: 'medium' });
+    deleteLogo();
+    currentLogoDataUrl = null;
+    document.getElementById('logo-upload').value = '';
+    document.getElementById('logo-preview').style.display = 'none';
+    document.getElementById('logo-placeholder').style.display = 'block';
+    showNotification('Logo removed successfully!');
+  } catch (err) {
+    showNotification('Failed to remove logo: ' + err.message, true);
+  }
 }
 
 // ── Danger zone ────────────────────────────────────────────────
@@ -237,7 +276,9 @@ function handleClearTimetable() {
   if (!confirm('Are you sure you want to clear all timetable data? This cannot be undone.')) return;
   localStorage.removeItem('timetable.data');
   showNotification('Timetable data cleared');
-  setTimeout(function () { window.location.href = 'index.html'; }, 1000);
+  setTimeout(function () {
+    window.location.href = timetableId ? `portal.html` : 'index.html';
+  }, 1000);
 }
 
 // ── Utility ────────────────────────────────────────────────────
@@ -262,27 +303,19 @@ function setupEventListeners() {
     applyLivePreview();
   });
 
-  document.getElementById('mode-btn-light').addEventListener('click', function () {
-    setModeToggle('light'); applyLivePreview();
-  });
-  document.getElementById('mode-btn-dark').addEventListener('click', function () {
-    setModeToggle('dark'); applyLivePreview();
-  });
+  document.getElementById('mode-btn-light').addEventListener('click', function () { setModeToggle('light'); applyLivePreview(); });
+  document.getElementById('mode-btn-dark').addEventListener('click',  function () { setModeToggle('dark');  applyLivePreview(); });
 
-  document.getElementById('accent-btn-auto').addEventListener('click', function () {
-    setAccentToggle('auto'); applyLivePreview();
-  });
-  document.getElementById('accent-btn-custom').addEventListener('click', function () {
-    setAccentToggle('custom'); applyLivePreview();
-  });
+  document.getElementById('accent-btn-auto').addEventListener('click',   function () { setAccentToggle('auto');   applyLivePreview(); });
+  document.getElementById('accent-btn-custom').addEventListener('click', function () { setAccentToggle('custom'); applyLivePreview(); });
 
   document.querySelectorAll('.preset-color').forEach(function (preset) {
     preset.addEventListener('click', function () {
       document.querySelectorAll('.preset-color').forEach(function (p) { p.classList.remove('selected'); });
       preset.classList.add('selected');
       currentPrimary = preset.dataset.primary;
-      document.getElementById('color-primary').value     = currentPrimary;
-      document.getElementById('primary-hex').textContent  = currentPrimary;
+      document.getElementById('color-primary').value    = currentPrimary;
+      document.getElementById('primary-hex').textContent = currentPrimary;
       applyLivePreview();
     });
   });
@@ -303,14 +336,13 @@ function setupEventListeners() {
     applyBgPreview();
   });
   document.querySelectorAll('.bg-preset').forEach(function (preset) {
-    preset.style.background =
-      'linear-gradient(135deg, ' + preset.dataset.start + ' 0%, ' + preset.dataset.end + ' 100%)';
+    preset.style.background = 'linear-gradient(135deg, ' + preset.dataset.start + ' 0%, ' + preset.dataset.end + ' 100%)';
     preset.addEventListener('click', function () {
       bgStart = preset.dataset.start;
       bgEnd   = preset.dataset.end;
-      document.getElementById('bg-start').value     = bgStart;
+      document.getElementById('bg-start').value        = bgStart;
       document.getElementById('bg-start-hex').textContent = bgStart;
-      document.getElementById('bg-end').value       = bgEnd;
+      document.getElementById('bg-end').value          = bgEnd;
       document.getElementById('bg-end-hex').textContent   = bgEnd;
       syncBgPresetSelected();
       applyBgPreview();
@@ -327,10 +359,25 @@ function setupEventListeners() {
 }
 
 // ── Init ───────────────────────────────────────────────────────
-window.addEventListener('load', function () {
-  loadThemeIntoForm();
-  loadLogoIntoForm();
-  loadBgIntoForm();
+window.addEventListener('load', async function () {
+  if (!timetableId) {
+    window.location.replace('portal.html');
+    return;
+  }
+
+  // Update back link to return to the correct timetable
+  var backLink = document.querySelector('.back-link');
+  if (backLink) backLink.href = `admin.html?id=${timetableId}`;
+
+  await window.authReady;
+
+  const cfg = await loadConfigFromSupabase();
+
+  loadThemeIntoForm(cfg);
+  loadBgIntoForm(cfg);
+  loadLogoIntoForm(cfg);
   setupEventListeners();
   applyLivePreview();
+
+  document.body.style.visibility = 'visible';
 });
