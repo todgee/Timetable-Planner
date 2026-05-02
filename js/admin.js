@@ -79,32 +79,22 @@ function isBreakSlot(slot) {
     return;
   }
 
-  // Fix toolbar links now that we know the timetableId
-  const configLink = document.querySelector('a[href="config.html"]');
-  if (configLink) configLink.href = `config.html?id=${timetableId}`;
+  // Set page title and user avatar
+  const pageTitleEl = document.getElementById('page-title');
+  if (pageTitleEl) pageTitleEl.textContent = tt.name;
 
+  const meta    = session.user.user_metadata || {};
+  const initial = (meta.first_name || session.user.email || '?')[0].toUpperCase();
+  const avatarEl = document.getElementById('user-avatar');
+  if (avatarEl) avatarEl.textContent = initial;
+
+  // Fix view link with timetableId
   const viewLink = document.querySelector('a[href="view.html"]');
   if (viewLink) viewLink.href = `view.html?id=${timetableId}`;
 
-  // Load timetable data and config in parallel
-  const [{ data: td }, { data: cfg }] = await Promise.all([
-    supabase.from('timetable_data').select('*').eq('timetable_id', timetableId).maybeSingle(),
-    supabase.from('timetable_config').select('*').eq('timetable_id', timetableId).maybeSingle(),
-  ]);
-
-  // Apply saved theme (config may not exist yet — that's fine)
-  if (cfg) {
-    ThemeEngine.apply({ primary: cfg.theme_primary, accent: cfg.theme_accent, mode: cfg.theme_mode });
-    ThemeEngine.save({ primary: cfg.theme_primary, accent: cfg.theme_accent, mode: cfg.theme_mode });
-    if (cfg.bg_start && cfg.bg_end) {
-      ThemeEngine.saveBg({ start: cfg.bg_start, end: cfg.bg_end });
-      document.body.style.background =
-        `linear-gradient(135deg, ${cfg.bg_start} 0%, ${cfg.bg_end} 100%)`;
-    }
-    if (cfg.logo_url) {
-      saveLogo({ url: cfg.logo_url, position: cfg.logo_position, size: cfg.logo_size });
-    }
-  }
+  // Load timetable data
+  const { data: td } = await supabase
+    .from('timetable_data').select('*').eq('timetable_id', timetableId).maybeSingle();
 
   // Seed localStorage from timetable_data so loadFromStorage() works unchanged
   if (td) {

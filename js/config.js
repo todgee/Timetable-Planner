@@ -1,8 +1,5 @@
-// config.js — theme / logo picker, Supabase-backed
+// config.js — theme / logo picker, Supabase-backed (user_config only)
 'use strict';
-
-const timetableId = new URLSearchParams(window.location.search).get('id');
-const userMode    = !timetableId; // true when accessed without a timetable ?id=
 
 // ── State ──────────────────────────────────────────────────────
 var currentMode        = ThemeEngine.DEFAULTS.mode;
@@ -18,31 +15,18 @@ var bgEnd       = BG_DEFAULTS.end;
 // ── Supabase helpers ───────────────────────────────────────────
 
 async function loadConfigFromSupabase() {
-  if (userMode) return window.userConfigReady;
-  const { data } = await supabase
-    .from('timetable_config')
-    .select('*')
-    .eq('timetable_id', timetableId)
-    .maybeSingle();
-  return data;
+  return window.userConfigReady;
 }
 
 async function saveConfig(fields) {
-  if (userMode) {
-    // Logo is localStorage-only; only persist theme/bg fields to user_config
-    const userFields = {};
-    ['theme_primary', 'theme_accent', 'theme_mode', 'bg_start', 'bg_end'].forEach(function (k) {
-      if (k in fields) userFields[k] = fields[k];
-    });
-    if (Object.keys(userFields).length > 0) {
-      await window.saveUserConfig(Object.assign(userFields, { setup_complete: true }));
-    }
-    return;
+  // Logo fields are localStorage-only; only persist theme/bg fields to user_config
+  const userFields = {};
+  ['theme_primary', 'theme_accent', 'theme_mode', 'bg_start', 'bg_end'].forEach(function (k) {
+    if (k in fields) userFields[k] = fields[k];
+  });
+  if (Object.keys(userFields).length > 0) {
+    await window.saveUserConfig(Object.assign(userFields, { setup_complete: true }));
   }
-  const { error } = await supabase
-    .from('timetable_config')
-    .upsert({ timetable_id: timetableId, ...fields }, { onConflict: 'timetable_id' });
-  if (error) throw error;
 }
 
 // ── Auto-accent ────────────────────────────────────────────────
@@ -288,7 +272,7 @@ function handleClearTimetable() {
   localStorage.removeItem('timetable.data');
   showNotification('Timetable data cleared');
   setTimeout(function () {
-    window.location.href = timetableId ? `portal.html` : 'index.html';
+    window.location.href = 'portal.html';
   }, 1000);
 }
 
@@ -371,63 +355,27 @@ function setupEventListeners() {
 
 // ── Init ───────────────────────────────────────────────────────
 window.addEventListener('load', async function () {
+  await window.authReady;
+
+  // Update page chrome
   var backLink = document.querySelector('.back-link');
-
-  if (userMode) {
-    // ── User mode: global account appearance ─────────────────
-    await window.authReady;
-
-    // Update page chrome
-    if (backLink) {
-      backLink.href        = 'portal.html';
-      backLink.textContent = '← Back to Portal';
-    }
-    var h1 = document.querySelector('.page-header h1');
-    var sub = document.querySelector('.page-header p');
-    if (h1)  h1.textContent  = 'Personalise your workspace';
-    if (sub) sub.textContent = 'Choose colours and a background that apply across all your timetables.';
-
-    // Hide timetable-specific sections
-    var dangerPanel = document.getElementById('danger-zone-panel');
-    if (dangerPanel) dangerPanel.hidden = true;
-
-    // Show the "continue to portal" footer
-    var continueBar = document.getElementById('user-mode-continue');
-    if (continueBar) continueBar.hidden = false;
-
-    const cfg = await loadConfigFromSupabase(); // resolves window.userConfigReady
-    loadThemeIntoForm(cfg);
-    loadBgIntoForm(cfg);
-    if (cfg) loadLogoIntoForm(cfg);
-    setupEventListeners();
-    applyLivePreview();
-
-    document.body.style.visibility = 'visible';
-    return;
+  if (backLink) {
+    backLink.href        = 'portal.html';
+    backLink.textContent = '← Back to Portal';
   }
 
-  // ── Timetable mode: per-timetable appearance ──────────────
-  if (backLink) backLink.href = `admin.html?id=${timetableId}`;
+  // Hide timetable-specific danger zone (no longer relevant)
+  var dangerPanel = document.getElementById('danger-zone-panel');
+  if (dangerPanel) dangerPanel.hidden = true;
 
-  const session = await window.authReady;
-
-  const { data: tt } = await supabase
-    .from('timetables')
-    .select('id')
-    .eq('id', timetableId)
-    .eq('owner_id', session.user.id)
-    .maybeSingle();
-
-  if (!tt) {
-    window.location.replace('portal.html');
-    return;
-  }
+  // Show "continue to portal" footer
+  var continueBar = document.getElementById('user-mode-continue');
+  if (continueBar) continueBar.hidden = false;
 
   const cfg = await loadConfigFromSupabase();
-
   loadThemeIntoForm(cfg);
   loadBgIntoForm(cfg);
-  loadLogoIntoForm(cfg);
+  if (cfg) loadLogoIntoForm(cfg);
   setupEventListeners();
   applyLivePreview();
 
