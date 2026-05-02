@@ -3,17 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Timetable Planner - View</title>
+    <title>Timetable Planner – View</title>
 
     <!-- PWA Configuration -->
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#2c5f4f" />
 
     <!-- Fonts -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Work+Sans:wght@300;400;500;600&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="css/tokens.css" />
@@ -31,43 +28,43 @@
     <script src="js/user-config.js"></script>
   </head>
   <body style="visibility:hidden">
+
     <!-- Animated orb background -->
     <div class="view-bg" aria-hidden="true"></div>
 
-    <div class="container">
-      <header>
-        <h1>Timetable Planner</h1>
-        <p class="subtitle">Read-only view</p>
-        <div class="view-header-nav">
-          <a href="admin.html" class="btn btn-secondary btn-icon">Back to Editor</a>
-        </div>
-      </header>
+    <!-- ── App header ──────────────────────────────────────── -->
+    <header class="app-header">
+      <a class="app-brand" href="portal.html">
+        <svg class="app-brand-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+             aria-hidden="true">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8"  y1="2" x2="8"  y2="6"/>
+          <line x1="3"  y1="10" x2="21" y2="10"/>
+        </svg>
+        Timetable <strong>Planner</strong>
+      </a>
 
-      <!-- Timetable Section -->
+      <span class="app-timetable-name" id="page-title"></span>
+
+      <div class="app-header-end">
+        <a href="admin.html" class="app-header-link" id="back-to-admin">← Editor</a>
+        <button class="btn btn-sm btn-secondary" onclick="window.print()">Print</button>
+        <div class="app-avatar" id="user-avatar" aria-hidden="true"></div>
+        <button class="app-btn-signout" onclick="window.signOut()">Sign out</button>
+      </div>
+    </header>
+
+    <div class="container">
       <div class="timetable-section">
-        <div class="timetable-header">
-          <h2 class="panel-title">
-            <span class="panel-icon">📅</span>
-            Weekly Timetable
-          </h2>
-          <div class="timetable-actions">
-            <button class="btn btn-secondary btn-icon" onclick="window.print()">
-              Print Timetable
-            </button>
-          </div>
-        </div>
 
         <!-- Day Selector + View Controls row -->
         <div class="day-controls-row">
-
-          <!-- Filter Staff -->
           <div id="filterStaffWrapper"></div>
-
           <div class="day-selector" id="daySelector"></div>
-
-          <!-- View Controls -->
           <div class="view-controls" id="viewControls"></div>
-        </div><!-- end day+controls row -->
+        </div>
 
         <div class="timetable-wrapper" id="timetableWrapper">
           <div class="timetable-zoom" id="timetableZoom">
@@ -88,7 +85,6 @@
       renderDaySelector(document.getElementById('daySelector'));
       renderViewControls(document.getElementById('viewControls'));
     </script>
-
 
     <!-- View JavaScript -->
     <script src="js/view.js"></script>

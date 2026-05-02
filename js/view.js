@@ -48,13 +48,9 @@ async function loadTimetableData() {
 
   const session = await window.authReady;
 
-  // Fix back-to-editor link
-  const backLink = document.querySelector('.view-header-nav a');
-  if (backLink) backLink.href = `admin.html?id=${timetableId}`;
-
   const { data: tt } = await supabase
     .from('timetables')
-    .select('id')
+    .select('id, name')
     .eq('id', timetableId)
     .eq('owner_id', session.user.id)
     .maybeSingle();
@@ -64,20 +60,21 @@ async function loadTimetableData() {
     return;
   }
 
-  try {
-    const [{ data: td }, { data: cfg }] = await Promise.all([
-      supabase.from('timetable_data').select('*').eq('timetable_id', timetableId).maybeSingle(),
-      supabase.from('timetable_config').select('*').eq('timetable_id', timetableId).maybeSingle(),
-    ]);
+  // Wire header elements
+  const pageTitleEl = document.getElementById('page-title');
+  if (pageTitleEl) pageTitleEl.textContent = tt.name || '';
 
-    // Apply theme from config
-    if (cfg) {
-      ThemeEngine.apply({ primary: cfg.theme_primary, accent: cfg.theme_accent, mode: cfg.theme_mode });
-      if (cfg.bg_start && cfg.bg_end) {
-        document.body.style.background =
-          `linear-gradient(135deg, ${cfg.bg_start} 0%, ${cfg.bg_end} 100%)`;
-      }
-    }
+  const backLink = document.getElementById('back-to-admin');
+  if (backLink) backLink.href = `admin.html?id=${timetableId}`;
+
+  const meta    = session.user.user_metadata || {};
+  const initial = (meta.first_name || session.user.email || '?')[0].toUpperCase();
+  const avatarEl = document.getElementById('user-avatar');
+  if (avatarEl) avatarEl.textContent = initial;
+
+  try {
+    const { data: td } = await supabase
+      .from('timetable_data').select('*').eq('timetable_id', timetableId).maybeSingle();
 
     document.body.style.visibility = 'visible';
 
