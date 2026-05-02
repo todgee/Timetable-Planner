@@ -141,34 +141,6 @@
   color: var(--brand-500, #2a5c4e);
 }
 
-/* ── Toolbar button base (theme-neutral) ─────────────────── */
-
-.toolbar-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.38rem;
-  padding: 0.38rem 0.75rem;
-  border-radius: 7px;
-  font-family: "Work Sans", sans-serif;
-  font-size: 0.8rem;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-  background: transparent;
-  border: 1px solid transparent;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: background 0.1s, color 0.1s, border-color 0.1s;
-  white-space: nowrap;
-  text-decoration: none;
-  line-height: 1;
-}
-
-.toolbar-btn:hover {
-  background: var(--border-default);
-  border-color: var(--border-strong);
-  color: var(--text-primary);
-}
-
 .toolbar-btn--accent { color: var(--text-secondary); }
 
 .toolbar-btn--accent:hover {
