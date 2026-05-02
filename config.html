@@ -23,6 +23,7 @@
     <!-- Shared utilities -->
     <script src="js/shared.js"></script>
     <script src="js/theme-engine.js"></script>
+    <script src="js/user-config.js"></script>
   </head>
   <body style="visibility:hidden">
     <div class="container container--narrow">
@@ -232,8 +233,8 @@
           <div class="status-message" id="logo-status"></div>
         </div>
 
-        <!-- Danger Zone Panel -->
-        <div class="panel panel-full">
+        <!-- Danger Zone Panel (hidden in user mode by JS) -->
+        <div class="panel panel-full" id="danger-zone-panel">
           <h2 class="panel-title" style="color: var(--state-error)">
             <span class="panel-icon">⚠️</span>
             Danger Zone
@@ -263,6 +264,27 @@
       </div>
     </div>
 
+
+    <!-- User mode: "Continue to Portal" footer (hidden by default, shown by JS) -->
+    <div id="user-mode-continue" hidden style="
+      position: sticky;
+      bottom: 0;
+      background: var(--fill-subtle, #f7f3ed);
+      border-top: 1px solid var(--border-subtle, #ddd7cc);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 1rem;
+      z-index: 20;
+    ">
+      <span style="font-size:0.875rem; color: var(--text-secondary, #4a5c54)">
+        Save your settings above, then continue when you're ready.
+      </span>
+      <a href="portal.html" class="btn btn-primary" style="white-space:nowrap">
+        Continue to Portal →
+      </a>
+    </div>
 
     <!-- Config JavaScript -->
     <script src="js/config.js"></script>
