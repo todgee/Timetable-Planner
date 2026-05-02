@@ -238,35 +238,14 @@
       if (!saved || !saved.start || !saved.end) return;
       document.body.style.background =
         'linear-gradient(135deg, ' + saved.start + ' 0%, ' + saved.end + ' 100%)';
-      var modal = computeModalSurface(saved.start, saved.end);
-      document.documentElement.style.setProperty('--surface-modal', modal);
     } catch (e) {}
-  }
-
-  /* Derive a modal panel colour from the page gradient.
-     Dark gradient → lift lightness so the panel reads above the bg.
-     Light/medium gradient → near-white with a colour tint that matches
-     the gradient hue, so custom colours don't produce a plain white modal. */
-  function computeModalSurface(startHex, endHex) {
-    var h1 = hexToHsl(startHex);
-    var h2 = hexToHsl(endHex);
-    var h  = (h1.h + h2.h) / 2;
-    var s  = (h1.s + h2.s) / 2;
-    var l  = (h1.l + h2.l) / 2;
-    if (l < 45) {
-      return hslToHex(h, clamp(s, 10, 60), clamp(l + 11, 12, 30));
-    } else {
-      return hslToHex(h, clamp(s * 0.35, 3, 22), 96);
-    }
   }
 
   function saveBg(config) {
     try {
-      var modal = computeModalSurface(config.start, config.end);
       localStorage.setItem(BG_STORAGE_KEY, JSON.stringify({
         start: config.start,
-        end:   config.end,
-        modal: modal
+        end:   config.end
       }));
     } catch (e) {}
   }
@@ -281,7 +260,6 @@
   function resetBg() {
     localStorage.removeItem(BG_STORAGE_KEY);
     if (document.body) document.body.style.background = '';
-    document.documentElement.style.removeProperty('--surface-modal'); // CSS token default takes over
   }
 
   /* ── Auto-init ───────────────────────────────────────────── */
