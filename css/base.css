@@ -840,8 +840,8 @@ body.timetable-fullscreen-active {
   background: #fdfaf6;
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 4px 20px var(--shadow-color);
-  border: 1px solid var(--border-default);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  border: 1px solid #ddd7cc;
   margin-top: 2rem;
 }
 
@@ -849,7 +849,7 @@ body.timetable-fullscreen-active {
   display: flex;
   gap: 1rem;
   margin-bottom: 1.5rem;
-  border-bottom: 2px solid var(--border-default);
+  border-bottom: 2px solid #ddd7cc;
 }
 
 .counter-tab {
@@ -860,14 +860,18 @@ body.timetable-fullscreen-active {
   font-family: "Work Sans", sans-serif;
   font-size: 0.95rem;
   font-weight: 500;
-  color: var(--text-secondary);
+  color: #888;
   border-bottom: 3px solid transparent;
   transition: all 0.2s ease;
 }
 
+.counter-tab:hover {
+  color: #555;
+}
+
 .counter-tab.active {
-  color: var(--brand-500);
-  border-bottom-color: var(--brand-500);
+  color: var(--primary);
+  border-bottom-color: var(--primary);
 }
 
 .counter-content {
@@ -886,9 +890,9 @@ body.timetable-fullscreen-active {
 
 .counter-item {
   padding: 1rem;
-  background: var(--surface-page);
+  background: rgba(44, 95, 79, 0.05);
   border-radius: 8px;
-  border: 2px solid var(--border-default);
+  border: 2px solid #ddd7cc;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -899,13 +903,14 @@ body.timetable-fullscreen-active {
   align-items: center;
   gap: 0.5rem;
   font-weight: 500;
+  color: #444;
 }
 
 .counter-color {
   width: 20px;
   height: 20px;
   border-radius: 4px;
-  border: 1px solid var(--border-default);
+  border: 1px solid #ddd7cc;
 }
 
 .counter-value {
