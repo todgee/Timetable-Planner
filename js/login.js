@@ -246,7 +246,7 @@ btnSendReset.addEventListener('click', async () => {
   setLoading(btnSendReset, true);
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${location.origin.replace(/\/$/, '')}/reset-password.html`,
+    redirectTo: new URL('reset-password.html', location.href).href,
   });
 
   setLoading(btnSendReset, false);
