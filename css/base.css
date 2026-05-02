@@ -692,10 +692,11 @@ body.timetable-fullscreen-active {
 
 .timetable-row {
   display: table-row;
+  color: var(--brand-500);
 }
 
 .timetable-row:nth-child(even) {
-  background: var(--surface-page);
+  background: rgba(42, 92, 78, 0.04);
 }
 
 .time-cell {
@@ -707,7 +708,7 @@ body.timetable-fullscreen-active {
   text-align: center;
   vertical-align: middle;
   width: 110px;
-  background: var(--surface-base);
+  background: #fdfaf6;
 }
 
 .time-range {
@@ -1831,15 +1832,15 @@ body.timetable-fullscreen-active {
 }
 
 [data-theme="dark"] .timetable                       { border-color: var(--border-mid); }
-[data-theme="dark"] .timetable-row:nth-child(even)   { background: var(--fill-stripe); }
+[data-theme="dark"] .timetable-row:nth-child(even)   { background: rgba(42, 92, 78, 0.04); }
 [data-theme="dark"] .time-cell {
-  background: var(--fill-subtle);
-  color: var(--text-secondary);
-  border-color: var(--border-default);
+  background: #fdfaf6;
+  color: var(--brand-500);
+  border-color: #ddd7cc;
 }
 
-[data-theme="dark"] .roster-cell                     { border-color: var(--border-subtle); }
-[data-theme="dark"] .roster-cell:hover               { background: var(--fill-control); }
+[data-theme="dark"] .roster-cell                     { border-color: #ddd7cc; }
+[data-theme="dark"] .roster-cell:hover               { background: rgba(42, 92, 78, 0.06); }
 
 /* Counters */
 [data-theme="dark"] .counters-section {
