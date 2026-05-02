@@ -623,7 +623,7 @@ body.timetable-fullscreen-active {
 
 /* Timetable Grid */
 .timetable-wrapper {
-  background: var(--surface-base);
+  background: #fdfaf6;
   border-radius: 12px;
   padding: 1.5rem;
   box-shadow: 0 4px 20px var(--shadow-color);
@@ -1825,9 +1825,9 @@ body.timetable-fullscreen-active {
 
 /* Timetable wrapper & table */
 [data-theme="dark"] .timetable-wrapper {
-  background: var(--surface-base);
-  border-color: var(--border-default);
-  box-shadow: 0 8px 32px var(--shadow-overlay);
+  background: #fdfaf6;
+  border-color: #ddd7cc;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
 }
 
 [data-theme="dark"] .timetable                       { border-color: var(--border-mid); }
