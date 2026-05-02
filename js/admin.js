@@ -499,7 +499,7 @@ function openEditTimeSlots() {
     };
 
     const removeBtn = document.createElement("button");
-    removeBtn.className = "btn btn-secondary btn-small delete-btn";
+    removeBtn.className = "btn btn-danger btn-small";
     removeBtn.textContent = "Remove";
     removeBtn.onclick = function () {
       removeTimeSlot(index);
