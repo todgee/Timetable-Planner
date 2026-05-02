@@ -2115,3 +2115,26 @@ body.timetable-fullscreen-active {
   border-color: var(--brand-500, #2a5c4e);
   color: var(--brand-500, #2a5c4e);
 }
+
+/* ── Config page title bar (inside .app-shell) ─────────────── */
+
+.app-page-title-bar {
+  padding: 0.9rem 1.5rem 1rem;
+  border-top: 1px solid rgba(221, 215, 204, 0.7);
+}
+
+.app-page-title {
+  font-family: "Crimson Pro", serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--brand-500, #2a5c4e);
+  margin: 0 0 0.2rem;
+  line-height: 1.2;
+}
+
+.app-page-subtitle {
+  font-family: "Work Sans", sans-serif;
+  font-size: 0.875rem;
+  color: #6b7c74;
+  margin: 0;
+}
