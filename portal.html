@@ -32,7 +32,7 @@
 
   <link rel="stylesheet" href="css/portal.css">
 </head>
-<body style="visibility:hidden">
+<body>
 
   <!-- Ambient background -->
   <div class="portal-bg" aria-hidden="true">
@@ -43,11 +43,6 @@
   <!-- ── Header ──────────────────────────────────────────── -->
   <header class="portal-header">
     <a class="portal-brand" href="portal.html">Timetable <strong>Planner</strong></a>
-    <div class="portal-header-right">
-      <span class="portal-user-name" id="user-name"></span>
-      <div class="portal-avatar" id="user-avatar" aria-hidden="true"></div>
-      <button class="btn-signout" id="btn-signout">Sign out</button>
-    </div>
   </header>
 
   <!-- ── Main ────────────────────────────────────────────── -->
@@ -73,11 +68,6 @@
       </div>
     </section>
 
-    <!-- Shared with me — hidden until data confirms there are shared timetables -->
-    <section class="portal-section" id="section-shared" hidden>
-      <h2 class="portal-section-title">Shared with me</h2>
-      <div class="timetable-grid" id="grid-shared"></div>
-    </section>
 
   </main>
 
@@ -129,7 +119,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/supabase-client.js"></script>
-  <script src="js/require-auth.js"></script>
+  <script src="js/shared.js"></script>
   <script src="js/portal.js"></script>
 </body>
 </html>

@@ -25,7 +25,7 @@ const classColorPalette = [
 let colorIndex = 0;
 
 // ============================================
-// Init — validate URL param, skip if done
+// Init — redirect if no ID or already complete
 // ============================================
 
 (async function init() {
@@ -34,20 +34,24 @@ let colorIndex = 0;
     return;
   }
 
-  const { data } = await supabase
+  await window.authReady;
+
+  const { data: tt } = await supabase
     .from('timetables')
     .select('setup_complete, name')
     .eq('id', timetableId)
     .single();
 
-  if (data?.setup_complete) {
+  if (tt?.setup_complete) {
     window.location.replace(`admin.html?id=${timetableId}`);
     return;
   }
 
-  if (data?.name) {
-    document.title = `Setup – ${data.name}`;
+  if (tt?.name) {
+    document.title = `Setup – ${tt.name}`;
   }
+
+  document.body.style.visibility = 'visible';
 })();
 
 // ============================================
@@ -347,63 +351,37 @@ function populateReview() {
 // ============================================
 
 async function finishSetup() {
-  const loadingEl = document.getElementById('setupLoading');
+  const loadingEl  = document.getElementById('setupLoading');
   const loadingMsg = loadingEl.querySelector('p');
   loadingEl.classList.add('active');
   loadingMsg.textContent = 'Saving your timetable…';
 
+  const classColors = {};
+  setupData.classes.forEach(cls => { classColors[cls.name] = cls.color; });
+
+  const data = {
+    version:    '1.0',
+    setupComplete: true,
+    peopleList: setupData.people,
+    classList:  setupData.classes.map(c => c.name),
+    classColors,
+    assignments: { monday: {}, tuesday: {}, wednesday: {}, thursday: {}, friday: {} },
+    timeSlots:  setupData.timeSlots,
+    updatedAt:  new Date().toISOString(),
+  };
+
   try {
-    // Classes
-    if (setupData.classes.length > 0) {
-      const { error } = await supabase.from('classes').insert(
-        setupData.classes.map((cls, i) => ({
-          timetable_id: timetableId,
-          name:         cls.name,
-          color:        cls.color,
-          sort_order:   i
-        }))
-      );
-      if (error) throw error;
-    }
-
-    // People
-    if (setupData.people.length > 0) {
-      const { error } = await supabase.from('people').insert(
-        setupData.people.map((name, i) => ({
-          timetable_id: timetableId,
-          name,
-          sort_order: i
-        }))
-      );
-      if (error) throw error;
-    }
-
-    // Time slots
-    if (setupData.timeSlots.length > 0) {
-      const { error } = await supabase.from('time_slots').insert(
-        setupData.timeSlots.map((slot, i) => ({
-          timetable_id: timetableId,
-          start_time:   slot.start,
-          end_time:     slot.end,
-          type:         slot.type,
-          sort_order:   i
-        }))
-      );
-      if (error) throw error;
-    }
-
-    // Mark setup complete
-    const { error: updateError } = await supabase
+    const { error } = await supabase
       .from('timetables')
-      .update({ setup_complete: true })
+      .update({ setup_complete: true, data })
       .eq('id', timetableId);
-    if (updateError) throw updateError;
+
+    if (error) throw error;
 
     loadingMsg.textContent = 'Setup complete! Redirecting…';
     setTimeout(() => {
       window.location.href = `admin.html?id=${timetableId}`;
     }, 800);
-
   } catch (err) {
     console.error('Setup save failed:', err);
     loadingEl.classList.remove('active');
