@@ -7,10 +7,6 @@
   color:      var(--text-on-brand);
 }
 
-[data-theme="dark"] .view-control-btn.active {
-  background: var(--brand-500);
-  color:      var(--text-on-brand);
-}
 
 /* ── Accent-override row (Custom accent picker) ────────────── */
 .accent-override-row {

@@ -469,28 +469,3 @@
 
 .roster-cell.class-filtered-out { opacity: 0.15; }
 
-/* ── Fullscreen mode ─────────────────────────────────────── */
-
-.timetable-section.timetable-fullscreen {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  margin: 0;
-  padding: 1rem;
-  background: var(--surface-page);
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.timetable-section.timetable-fullscreen .counters-section { display: none; }
-.timetable-section.timetable-fullscreen .day-selector     { margin-bottom: 0; }
-.timetable-section.timetable-fullscreen .view-controls    { margin-bottom: 0; }
-
-.timetable-section.timetable-fullscreen .timetable-wrapper {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow: auto;
-}
-
-body.timetable-fullscreen-active { overflow: hidden; }
