@@ -1,14 +1,12 @@
 /* ==========================================================
    SUPABASE-CLIENT.JS
-   Initialises the Supabase client and ensures a session exists
-   before any page logic runs.
+   Initialises the Supabase client and enforces authentication.
 
-   DEV MODE: auto-signs in with hardcoded credentials so there
-   is no login UI during development. Replace this block with
-   real auth when the login flow is added back.
-
-   window.authReady — Promise that resolves to the session.
-   Await it in any script that needs an authenticated client.
+   window.authReady — Promise that resolves to the active session.
+                      Await it in any script that needs an auth'd client.
+                      On pages other than login.html it redirects to
+                      login.html when there is no session.
+   window.signOut   — Signs the user out and redirects to login.html.
    ========================================================== */
 
 const SUPABASE_URL = 'https://csqwfuvjbtkhestnfezt.supabase.co';
@@ -16,23 +14,33 @@ const SUPABASE_KEY = 'sb_publishable_sGE1GsTukTyUzbobi4oLHg_jKvZLBYT';
 
 window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// DEV: hardcoded credentials — swap for real auth later
-const DEV_EMAIL    = 'dev@dev.com';
-const DEV_PASSWORD = 'password';
+const _isLoginPage = window.location.pathname.endsWith('/login.html');
+
+window.signOut = async function () {
+  await window.supabase.auth.signOut();
+  window.location.replace('login.html');
+};
 
 window.authReady = (async () => {
   const { data: { session } } = await window.supabase.auth.getSession();
-  if (session) return session;
 
-  const { data, error } = await window.supabase.auth.signInWithPassword({
-    email:    DEV_EMAIL,
-    password: DEV_PASSWORD,
-  });
-
-  if (error) {
-    console.error('Dev auto-signin failed:', error.message);
-    throw error;
+  if (_isLoginPage) {
+    // Already logged in — skip past the login page
+    if (session) window.location.replace('portal.html');
+    return null;
   }
 
-  return data.session;
+  if (!session) {
+    window.location.replace('login.html');
+    return new Promise(() => {}); // suspend while the redirect fires
+  }
+
+  return session;
 })();
+
+// Redirect to login if the session expires or the user signs out in another tab
+window.supabase.auth.onAuthStateChange((event) => {
+  if (event === 'SIGNED_OUT' && !_isLoginPage) {
+    window.location.replace('login.html');
+  }
+});

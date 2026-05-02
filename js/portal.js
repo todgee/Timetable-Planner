@@ -18,6 +18,17 @@ async function initPortal() {
 
   document.body.style.visibility = 'visible';
 
+  // Display user name and avatar initial in the header
+  const meta = user.user_metadata || {};
+  const displayName = meta.full_name || meta.first_name || user.email;
+  const initial = (meta.first_name || user.email || '?')[0].toUpperCase();
+  const nameEl   = document.getElementById('user-name');
+  const avatarEl = document.getElementById('user-avatar');
+  if (nameEl)   nameEl.textContent   = displayName;
+  if (avatarEl) avatarEl.textContent = initial;
+
+  document.getElementById('btn-signout').addEventListener('click', window.signOut);
+
   const { data: timetables, error } = await supabase
     .from('timetables')
     .select('id, name, description, setup_complete, updated_at')

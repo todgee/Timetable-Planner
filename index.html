@@ -1,84 +1,18 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Timetable Planner</title>
-
-    <!-- PWA Configuration -->
-    <link rel="manifest" href="manifest.json" />
-    <meta name="theme-color" content="#2c5f4f" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Timetable" />
-
-    <!-- Fonts -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Work+Sans:wght@300;400;500;600&display=swap"
-      rel="stylesheet"
-    />
-
-    <!-- Stylesheet -->
-    <link rel="stylesheet" href="css/tokens.css" />
-    <link rel="stylesheet" href="css/base.css" />
-
-    <script src="js/shared.js"></script>
-    <script src="js/theme-engine.js"></script>
-
-    <style>
-      body {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 2rem;
-      }
-
-      .landing {
-        max-width: 520px;
-        text-align: center;
-      }
-
-      .landing h1 {
-        color: var(--primary, #2c5f4f);
-        margin-bottom: 0.5rem;
-      }
-
-      .landing p {
-        color: #555;
-        margin-bottom: 2rem;
-      }
-
-      .landing-actions {
-        display: grid;
-        gap: 0.75rem;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="landing">
-      <h1>Timetable Planner</h1>
-      <p>Flexible scheduling for schools &amp; teams — runs entirely in your browser.</p>
-
-      <div class="landing-actions">
-        <a id="primaryAction" class="btn btn-primary" href="setup.html">Get Started</a>
-        <a id="secondaryAction" class="btn btn-secondary" href="view.html" style="display:none">View Timetable</a>
-      </div>
-    </div>
-
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        if (hasTimetable()) {
-          window.location.replace('admin.html');
-          return;
-        }
-
-        const data = loadTimetable();
-        if (data && (data.peopleList?.length || data.classList?.length)) {
-          document.getElementById('primaryAction').href = 'admin.html';
-          document.getElementById('primaryAction').textContent = 'Open Timetable';
-          document.getElementById('secondaryAction').style.display = 'inline-flex';
-        }
-      });
-    </script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Timetable Planner</title>
+  <!-- Redirect: authenticated → portal, unauthenticated → login (via supabase-client.js guard) -->
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script>
+    // authReady resolves when a session exists; the guard in supabase-client.js
+    // handles the unauthenticated case by redirecting to login.html.
+    window.authReady.then(() => window.location.replace('portal.html')).catch(() => {});
+  </script>
+</body>
 </html>
