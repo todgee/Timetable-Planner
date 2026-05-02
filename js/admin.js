@@ -78,8 +78,45 @@ function isBreakSlot(slot) {
     return;
   }
 
-  // Seed localStorage from Supabase so loadFromStorage() works unchanged
-  saveTimetable({ ...tt.data, setupComplete: true });
+  // Fix toolbar links now that we know the timetableId
+  const configLink = document.querySelector('a[href="config.html"]');
+  if (configLink) configLink.href = `config.html?id=${timetableId}`;
+
+  const viewLink = document.querySelector('a[href="view.html"]');
+  if (viewLink) viewLink.href = `view.html?id=${timetableId}`;
+
+  // Load timetable data and config in parallel
+  const [{ data: td }, { data: cfg }] = await Promise.all([
+    supabase.from('timetable_data').select('*').eq('timetable_id', timetableId).maybeSingle(),
+    supabase.from('timetable_config').select('*').eq('timetable_id', timetableId).maybeSingle(),
+  ]);
+
+  // Apply saved theme (config may not exist yet — that's fine)
+  if (cfg) {
+    ThemeEngine.apply({ primary: cfg.theme_primary, accent: cfg.theme_accent, mode: cfg.theme_mode });
+    ThemeEngine.save({ primary: cfg.theme_primary, accent: cfg.theme_accent, mode: cfg.theme_mode });
+    if (cfg.bg_start && cfg.bg_end) {
+      ThemeEngine.saveBg({ start: cfg.bg_start, end: cfg.bg_end });
+      document.body.style.background =
+        `linear-gradient(135deg, ${cfg.bg_start} 0%, ${cfg.bg_end} 100%)`;
+    }
+    if (cfg.logo_url) {
+      saveLogo({ url: cfg.logo_url, position: cfg.logo_position, size: cfg.logo_size });
+    }
+  }
+
+  // Seed localStorage from timetable_data so loadFromStorage() works unchanged
+  if (td) {
+    saveTimetable({
+      setupComplete: true,
+      peopleList:  td.people       || [],
+      classList:   td.classes      || [],
+      classColors: td.class_colors || {},
+      assignments: td.assignments  || { monday: {}, tuesday: {}, wednesday: {}, thursday: {}, friday: {} },
+      timeSlots:   td.time_slots   || [],
+    });
+  }
+
   loadFromStorage();
   document.body.style.visibility = 'visible';
 })();
@@ -1281,13 +1318,17 @@ function autoSave() {
 
 async function syncToSupabase() {
   if (!timetableId) return;
-  const data = loadTimetable();
-  if (!data) return;
 
   const { error } = await supabase
-    .from('timetables')
-    .update({ data })
-    .eq('id', timetableId);
+    .from('timetable_data')
+    .upsert({
+      timetable_id: timetableId,
+      people:       peopleList,
+      classes:      classList,
+      class_colors: classColors,
+      time_slots:   timeSlots,
+      assignments,
+    }, { onConflict: 'timetable_id' });
 
   if (error) console.error('Supabase sync failed:', error.message);
 }

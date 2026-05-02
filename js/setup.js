@@ -359,21 +359,22 @@ async function finishSetup() {
   const classColors = {};
   setupData.classes.forEach(cls => { classColors[cls.name] = cls.color; });
 
-  const data = {
-    version:    '1.0',
-    setupComplete: true,
-    peopleList: setupData.people,
-    classList:  setupData.classes.map(c => c.name),
-    classColors,
-    assignments: { monday: {}, tuesday: {}, wednesday: {}, thursday: {}, friday: {} },
-    timeSlots:  setupData.timeSlots,
-    updatedAt:  new Date().toISOString(),
-  };
-
   try {
+    const { error: tdError } = await supabase
+      .from('timetable_data')
+      .upsert({
+        timetable_id: timetableId,
+        people:       setupData.people,
+        classes:      setupData.classes.map(c => c.name),
+        class_colors: classColors,
+        time_slots:   setupData.timeSlots,
+        assignments:  { monday: {}, tuesday: {}, wednesday: {}, thursday: {}, friday: {} },
+      }, { onConflict: 'timetable_id' });
+    if (tdError) throw tdError;
+
     const { error } = await supabase
       .from('timetables')
-      .update({ setup_complete: true, data })
+      .update({ setup_complete: true })
       .eq('id', timetableId);
 
     if (error) throw error;
