@@ -50,9 +50,8 @@ async function loadTimetableData() {
 
   const { data: tt } = await supabase
     .from('timetables')
-    .select('id, name')
+    .select('id, name, owner_id')
     .eq('id', timetableId)
-    .eq('owner_id', session.user.id)
     .maybeSingle();
 
   if (!tt) {
@@ -64,8 +63,22 @@ async function loadTimetableData() {
   const pageTitleEl = document.getElementById('page-title');
   if (pageTitleEl) pageTitleEl.textContent = tt.name || '';
 
+  // Owners and admin members get a back-link to admin.html; read members go to portal
+  const isOwner = tt.owner_id === session.user.id;
+  let backTarget = 'portal.html';
+  if (isOwner) {
+    backTarget = `admin.html?id=${timetableId}`;
+  } else {
+    const { data: membership } = await supabase
+      .from('timetable_members')
+      .select('role')
+      .eq('timetable_id', timetableId)
+      .eq('user_id', session.user.id)
+      .maybeSingle();
+    if (membership?.role === 'admin') backTarget = `admin.html?id=${timetableId}`;
+  }
   const backLink = document.getElementById('back-to-admin');
-  if (backLink) backLink.href = `admin.html?id=${timetableId}`;
+  if (backLink) backLink.href = backTarget;
 
   const meta        = session.user.user_metadata || {};
   const displayName = meta.full_name || meta.first_name || session.user.email;

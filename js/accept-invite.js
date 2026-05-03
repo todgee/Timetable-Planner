@@ -28,7 +28,7 @@ async function initAcceptInvite() {
   // Look up the invite by token — RLS allows this only if the user's email matches
   const { data: invite, error } = await supabase
     .from('timetable_invites')
-    .select('id, timetable_id, timetable_name, invited_by, invited_email, status, expires_at')
+    .select('id, timetable_id, timetable_name, invited_by, invited_email, status, expires_at, role')
     .eq('token', token)
     .maybeSingle();
 
@@ -79,6 +79,7 @@ async function acceptInvite(invite, timetableName, user) {
         timetable_id: invite.timetable_id,
         user_id:      user.id,
         invited_by:   invite.invited_by,
+        role:         invite.role || 'read',
       });
 
     // Ignore duplicate — user may have already joined

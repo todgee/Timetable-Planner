@@ -300,14 +300,14 @@ async function loadMembersPanel(ttId) {
     await Promise.all([
       supabase
         .from('timetable_invites')
-        .select('id, invited_email, expires_at, status, created_at')
+        .select('id, invited_email, expires_at, status, created_at, role')
         .eq('timetable_id', ttId)
         .in('status', ['pending'])
         .gt('expires_at', new Date().toISOString())
         .order('created_at', { ascending: false }),
       supabase
         .from('timetable_members')
-        .select('id, user_id, joined_at')
+        .select('id, user_id, joined_at, role')
         .eq('timetable_id', ttId)
         .order('joined_at', { ascending: true }),
     ]);
@@ -330,9 +330,12 @@ function renderPendingInvites(invites) {
     const exp = new Date(inv.expires_at).toLocaleDateString('en-AU', {
       day: 'numeric', month: 'short',
     });
+    const role      = inv.role || 'read';
+    const roleLabel = role === 'admin' ? 'Admin' : 'View only';
     return `
       <li class="members-item">
         <span class="members-item-email">${escapeHtml(inv.invited_email)}</span>
+        <span class="role-badge role-badge--${role}">${roleLabel}</span>
         <span class="members-item-meta">Expires ${exp}</span>
         <button class="btn-members-action" data-action="revoke" data-invite-id="${inv.id}">
           Revoke
@@ -352,9 +355,12 @@ function renderMembers(members) {
     const joined = new Date(m.joined_at).toLocaleDateString('en-AU', {
       day: 'numeric', month: 'short', year: 'numeric',
     });
+    const role      = m.role || 'read';
+    const roleLabel = role === 'admin' ? 'Admin' : 'View only';
     return `
       <li class="members-item">
         <span class="members-item-email members-item-uid">${m.user_id}</span>
+        <span class="role-badge role-badge--${role}">${roleLabel}</span>
         <span class="members-item-meta">Joined ${joined}</span>
         <button class="btn-members-action" data-action="remove" data-member-id="${m.id}">
           Remove
@@ -408,6 +414,8 @@ btnSendInvite.addEventListener('click', async () => {
   btnSendInvite.disabled = true;
   btnSendInvite.classList.add('loading');
 
+  const role = document.querySelector('input[name="invite-role"]:checked')?.value || 'read';
+
   try {
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -419,6 +427,7 @@ btnSendInvite.addEventListener('click', async () => {
         timetable_name: activeTtName,
         invited_by:     user.id,
         invited_email:  email,
+        role,
       })
       .select('id, token')
       .single();
@@ -442,15 +451,15 @@ btnSendInvite.addEventListener('click', async () => {
 async function loadSharedTimetables(userId) {
   const { data: memberships, error } = await supabase
     .from('timetable_members')
-    .select('joined_at, timetables(id, name, description, updated_at)')
+    .select('joined_at, role, timetables(id, name, description, updated_at)')
     .eq('user_id', userId)
     .order('joined_at', { ascending: false });
 
   if (error) { console.error('Failed to load shared timetables:', error.message); return; }
 
   const timetables = (memberships || [])
-    .map(m => m.timetables)
-    .filter(Boolean);
+    .filter(m => m.timetables)
+    .map(m => ({ ...m.timetables, role: m.role || 'read' }));
 
   renderSharedGrid(timetables);
 }
@@ -466,24 +475,27 @@ function renderSharedGrid(timetables) {
 
   section.hidden = false;
   grid.innerHTML = timetables.map(tt => {
-    const descHtml = tt.description
+    const descHtml  = tt.description
       ? `<p class="card-desc">${escapeHtml(tt.description)}</p>`
       : '';
-    const dateText = tt.updated_at ? `Updated ${formatDate(tt.updated_at)}` : '';
+    const dateText  = tt.updated_at ? `Updated ${formatDate(tt.updated_at)}` : '';
+    const isAdmin   = tt.role === 'admin';
+    const href      = isAdmin ? `admin.html?id=${tt.id}` : `view.html?id=${tt.id}`;
+    const roleLabel = isAdmin ? 'Admin' : 'View only';
     return `
       <div class="timetable-card timetable-card--shared">
         <div class="card-body">
           <div class="card-header-row">
             <h3 class="card-name">${escapeHtml(tt.name)}</h3>
-            <span class="status-badge status-badge--shared">Shared</span>
+            <span class="role-badge role-badge--${tt.role}">${roleLabel}</span>
           </div>
           ${descHtml}
         </div>
         <div class="card-footer">
           <span class="card-date">${dateText}</span>
           <div class="card-footer-actions">
-            <a class="btn btn-sm btn-primary" href="admin.html?id=${tt.id}">
-              View
+            <a class="btn btn-sm btn-primary" href="${href}">
+              ${isAdmin ? 'Open' : 'View'}
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <line x1="5" y1="12" x2="19" y2="12"/>
@@ -501,7 +513,7 @@ function renderSharedGrid(timetables) {
 async function loadMyInvites() {
   const { data: invites } = await supabase
     .from('timetable_invites')
-    .select('id, timetable_id, timetable_name, invited_by, expires_at')
+    .select('id, timetable_id, timetable_name, invited_by, expires_at, role')
     .eq('status', 'pending')
     .gt('expires_at', new Date().toISOString())
     .order('created_at', { ascending: false });
@@ -521,13 +533,16 @@ function renderMyInvites(invites) {
 
   section.hidden = false;
   list.innerHTML = invites.map(inv => {
-    const exp = new Date(inv.expires_at).toLocaleDateString('en-AU', {
+    const exp       = new Date(inv.expires_at).toLocaleDateString('en-AU', {
       day: 'numeric', month: 'short',
     });
+    const role      = inv.role || 'read';
+    const roleLabel = role === 'admin' ? 'Admin' : 'View only';
     return `
       <li class="my-invite-item">
         <div class="my-invite-body">
           <span class="my-invite-name">${escapeHtml(inv.timetable_name)}</span>
+          <span class="role-badge role-badge--${role}">${roleLabel}</span>
           <span class="my-invite-meta">Expires ${exp}</span>
         </div>
         <div class="my-invite-actions">
@@ -540,7 +555,8 @@ function renderMyInvites(invites) {
                   data-my-action="accept"
                   data-invite-id="${inv.id}"
                   data-timetable-id="${inv.timetable_id}"
-                  data-invited-by="${inv.invited_by}">
+                  data-invited-by="${inv.invited_by}"
+                  data-role="${role}">
             Accept
           </button>
         </div>
@@ -566,6 +582,7 @@ document.getElementById('list-my-invites').addEventListener('click', async e => 
         timetable_id: btn.dataset.timetableId,
         user_id:      user.id,
         invited_by:   btn.dataset.invitedBy,
+        role:         btn.dataset.role || 'read',
       });
 
     if (joinErr) {

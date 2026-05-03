@@ -35,6 +35,65 @@
   <link rel="stylesheet" href="css/portal.css">
   <!-- Apply saved theme tokens before first paint — avoids colour flash -->
   <script src="js/theme-engine.js"></script>
+  <style>
+    .invite-role-toggle {
+      display: flex;
+      gap: 0;
+      border: 1px solid #d0c9bf;
+      border-radius: 6px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .invite-role-option {
+      display: flex;
+      flex: 1;
+    }
+    .invite-role-option input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .invite-role-option span {
+      display: block;
+      width: 100%;
+      padding: 0.45rem 0.8rem;
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-align: center;
+      cursor: pointer;
+      color: #5a6e66;
+      background: #f5f1eb;
+      border-right: 1px solid #d0c9bf;
+      transition: background 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+    .invite-role-option:last-child span {
+      border-right: none;
+    }
+    .invite-role-option input[type="radio"]:checked + span {
+      background: #2a5c4e;
+      color: #fff;
+    }
+    .role-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      flex-shrink: 0;
+    }
+    .role-badge--admin {
+      background: rgba(42, 92, 78, 0.12);
+      color: #2a5c4e;
+    }
+    .role-badge--read {
+      background: rgba(100, 100, 100, 0.1);
+      color: #5a6e66;
+    }
+  </style>
 </head>
 <body>
 
@@ -207,8 +266,18 @@
             autocomplete="off"
             maxlength="254"
           >
+          <div class="invite-role-toggle" role="group" aria-label="Access level">
+            <label class="invite-role-option">
+              <input type="radio" name="invite-role" value="admin">
+              <span>Admin</span>
+            </label>
+            <label class="invite-role-option">
+              <input type="radio" name="invite-role" value="read" checked>
+              <span>View only</span>
+            </label>
+          </div>
           <button class="btn btn-primary" id="btn-send-invite" style="width:100%">
-            <span class="btn-label">Invite</span>
+            <span class="btn-label">Send Invite</span>
             <span class="btn-spinner" aria-hidden="true"></span>
           </button>
         </div>

@@ -63,15 +63,33 @@ function isBreakSlot(slot) {
 
   const { data: tt, error } = await supabase
     .from('timetables')
-    .select('name, setup_complete')
+    .select('name, setup_complete, owner_id')
     .eq('id', timetableId)
-    .eq('owner_id', session.user.id)
     .single();
 
   if (error || !tt) {
     console.error('Failed to load timetable:', error?.message);
     window.location.replace('portal.html');
     return;
+  }
+
+  // Non-owners must be an admin member; read members go to view.html
+  if (tt.owner_id !== session.user.id) {
+    const { data: membership } = await supabase
+      .from('timetable_members')
+      .select('role')
+      .eq('timetable_id', timetableId)
+      .eq('user_id', session.user.id)
+      .maybeSingle();
+
+    if (!membership) {
+      window.location.replace('portal.html');
+      return;
+    }
+    if (membership.role === 'read') {
+      window.location.replace(`view.html?id=${timetableId}`);
+      return;
+    }
   }
 
   if (!tt.setup_complete) {
