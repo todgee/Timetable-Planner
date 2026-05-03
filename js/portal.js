@@ -307,7 +307,7 @@ async function loadMembersPanel(ttId) {
         .order('created_at', { ascending: false }),
       supabase
         .from('timetable_members')
-        .select('id, user_id, joined_at, role')
+        .select('id, user_id, user_email, joined_at, role')
         .eq('timetable_id', ttId)
         .order('joined_at', { ascending: true }),
     ]);
@@ -359,7 +359,7 @@ function renderMembers(members) {
     const roleLabel = role === 'admin' ? 'Admin' : 'View only';
     return `
       <li class="members-item">
-        <span class="members-item-email members-item-uid">${m.user_id}</span>
+        <span class="members-item-email">${escapeHtml(m.user_email || m.user_id)}</span>
         <span class="role-badge role-badge--${role}">${roleLabel}</span>
         <span class="members-item-meta">Joined ${joined}</span>
         <button class="btn-members-action" data-action="remove" data-member-id="${m.id}">
@@ -556,7 +556,8 @@ function renderMyInvites(invites) {
                   data-invite-id="${inv.id}"
                   data-timetable-id="${inv.timetable_id}"
                   data-invited-by="${inv.invited_by}"
-                  data-role="${role}">
+                  data-role="${role}"
+                  data-user-email="${escapeHtml(inv.invited_email || '')}">
             Accept
           </button>
         </div>
@@ -583,6 +584,7 @@ document.getElementById('list-my-invites').addEventListener('click', async e => 
         user_id:      user.id,
         invited_by:   btn.dataset.invitedBy,
         role:         btn.dataset.role || 'read',
+        user_email:   btn.dataset.userEmail || user.email || '',
       });
 
     if (joinErr) {
