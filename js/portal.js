@@ -68,6 +68,7 @@ async function initPortal() {
   }
 
   renderGrid(timetables || []);
+  loadMyInvites();
 }
 
 // ── Render timetable grid ─────────────────────────────────
@@ -423,26 +424,6 @@ btnSendInvite.addEventListener('click', async () => {
 
     if (insertErr) throw insertErr;
 
-    // Build the accept URL
-    const origin     = window.location.origin + window.location.pathname.replace('portal.html', '');
-    const acceptUrl  = `${origin}accept-invite.html?token=${invite.token}`;
-
-    // Call Edge Function to send the email
-    const { error: fnErr } = await supabase.functions.invoke('send-invite', {
-      body: {
-        invite_id:      invite.id,
-        timetable_name: activeTtName,
-        invite_url:     acceptUrl,
-      },
-    });
-
-    if (fnErr) {
-      // Invite row was created; warn but don't block — owner can share URL manually
-      console.warn('Email send failed (invite still created):', fnErr.message);
-      membersInviteErr.textContent = 'Invite created but email failed to send. Share the invite link manually if needed.';
-      membersInviteErr.classList.add('visible');
-    }
-
     inputInviteEmail.value = '';
     loadMembersPanel(activeTtId);
   } catch (err) {
@@ -453,6 +434,107 @@ btnSendInvite.addEventListener('click', async () => {
     btnSendInvite.disabled = false;
     btnSendInvite.classList.remove('loading');
   }
+});
+
+// ── My pending invites (received) ─────────────────────────
+
+async function loadMyInvites() {
+  const { data: invites } = await supabase
+    .from('timetable_invites')
+    .select('id, timetable_id, timetable_name, invited_by, expires_at')
+    .eq('status', 'pending')
+    .gt('expires_at', new Date().toISOString())
+    .order('created_at', { ascending: false });
+
+  renderMyInvites(invites || []);
+}
+
+function renderMyInvites(invites) {
+  const section = document.getElementById('section-my-invites');
+  const list    = document.getElementById('list-my-invites');
+
+  if (invites.length === 0) {
+    section.hidden = true;
+    list.innerHTML = '';
+    return;
+  }
+
+  section.hidden = false;
+  list.innerHTML = invites.map(inv => {
+    const exp = new Date(inv.expires_at).toLocaleDateString('en-AU', {
+      day: 'numeric', month: 'short',
+    });
+    return `
+      <li class="my-invite-item">
+        <div class="my-invite-body">
+          <span class="my-invite-name">${escapeHtml(inv.timetable_name)}</span>
+          <span class="my-invite-meta">Expires ${exp}</span>
+        </div>
+        <div class="my-invite-actions">
+          <button class="btn btn-sm btn-ghost"
+                  data-my-action="decline"
+                  data-invite-id="${inv.id}">
+            Decline
+          </button>
+          <button class="btn btn-sm btn-primary"
+                  data-my-action="accept"
+                  data-invite-id="${inv.id}"
+                  data-timetable-id="${inv.timetable_id}"
+                  data-invited-by="${inv.invited_by}">
+            Accept
+          </button>
+        </div>
+      </li>`;
+  }).join('');
+}
+
+document.getElementById('list-my-invites').addEventListener('click', async e => {
+  const btn = e.target.closest('[data-my-action]');
+  if (!btn || btn.disabled) return;
+
+  btn.disabled = true;
+  const action   = btn.dataset.myAction;
+  const inviteId = btn.dataset.inviteId;
+
+  if (action === 'accept') {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // Insert member row first — RLS verifies the pending invite exists
+    const { error: joinErr } = await supabase
+      .from('timetable_members')
+      .insert({
+        timetable_id: btn.dataset.timetableId,
+        user_id:      user.id,
+        invited_by:   btn.dataset.invitedBy,
+      });
+
+    if (joinErr) {
+      console.error('Failed to join timetable:', joinErr.message);
+      btn.disabled = false;
+      return;
+    }
+
+    // Mark invite as accepted after successfully joining
+    await supabase
+      .from('timetable_invites')
+      .update({ status: 'accepted' })
+      .eq('id', inviteId);
+  }
+
+  if (action === 'decline') {
+    const { error } = await supabase
+      .from('timetable_invites')
+      .update({ status: 'revoked' })
+      .eq('id', inviteId);
+
+    if (error) {
+      console.error('Failed to decline invite:', error.message);
+      btn.disabled = false;
+      return;
+    }
+  }
+
+  loadMyInvites();
 });
 
 // ── Start ─────────────────────────────────────────────────
