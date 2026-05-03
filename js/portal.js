@@ -306,10 +306,7 @@ async function loadMembersPanel(ttId) {
         .gt('expires_at', new Date().toISOString())
         .order('created_at', { ascending: false }),
       supabase
-        .from('timetable_members')
-        .select('id, user_id, joined_at, role')
-        .eq('timetable_id', ttId)
-        .order('joined_at', { ascending: true }),
+        .rpc('get_timetable_members_with_names', { p_timetable_id: ttId }),
     ]);
 
   if (invErr) console.error('Failed to load invites:', invErr.message);
@@ -359,7 +356,7 @@ function renderMembers(members) {
     const roleLabel = role === 'admin' ? 'Admin' : 'View only';
     return `
       <li class="members-item">
-        <span class="members-item-email members-item-uid">${m.user_id}</span>
+        <span class="members-item-email">${escapeHtml(m.display_name || m.user_id)}</span>
         <span class="role-badge role-badge--${role}">${roleLabel}</span>
         <span class="members-item-meta">Joined ${joined}</span>
         <button class="btn-members-action" data-action="remove" data-member-id="${m.id}">
