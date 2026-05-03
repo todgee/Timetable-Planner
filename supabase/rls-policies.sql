@@ -5,6 +5,26 @@
 -- =============================================================
 
 
+-- ── 0. Helper function ───────────────────────────────────────
+--   SECURITY DEFINER bypasses RLS on timetable_members, which
+--   prevents the circular dependency:
+--     timetables policy → timetable_members → timetables policy → …
+
+CREATE OR REPLACE FUNCTION public.is_timetable_member(tt_id uuid)
+RETURNS boolean
+LANGUAGE sql
+SECURITY DEFINER
+STABLE
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM timetable_members
+    WHERE timetable_id = tt_id
+      AND user_id = auth.uid()
+  );
+$$;
+
+
 -- ── 1. timetables ────────────────────────────────────────────
 --   owner_id is set by the app to auth.uid() on insert.
 --   All operations are restricted to the owning user.
@@ -17,16 +37,13 @@ DROP POLICY IF EXISTS "timetables: insert own"            ON timetables;
 DROP POLICY IF EXISTS "timetables: update own"            ON timetables;
 DROP POLICY IF EXISTS "timetables: delete own"            ON timetables;
 
--- Owners see all their timetables; accepted members see timetables they joined
+-- Owners see all their timetables; accepted members see timetables they joined.
+-- Uses is_timetable_member() (SECURITY DEFINER) to avoid RLS recursion.
 CREATE POLICY "timetables: select own or member"
   ON timetables FOR SELECT
   USING (
     auth.uid() = owner_id
-    OR EXISTS (
-      SELECT 1 FROM timetable_members
-      WHERE timetable_members.timetable_id = timetables.id
-        AND timetable_members.user_id = auth.uid()
-    )
+    OR public.is_timetable_member(id)
   );
 
 -- Enforce that new rows can only be created for the signed-in user.
@@ -56,20 +73,13 @@ DROP POLICY IF EXISTS "timetable_data: insert own"            ON timetable_data;
 DROP POLICY IF EXISTS "timetable_data: update own"            ON timetable_data;
 DROP POLICY IF EXISTS "timetable_data: delete own"            ON timetable_data;
 
+-- Delegate access check to the timetables RLS (which handles owner + member via the helper fn)
 CREATE POLICY "timetable_data: select own or member"
   ON timetable_data FOR SELECT
   USING (
     EXISTS (
       SELECT 1 FROM timetables
       WHERE timetables.id = timetable_data.timetable_id
-        AND (
-          timetables.owner_id = auth.uid()
-          OR EXISTS (
-            SELECT 1 FROM timetable_members
-            WHERE timetable_members.timetable_id = timetables.id
-              AND timetable_members.user_id = auth.uid()
-          )
-        )
     )
   );
 
@@ -121,14 +131,6 @@ CREATE POLICY "timetable_config: select own or member"
     EXISTS (
       SELECT 1 FROM timetables
       WHERE timetables.id = timetable_config.timetable_id
-        AND (
-          timetables.owner_id = auth.uid()
-          OR EXISTS (
-            SELECT 1 FROM timetable_members
-            WHERE timetable_members.timetable_id = timetables.id
-              AND timetable_members.user_id = auth.uid()
-          )
-        )
     )
   );
 

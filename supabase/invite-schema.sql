@@ -83,16 +83,14 @@ DROP POLICY IF EXISTS "members: select owner or self"          ON timetable_memb
 DROP POLICY IF EXISTS "members: insert self with valid invite" ON timetable_members;
 DROP POLICY IF EXISTS "members: delete owner or self"         ON timetable_members;
 
--- Owner and the member themselves can view the membership row
+-- Member sees their own row; owner sees rows they created (via invited_by).
+-- Intentionally avoids joining timetables to prevent RLS circular recursion
+-- with the timetables policy that calls is_timetable_member().
 CREATE POLICY "members: select owner or self"
   ON timetable_members FOR SELECT
   USING (
     user_id = auth.uid()
-    OR EXISTS (
-      SELECT 1 FROM timetables
-      WHERE timetables.id = timetable_members.timetable_id
-        AND timetables.owner_id = auth.uid()
-    )
+    OR invited_by = auth.uid()
   );
 
 -- A user can join only when a valid pending invite exists for their email
