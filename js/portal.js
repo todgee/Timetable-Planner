@@ -117,6 +117,19 @@ function buildCard(tt) {
     : '';
   const dateText = tt.updated_at ? `Updated ${formatDate(tt.updated_at)}` : '';
 
+  // Members icon button only shown for completed timetables
+  const membersBtn = isComplete ? `
+    <button class="btn-card-members" data-tt-id="${tt.id}" data-tt-name="${escapeHtml(tt.name)}"
+            title="Invite &amp; Members" aria-label="Invite &amp; Members">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+    </button>` : '';
+
   return `
     <div class="timetable-card${isComplete ? '' : ' timetable-card--setup'}">
       <div class="card-body">
@@ -130,14 +143,17 @@ function buildCard(tt) {
       </div>
       <div class="card-footer">
         <span class="card-date">${dateText}</span>
-        <a class="btn btn-sm ${isComplete ? 'btn-primary' : 'btn-ghost'}" href="${href}">
-          ${isComplete ? 'Open' : 'Continue'}
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-               stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <line x1="5" y1="12" x2="19" y2="12"/>
-            <polyline points="12 5 19 12 12 19"/>
-          </svg>
-        </a>
+        <div class="card-footer-actions">
+          ${membersBtn}
+          <a class="btn btn-sm ${isComplete ? 'btn-primary' : 'btn-ghost'}" href="${href}">
+            ${isComplete ? 'Open' : 'Continue'}
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </a>
+        </div>
       </div>
     </div>
   `;
@@ -189,7 +205,10 @@ document.getElementById('btn-modal-cancel').addEventListener('click', closeModal
 modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
 
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && !modal.hidden) closeModal();
+  if (e.key === 'Escape') {
+    if (!modal.hidden)        closeModal();
+    if (!membersModal.hidden) closeMembersModal();
+  }
 });
 
 btnConfirm.addEventListener('click', async () => {
@@ -227,6 +246,212 @@ btnConfirm.addEventListener('click', async () => {
     createError.classList.add('visible');
     btnConfirm.disabled = false;
     btnConfirm.classList.remove('loading');
+  }
+});
+
+// ── Members / Invites Modal ───────────────────────────────
+
+const membersModal      = document.getElementById('modal-members');
+const membersModalTitle = document.getElementById('members-modal-title');
+const inputInviteEmail  = document.getElementById('input-invite-email');
+const membersInviteErr  = document.getElementById('members-invite-error');
+const btnSendInvite     = document.getElementById('btn-send-invite');
+
+let activeTtId   = null;
+let activeTtName = null;
+
+function openMembersModal(ttId, ttName) {
+  activeTtId   = ttId;
+  activeTtName = ttName;
+  membersModalTitle.textContent = `Members — ${ttName}`;
+  inputInviteEmail.value = '';
+  membersInviteErr.textContent = '';
+  membersInviteErr.classList.remove('visible');
+  membersModal.hidden = false;
+  loadMembersPanel(ttId);
+  inputInviteEmail.focus();
+}
+
+function closeMembersModal() {
+  membersModal.hidden = true;
+  activeTtId   = null;
+  activeTtName = null;
+}
+
+document.getElementById('btn-members-close').addEventListener('click', closeMembersModal);
+membersModal.addEventListener('click', e => { if (e.target === membersModal) closeMembersModal(); });
+
+// Event delegation: open members modal when a card's members button is clicked
+document.getElementById('grid-owned').addEventListener('click', e => {
+  const btn = e.target.closest('.btn-card-members');
+  if (!btn) return;
+  openMembersModal(btn.dataset.ttId, btn.dataset.ttName);
+});
+
+// ── Load panel data ───────────────────────────────────────
+
+async function loadMembersPanel(ttId) {
+  renderPendingInvites(null);  // show loading state
+  renderMembers(null);
+
+  const [{ data: invites, error: invErr }, { data: members, error: memErr }] =
+    await Promise.all([
+      supabase
+        .from('timetable_invites')
+        .select('id, invited_email, expires_at, status, created_at')
+        .eq('timetable_id', ttId)
+        .in('status', ['pending'])
+        .gt('expires_at', new Date().toISOString())
+        .order('created_at', { ascending: false }),
+      supabase
+        .from('timetable_members')
+        .select('id, user_id, joined_at')
+        .eq('timetable_id', ttId)
+        .order('joined_at', { ascending: true }),
+    ]);
+
+  if (invErr) console.error('Failed to load invites:', invErr.message);
+  if (memErr) console.error('Failed to load members:', memErr.message);
+
+  renderPendingInvites(invites || []);
+  renderMembers(members || []);
+}
+
+function renderPendingInvites(invites) {
+  const list = document.getElementById('list-pending-invites');
+  if (!invites) { list.innerHTML = '<li class="members-empty">Loading…</li>'; return; }
+  if (invites.length === 0) {
+    list.innerHTML = '<li class="members-empty">No pending invites.</li>';
+    return;
+  }
+  list.innerHTML = invites.map(inv => {
+    const exp = new Date(inv.expires_at).toLocaleDateString('en-AU', {
+      day: 'numeric', month: 'short',
+    });
+    return `
+      <li class="members-item">
+        <span class="members-item-email">${escapeHtml(inv.invited_email)}</span>
+        <span class="members-item-meta">Expires ${exp}</span>
+        <button class="btn-members-action" data-action="revoke" data-invite-id="${inv.id}">
+          Revoke
+        </button>
+      </li>`;
+  }).join('');
+}
+
+function renderMembers(members) {
+  const list = document.getElementById('list-members');
+  if (!members) { list.innerHTML = '<li class="members-empty">Loading…</li>'; return; }
+  if (members.length === 0) {
+    list.innerHTML = '<li class="members-empty">No members yet.</li>';
+    return;
+  }
+  list.innerHTML = members.map(m => {
+    const joined = new Date(m.joined_at).toLocaleDateString('en-AU', {
+      day: 'numeric', month: 'short', year: 'numeric',
+    });
+    return `
+      <li class="members-item">
+        <span class="members-item-email members-item-uid">${m.user_id}</span>
+        <span class="members-item-meta">Joined ${joined}</span>
+        <button class="btn-members-action" data-action="remove" data-member-id="${m.id}">
+          Remove
+        </button>
+      </li>`;
+  }).join('');
+}
+
+// ── Actions (revoke / remove) via event delegation ────────
+
+membersModal.addEventListener('click', async e => {
+  const btn = e.target.closest('[data-action]');
+  if (!btn || !activeTtId) return;
+
+  const action = btn.dataset.action;
+  btn.disabled = true;
+
+  if (action === 'revoke') {
+    const { error } = await supabase
+      .from('timetable_invites')
+      .update({ status: 'revoked' })
+      .eq('id', btn.dataset.inviteId);
+    if (error) { console.error('Revoke failed:', error.message); btn.disabled = false; return; }
+    loadMembersPanel(activeTtId);
+  }
+
+  if (action === 'remove') {
+    const { error } = await supabase
+      .from('timetable_members')
+      .delete()
+      .eq('id', btn.dataset.memberId);
+    if (error) { console.error('Remove failed:', error.message); btn.disabled = false; return; }
+    loadMembersPanel(activeTtId);
+  }
+});
+
+// ── Send invite ───────────────────────────────────────────
+
+btnSendInvite.addEventListener('click', async () => {
+  const email = inputInviteEmail.value.trim().toLowerCase();
+  membersInviteErr.textContent = '';
+  membersInviteErr.classList.remove('visible');
+
+  if (!email || !email.includes('@')) {
+    membersInviteErr.textContent = 'Please enter a valid email address.';
+    membersInviteErr.classList.add('visible');
+    inputInviteEmail.focus();
+    return;
+  }
+
+  btnSendInvite.disabled = true;
+  btnSendInvite.classList.add('loading');
+
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // Insert invite row
+    const { data: invite, error: insertErr } = await supabase
+      .from('timetable_invites')
+      .insert({
+        timetable_id:   activeTtId,
+        timetable_name: activeTtName,
+        invited_by:     user.id,
+        invited_email:  email,
+      })
+      .select('id, token')
+      .single();
+
+    if (insertErr) throw insertErr;
+
+    // Build the accept URL
+    const origin     = window.location.origin + window.location.pathname.replace('portal.html', '');
+    const acceptUrl  = `${origin}accept-invite.html?token=${invite.token}`;
+
+    // Call Edge Function to send the email
+    const { error: fnErr } = await supabase.functions.invoke('send-invite', {
+      body: {
+        invite_id:      invite.id,
+        timetable_name: activeTtName,
+        invite_url:     acceptUrl,
+      },
+    });
+
+    if (fnErr) {
+      // Invite row was created; warn but don't block — owner can share URL manually
+      console.warn('Email send failed (invite still created):', fnErr.message);
+      membersInviteErr.textContent = 'Invite created but email failed to send. Share the invite link manually if needed.';
+      membersInviteErr.classList.add('visible');
+    }
+
+    inputInviteEmail.value = '';
+    loadMembersPanel(activeTtId);
+  } catch (err) {
+    console.error('Send invite failed:', err);
+    membersInviteErr.textContent = err.message || 'Something went wrong. Please try again.';
+    membersInviteErr.classList.add('visible');
+  } finally {
+    btnSendInvite.disabled = false;
+    btnSendInvite.classList.remove('loading');
   }
 });
 

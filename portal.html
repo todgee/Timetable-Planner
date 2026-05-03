@@ -171,6 +171,53 @@
     </div>
   </div>
 
+  <!-- ── Members / Invites Modal ────────────────────────────── -->
+  <div class="modal-overlay" id="modal-members" hidden role="dialog"
+       aria-modal="true" aria-labelledby="members-modal-title">
+    <div class="portal-modal portal-modal--members">
+      <div class="modal-header">
+        <h2 class="modal-title" id="members-modal-title">Members</h2>
+        <button class="btn-close-modal" id="btn-members-close" aria-label="Close">&#x2715;</button>
+      </div>
+      <div class="modal-body">
+
+        <!-- Invite form -->
+        <div class="members-invite-row">
+          <input
+            type="email"
+            id="input-invite-email"
+            class="members-email-input"
+            placeholder="Invite by email address…"
+            autocomplete="off"
+            maxlength="254"
+          >
+          <button class="btn btn-primary btn-sm" id="btn-send-invite">
+            <span class="btn-label">Send Invite</span>
+            <span class="btn-spinner" aria-hidden="true"></span>
+          </button>
+        </div>
+        <div class="form-error members-invite-error" id="members-invite-error" role="alert"></div>
+
+        <!-- Pending invites -->
+        <div class="members-section">
+          <p class="members-section-label">Pending invites</p>
+          <ul class="members-list" id="list-pending-invites">
+            <li class="members-empty">No pending invites.</li>
+          </ul>
+        </div>
+
+        <!-- Current members -->
+        <div class="members-section">
+          <p class="members-section-label">Members</p>
+          <ul class="members-list" id="list-members">
+            <li class="members-empty">No members yet.</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="js/supabase-client.js"></script>
   <script src="js/shared.js"></script>
