@@ -45,14 +45,20 @@
       flex-shrink: 0;
     }
     .invite-role-option {
+      position: relative;
       display: flex;
       flex: 1;
     }
     .invite-role-option input[type="radio"] {
       position: absolute;
-      opacity: 0;
-      width: 0;
-      height: 0;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
     .invite-role-option span {
       display: block;
