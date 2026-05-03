@@ -80,7 +80,6 @@ async function acceptInvite(invite, timetableName, user) {
         user_id:      user.id,
         invited_by:   invite.invited_by,
         role:         invite.role || 'read',
-        user_email:   user.email || '',
       });
 
     // Ignore duplicate — user may have already joined
