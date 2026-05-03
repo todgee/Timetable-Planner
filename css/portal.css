@@ -411,7 +411,7 @@ body {
 /* ── Members modal ───────────────────────────────────────── */
 
 .portal-modal--members {
-  max-width: 440px;
+  max-width: 560px;
 }
 
 .members-invite-row {
@@ -434,6 +434,14 @@ body {
 }
 
 .members-email-input:focus {
+  border-color: var(--brand-500, #2a5c4e);
+}
+
+.members-email-input:-webkit-autofill,
+.members-email-input:-webkit-autofill:hover,
+.members-email-input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #fdfaf6 inset;
+  -webkit-text-fill-color: #1e2622;
   border-color: var(--brand-500, #2a5c4e);
 }
 
