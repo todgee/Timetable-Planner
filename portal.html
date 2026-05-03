@@ -115,6 +115,14 @@
   <!-- ── Main content ────────────────────────────────────── -->
   <main class="portal-main">
 
+    <!-- Pending invites — only shown when the user has invites waiting -->
+    <section id="section-my-invites" hidden>
+      <div class="portal-section-header">
+        <h2 class="portal-section-title">Pending Invites</h2>
+      </div>
+      <ul class="my-invites-list" id="list-my-invites"></ul>
+    </section>
+
     <div class="portal-section-header">
       <h2 class="portal-section-title">My Timetables</h2>
     </div>
@@ -192,7 +200,7 @@
             maxlength="254"
           >
           <button class="btn btn-primary" id="btn-send-invite" style="width:100%">
-            <span class="btn-label">Send Invite</span>
+            <span class="btn-label">Invite</span>
             <span class="btn-spinner" aria-hidden="true"></span>
           </button>
         </div>

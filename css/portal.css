@@ -505,6 +505,58 @@ body {
   border-color: rgba(201, 146, 78, 0.4);
 }
 
+/* ── Pending invites (received) ──────────────────────────── */
+
+.my-invites-list {
+  list-style: none;
+  margin: 0 0 2.5rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.my-invite-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: #fdfaf6;
+  border: 1px solid rgba(201, 146, 78, 0.30);
+  border-left: 3px solid #c9924e;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(42, 92, 78, 0.06);
+}
+
+.my-invite-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.my-invite-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e2622;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.my-invite-meta {
+  font-size: 0.78rem;
+  color: #8a9a92;
+}
+
+.my-invite-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
 /* ── Empty state ─────────────────────────────────────────── */
 
 .empty-state {
