@@ -68,6 +68,7 @@ async function initPortal() {
   }
 
   renderGrid(timetables || []);
+  loadSharedTimetables(user.id);
   loadMyInvites();
 }
 
@@ -435,6 +436,65 @@ btnSendInvite.addEventListener('click', async () => {
     btnSendInvite.classList.remove('loading');
   }
 });
+
+// ── Shared timetables (member of others') ─────────────────
+
+async function loadSharedTimetables(userId) {
+  const { data: memberships, error } = await supabase
+    .from('timetable_members')
+    .select('joined_at, timetables(id, name, description, updated_at)')
+    .eq('user_id', userId)
+    .order('joined_at', { ascending: false });
+
+  if (error) { console.error('Failed to load shared timetables:', error.message); return; }
+
+  const timetables = (memberships || [])
+    .map(m => m.timetables)
+    .filter(Boolean);
+
+  renderSharedGrid(timetables);
+}
+
+function renderSharedGrid(timetables) {
+  const section = document.getElementById('section-shared');
+  const grid    = document.getElementById('grid-shared');
+
+  if (timetables.length === 0) {
+    section.hidden = true;
+    return;
+  }
+
+  section.hidden = false;
+  grid.innerHTML = timetables.map(tt => {
+    const descHtml = tt.description
+      ? `<p class="card-desc">${escapeHtml(tt.description)}</p>`
+      : '';
+    const dateText = tt.updated_at ? `Updated ${formatDate(tt.updated_at)}` : '';
+    return `
+      <div class="timetable-card timetable-card--shared">
+        <div class="card-body">
+          <div class="card-header-row">
+            <h3 class="card-name">${escapeHtml(tt.name)}</h3>
+            <span class="status-badge status-badge--shared">Shared</span>
+          </div>
+          ${descHtml}
+        </div>
+        <div class="card-footer">
+          <span class="card-date">${dateText}</span>
+          <div class="card-footer-actions">
+            <a class="btn btn-sm btn-primary" href="admin.html?id=${tt.id}">
+              View
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                   stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
 
 // ── My pending invites (received) ─────────────────────────
 

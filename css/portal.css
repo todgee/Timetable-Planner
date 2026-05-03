@@ -351,6 +351,17 @@ body {
   border: 1px solid rgba(201, 146, 78, 0.30);
 }
 
+.status-badge--shared {
+  background: rgba(80, 100, 180, 0.10);
+  color: #3a4a9a;
+  border: 1px solid rgba(80, 100, 180, 0.22);
+}
+
+/* Shared timetable cards get a blue-grey top accent instead of brand green */
+.timetable-card--shared {
+  border-top-color: #6070c0;
+}
+
 /* Card footer */
 
 .card-footer {
