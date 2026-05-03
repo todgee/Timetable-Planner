@@ -73,6 +73,25 @@ function isBreakSlot(slot) {
     return;
   }
 
+  // Non-owners must be an admin member; read members go to view.html
+  if (tt.owner_id !== session.user.id) {
+    const { data: membership } = await supabase
+      .from('timetable_members')
+      .select('role')
+      .eq('timetable_id', timetableId)
+      .eq('user_id', session.user.id)
+      .maybeSingle();
+
+    if (!membership) {
+      window.location.replace('portal.html');
+      return;
+    }
+    if (membership.role === 'read') {
+      window.location.replace(`view.html?id=${timetableId}`);
+      return;
+    }
+  }
+
   if (!tt.setup_complete) {
     window.location.replace(`setup.html?id=${timetableId}`);
     return;
