@@ -11,14 +11,23 @@
 
 ALTER TABLE timetables ENABLE ROW LEVEL SECURITY;
 
-DROP POLICY IF EXISTS "timetables: select own"  ON timetables;
-DROP POLICY IF EXISTS "timetables: insert own"  ON timetables;
-DROP POLICY IF EXISTS "timetables: update own"  ON timetables;
-DROP POLICY IF EXISTS "timetables: delete own"  ON timetables;
+DROP POLICY IF EXISTS "timetables: select own"           ON timetables;
+DROP POLICY IF EXISTS "timetables: select own or member"  ON timetables;
+DROP POLICY IF EXISTS "timetables: insert own"            ON timetables;
+DROP POLICY IF EXISTS "timetables: update own"            ON timetables;
+DROP POLICY IF EXISTS "timetables: delete own"            ON timetables;
 
-CREATE POLICY "timetables: select own"
+-- Owners see all their timetables; accepted members see timetables they joined
+CREATE POLICY "timetables: select own or member"
   ON timetables FOR SELECT
-  USING (auth.uid() = owner_id);
+  USING (
+    auth.uid() = owner_id
+    OR EXISTS (
+      SELECT 1 FROM timetable_members
+      WHERE timetable_members.timetable_id = timetables.id
+        AND timetable_members.user_id = auth.uid()
+    )
+  );
 
 -- Enforce that new rows can only be created for the signed-in user.
 CREATE POLICY "timetables: insert own"
@@ -41,18 +50,26 @@ CREATE POLICY "timetables: delete own"
 
 ALTER TABLE timetable_data ENABLE ROW LEVEL SECURITY;
 
-DROP POLICY IF EXISTS "timetable_data: select own"  ON timetable_data;
-DROP POLICY IF EXISTS "timetable_data: insert own"  ON timetable_data;
-DROP POLICY IF EXISTS "timetable_data: update own"  ON timetable_data;
-DROP POLICY IF EXISTS "timetable_data: delete own"  ON timetable_data;
+DROP POLICY IF EXISTS "timetable_data: select own"           ON timetable_data;
+DROP POLICY IF EXISTS "timetable_data: select own or member"  ON timetable_data;
+DROP POLICY IF EXISTS "timetable_data: insert own"            ON timetable_data;
+DROP POLICY IF EXISTS "timetable_data: update own"            ON timetable_data;
+DROP POLICY IF EXISTS "timetable_data: delete own"            ON timetable_data;
 
-CREATE POLICY "timetable_data: select own"
+CREATE POLICY "timetable_data: select own or member"
   ON timetable_data FOR SELECT
   USING (
     EXISTS (
       SELECT 1 FROM timetables
       WHERE timetables.id = timetable_data.timetable_id
-        AND timetables.owner_id = auth.uid()
+        AND (
+          timetables.owner_id = auth.uid()
+          OR EXISTS (
+            SELECT 1 FROM timetable_members
+            WHERE timetable_members.timetable_id = timetables.id
+              AND timetable_members.user_id = auth.uid()
+          )
+        )
     )
   );
 
@@ -92,18 +109,26 @@ CREATE POLICY "timetable_data: delete own"
 
 ALTER TABLE timetable_config ENABLE ROW LEVEL SECURITY;
 
-DROP POLICY IF EXISTS "timetable_config: select own"  ON timetable_config;
-DROP POLICY IF EXISTS "timetable_config: insert own"  ON timetable_config;
-DROP POLICY IF EXISTS "timetable_config: update own"  ON timetable_config;
-DROP POLICY IF EXISTS "timetable_config: delete own"  ON timetable_config;
+DROP POLICY IF EXISTS "timetable_config: select own"           ON timetable_config;
+DROP POLICY IF EXISTS "timetable_config: select own or member"  ON timetable_config;
+DROP POLICY IF EXISTS "timetable_config: insert own"            ON timetable_config;
+DROP POLICY IF EXISTS "timetable_config: update own"            ON timetable_config;
+DROP POLICY IF EXISTS "timetable_config: delete own"            ON timetable_config;
 
-CREATE POLICY "timetable_config: select own"
+CREATE POLICY "timetable_config: select own or member"
   ON timetable_config FOR SELECT
   USING (
     EXISTS (
       SELECT 1 FROM timetables
       WHERE timetables.id = timetable_config.timetable_id
-        AND timetables.owner_id = auth.uid()
+        AND (
+          timetables.owner_id = auth.uid()
+          OR EXISTS (
+            SELECT 1 FROM timetable_members
+            WHERE timetable_members.timetable_id = timetables.id
+              AND timetable_members.user_id = auth.uid()
+          )
+        )
     )
   );
 
