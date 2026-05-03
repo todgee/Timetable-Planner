@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' https://cdn.jsdelivr.net;
+    style-src 'self' https://fonts.googleapis.com 'unsafe-inline';
+    font-src https://fonts.gstatic.com;
+    connect-src 'self' https://*.supabase.co https://cdn.jsdelivr.net;
+    img-src 'self' data: blob:;
+    base-uri 'self';
+    form-action 'self';
+  ">
+  <title>Accept Invite – Timetable Planner</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/portal.css">
+  <script src="js/theme-engine.js"></script>
+
+  <style>
+    body { visibility: hidden; }
+
+    .accept-wrap {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .accept-card {
+      background: #fdfaf6;
+      border: 1px solid #ddd7cc;
+      border-top: 4px solid var(--brand-500, #2a5c4e);
+      border-radius: 14px;
+      padding: 2.5rem 2rem;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 4px 24px rgba(42, 92, 78, 0.10);
+      text-align: center;
+    }
+
+    .accept-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--brand-fill, rgba(42, 92, 78, 0.10));
+      color: var(--brand-500, #2a5c4e);
+      margin-bottom: 1.25rem;
+    }
+
+    .accept-title {
+      font-family: "Crimson Pro", Georgia, serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--brand-500, #2a5c4e);
+      margin: 0 0 0.5rem;
+      line-height: 1.2;
+    }
+
+    .accept-sub {
+      font-size: 0.9rem;
+      color: #4a5c54;
+      margin: 0 0 1.75rem;
+      line-height: 1.6;
+    }
+
+    .accept-sub strong {
+      color: #1e2622;
+    }
+
+    .accept-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .accept-status {
+      margin-top: 1.25rem;
+      font-size: 0.85rem;
+      color: #8a9a92;
+      min-height: 1.2em;
+    }
+
+    .accept-status.error {
+      color: #b04040;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="portal-bg" aria-hidden="true">
+    <div class="portal-orb portal-orb--green"></div>
+    <div class="portal-orb portal-orb--gold"></div>
+  </div>
+
+  <div class="accept-wrap">
+    <div class="accept-card" id="accept-card">
+
+      <div class="accept-icon" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+
+      <h1 class="accept-title" id="accept-title">You've been invited</h1>
+      <p class="accept-sub" id="accept-sub">Loading invite details…</p>
+
+      <div class="accept-actions" id="accept-actions" hidden>
+        <button class="btn btn-primary" id="btn-accept">
+          <span class="btn-label">Accept &amp; Join</span>
+          <span class="btn-spinner" aria-hidden="true"></span>
+        </button>
+        <a class="btn btn-ghost" href="portal.html">Cancel</a>
+      </div>
+
+      <p class="accept-status" id="accept-status" role="alert"></p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/accept-invite.js"></script>
+</body>
+</html>
