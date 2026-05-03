@@ -63,9 +63,8 @@ function isBreakSlot(slot) {
 
   const { data: tt, error } = await supabase
     .from('timetables')
-    .select('name, setup_complete')
+    .select('name, setup_complete, owner_id')
     .eq('id', timetableId)
-    .eq('owner_id', session.user.id)
     .single();
 
   if (error || !tt) {
