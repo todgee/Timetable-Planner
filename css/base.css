@@ -1856,30 +1856,6 @@ body.timetable-fullscreen-active {
   opacity: 0.85;
 }
 
-.app-page-title {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem 1.5rem;
-  border-top: 1px solid rgba(221, 215, 204, 0.7);
-}
-
-.app-page-title-text h1 {
-  font-family: "Crimson Pro", serif;
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #2a3d35;
-  margin: 0 0 0.1rem;
-  letter-spacing: -0.01em;
-}
-
-.app-page-title-text p {
-  font-family: "Work Sans", sans-serif;
-  font-size: 0.82rem;
-  color: #6b7c74;
-  margin: 0;
-}
-
 .app-header-center {
   display: flex;
   align-items: center;
@@ -1984,22 +1960,31 @@ body.timetable-fullscreen-active {
 /* ── Config page title bar (inside .app-shell) ─────────────── */
 
 .app-page-title-bar {
-  padding: 0.9rem 1.5rem 1rem;
+  padding: 1.25rem 1.5rem 1.5rem;
   border-top: 1px solid rgba(221, 215, 204, 0.7);
+}
+
+.app-page-title-bar-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .app-page-title {
   font-family: "Crimson Pro", serif;
-  font-size: 1.6rem;
+  font-size: 2.5rem;
   font-weight: 700;
   color: var(--brand-500, #2a5c4e);
-  margin: 0 0 0.2rem;
-  line-height: 1.2;
+  margin: 0 0 0.35rem;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
 }
 
 .app-page-subtitle {
   font-family: "Work Sans", sans-serif;
-  font-size: 0.875rem;
-  color: #6b7c74;
+  font-size: 1rem;
+  color: var(--text-secondary, #4a5c54);
+  font-weight: 300;
   margin: 0;
 }
