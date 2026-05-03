@@ -187,6 +187,8 @@ body {
   padding: 0.75rem 1.5rem;
   font-size: 0.925rem;
   flex-shrink: 0;
+  margin-left: auto;
+  width: fit-content;
 }
 
 /* Loading spinner (used by confirm button in modal) */
@@ -603,6 +605,7 @@ body {
 
   .portal-cta {
     width: 100%;
+    margin-left: 0;
     justify-content: center;
   }
 
